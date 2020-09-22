@@ -37,6 +37,9 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   jetTagCollectionT_      = consumes<reco::JetTagCollection>(iConfig.getParameter<edm::InputTag>("jetTagCollection"));
   ipTagInfoCollectionT_   = consumes<std::vector<reco::CandIPTagInfo> > (iConfig.getParameter<edm::InputTag>("ipTagInfoCollection"));
 
+  siPixelRecHitCollectionT_ = iConfig.getParameter<edm::InputTag>("siPixelRecHitCollection");
+  siStripRecHitCollectionT_ = iConfig.getParameter<std::vector<edm::InputTag> >("siStripRecHitCollection");
+
   //johnda add configuration
   mode_      = iConfig.getParameter<std::string>("mode");
   minJetPt_  = iConfig.getParameter<double>("minJetPt");
@@ -88,6 +91,7 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   //branchesTRKvolumeAtEBEE(RHTree, fs);
   //branchesTRKvolumeAtECAL(RHTree, fs);
   branchesJetInfoAtECALstitched( RHTree, fs);
+  branchesTRKlayersAtECALstitched(RHTree, fs);
 
   // For FC inputs
   //RHTree->Branch("FC_inputs",      &vFC_inputs_);
@@ -117,11 +121,13 @@ RecHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   bool passedSelection = false;
   if ( doJets_ ) {
     passedSelection = runEvtSel_jet( iEvent, iSetup );
+    //passedSelection = runEvtSel_jet_dijet_tau( iEvent, iSetup );
   } else {
     passedSelection = runEvtSel( iEvent, iSetup );
   }
 
   if ( !passedSelection ) {
+    std::cout << "!!!!!!!!!!! DID NOT PASS EVENT/JET SELECTION !!!!!!!!!!!" << std::endl;
     h_sel->Fill( 0. );;
     return;
   }
@@ -141,6 +147,12 @@ RecHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //fillTRKvolumeAtEBEE( iEvent, iSetup );
   //fillTRKvolumeAtECAL( iEvent, iSetup );
   fillJetInfoAtECALstitched( iEvent, iSetup );
+  //fillTRKlayersAtECALstitched( iEvent, iSetup );
+  for (unsigned int i=0;i<Nhitproj;i++)
+  {
+    fillTRKlayersAtECALstitched( iEvent, iSetup, i );
+  }
+
 
   ////////////// 4-Momenta //////////
   //fillFC( iEvent, iSetup );

@@ -127,10 +127,10 @@ SCRegressor::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   nTotal += nPhotons;
   //hasPassed = runPiSel ( iEvent, iSetup ); //TODO: add config-level switch
   //hasPassed = runPhotonSel ( iEvent, iSetup );
-  hasPassed = runDiPhotonSel ( iEvent, iSetup );
+  //hasPassed = runDiPhotonSel ( iEvent, iSetup );
   //hasPassed = runZJetsEleSel ( iEvent, iSetup );
   //hasPassed = runZJetsMuSel ( iEvent, iSetup );
-  //hasPassed = runNJetsSel ( iEvent, iSetup );
+  hasPassed = runNJetsSel ( iEvent, iSetup );
   //hasPassed = runH2aaSel ( iEvent, iSetup );
   if ( !hasPassed ) return;
   //runDiPhotonSel ( iEvent, iSetup );

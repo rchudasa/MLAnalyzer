@@ -34,9 +34,19 @@
 #include "DataFormats/SiStripDetId/interface/TIDDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
+
+#include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
+#include "DataFormats/SiStripDetId/interface/StripSubdetector.h"
+
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
+#include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
+#include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetType.h"
 #include "Geometry/TrackerGeometryBuilder/interface/StripGeomDetUnit.h"
+#include "Geometry/TrackerGeometryBuilder/interface/StripGeomDetType.h"
+
+#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
+#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 
 #include "Calibration/IsolatedParticles/interface/DetIdFromEtaPhi.h"
 
@@ -64,6 +74,7 @@
 #include "TCanvas.h"
 #include "TStyle.h"
 #include "TMath.h"
+#include "TVector3.h"
 
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
@@ -78,6 +89,10 @@
 #include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/BTauReco/interface/CandIPTagInfo.h"
 
+#include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHitCollection.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiStripMatchedRecHit2DCollection.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
+
 //
 // class declaration
 //
@@ -87,6 +102,10 @@
 // from  edm::one::EDAnalyzer<> and also remove the line from
 // constructor "usesResource("TFileService");"
 // This will improve performance in multithreaded jobs.
+
+static const unsigned int Nproj = 5;
+static const unsigned int Nhitproj = 2;
+static const unsigned int Nadjproj = 2;
 
 class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //class RecHitAnalyzer : public edm::EDAnalyzer  {
@@ -120,6 +139,9 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     
     typedef std::vector<reco::PFCandidate>  PFCollection;
     edm::EDGetTokenT<PFCollection> pfCollectionT_;
+
+    edm::InputTag siPixelRecHitCollectionT_;
+    std::vector<edm::InputTag> siStripRecHitCollectionT_;
     //edm::InputTag trackTags_; //used to select what tracks to read from configuration file
 
     // Diagnostic histograms
@@ -153,6 +175,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void branchesTRKvolumeAtEBEE( TTree*, edm::Service<TFileService>& );
     //void branchesTRKvolumeAtECAL( TTree*, edm::Service<TFileService>& );
     void branchesJetInfoAtECALstitched   ( TTree*, edm::Service<TFileService>& );
+    void branchesTRKlayersAtECALstitched( TTree*, edm::Service<TFileService>& );
 
     bool runEvtSel          ( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet      ( const edm::Event&, const edm::EventSetup& );
@@ -171,11 +194,15 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void fillTRKvolumeAtEBEE( const edm::Event&, const edm::EventSetup& );
     //void fillTRKvolumeAtECAL( const edm::Event&, const edm::EventSetup& );
     void fillJetInfoAtECALstitched   ( const edm::Event&, const edm::EventSetup& );
+    //void fillTRKlayersAtECALstitched( TTree*, edm::Service<TFileService>& );
+    void fillTRKlayersAtECALstitched( const edm::Event&, const edm::EventSetup&, unsigned int proj );
 
     const reco::PFCandidate* getPFCand(edm::Handle<PFCollection> pfCands, float eta, float phi, float& minDr, bool debug = false);
     const reco::Track* getTrackCand(edm::Handle<reco::TrackCollection> trackCands, float eta, float phi, float& minDr, bool debug = false);
     int   getTruthLabel(const reco::PFJetRef& recJet, edm::Handle<reco::GenParticleCollection> genParticles, float dRMatch = 0.4, bool debug = false);
     float getBTaggingValue(const reco::PFJetRef& recJet, edm::Handle<edm::View<reco::Jet> >& recoJetCollection, edm::Handle<reco::JetTagCollection>& btagCollection, float dRMatch = 0.1, bool debug= false );
+
+    unsigned int getLayer(const DetId& detid);
 
     // Jet level functions
     std::string mode_;  // EventLevel / JetLevel
@@ -186,10 +213,13 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     double z0PVCut_;
     std::vector<int> vJetIdxs;
     void branchesEvtSel_jet_dijet      ( TTree*, edm::Service<TFileService>& );
+    void branchesEvtSel_jet_dijet_tau( TTree*, edm::Service<TFileService>& );
     void branchesEvtSel_jet_dijet_gg_qq( TTree*, edm::Service<TFileService>& );
     bool runEvtSel_jet_dijet      ( const edm::Event&, const edm::EventSetup& );
+    bool runEvtSel_jet_dijet_tau( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet_dijet_gg_qq( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet      ( const edm::Event&, const edm::EventSetup& );
+    void fillEvtSel_jet_dijet_tau( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet_gg_qq( const edm::Event&, const edm::EventSetup& );
 
     int nTotal, nPassed;
@@ -260,6 +290,27 @@ static const double eta_bins_HBHE[2*(hcaldqm::constants::IETA_MAX_HE-1)+1] =
                    -1.218, -1.131, -1.044, -0.957, -0.870, -0.783, -0.695, -0.609, -0.522, -0.435, -0.348, -0.261, -0.174, -0.087, 0.000,
                     0.087,  0.174,  0.261,  0.348,  0.435,  0.522,  0.609,  0.695,  0.783,  0.870,  0.957,  1.044,  1.131,  1.218,
                     1.305,  1.392,  1.479,  1.566,  1.653,  1.740,  1.830,  1.930,  2.043,  2.172,  2.322,  2.500,  2.650,  3.000}; // 57
+
+// MGG80, pt/m0 cut
+static const int runTotal[3] = {14907, 22323, 20195}; //57425
+// MGG80
+//static const int runTotal[3] = {21918, 29913, 32805}; //84636
+//static const int runTotal[3] = {6575, 8974, 9842}; //25391
+//static const int runTotal[3] = {28493, 38887, 42647}; //84636+25391
+//static const int runTotal[3] = {45363, 67946, 61752}; //175061
+// MGG90
+//static const int runTotal[3] = {16308, 24538, 22206}; //63052
+//static const int runTotal[3] = {4892, 7361, 6662}; //18915
+//static const int runTotal[3] = {21200, 31899, 28868}; //63052+18915
+//static const int runTotal[3] = {35141, 47885, 52576}; //135602
+
+
+static const std::string projections[Nproj] = {"", "_atECAL", "_atHCAL","_atECALfixIP","_atECALfixIPfromPV"}; //57425
+static const std::string hit_projections[Nhitproj] = {"", "_atPV"};
+static const std::string adj_projections[Nadjproj] = {"_5x5", "_3x3"};
+static const int eta_nbins_HBHE = 2*(HBHE_IETA_MAX_HE-1);
+static const int granularityMultiECAL=5;
+
 //
 // static data member definitions
 //

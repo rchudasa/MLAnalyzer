@@ -19,7 +19,7 @@ vector<int>   vFailedJetIdx_;
 
 
 //const std::string jetSelection = "dijet_gg_qq"; // TODO: put switch at cfg level
-const std::string jetSelection = "dijet";
+const std::string jetSelection = "dijet_tau";
 
 
 // Initialize branches _____________________________________________________//
@@ -32,8 +32,8 @@ void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService
   tree->Branch("jetSeed_ieta",   &vJetSeed_ieta_);
 
   // Fill branches in explicit jet selection
-  if ( jetSelection == "dijet_gg_qq" ) {
-    branchesEvtSel_jet_dijet_gg_qq( tree, fs );
+  if ( jetSelection == "dijet_tau" ) {
+    branchesEvtSel_jet_dijet_tau( tree, fs );
   } else {
     branchesEvtSel_jet_dijet( tree, fs );
   }
@@ -47,8 +47,9 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
 
   // Run explicit jet selection
   bool hasPassed;
-  if ( jetSelection == "dijet_gg_qq" ) {
-    hasPassed = runEvtSel_jet_dijet_gg_qq( iEvent, iSetup );
+  if ( jetSelection == "dijet_tau" ) {
+    hasPassed = runEvtSel_jet_dijet_tau( iEvent, iSetup );
+    if ( hasPassed ) std::cout << "!!!!!!   JET SELECTION HAS PASSED! " << std::endl; 
   } else {
     hasPassed = runEvtSel_jet_dijet( iEvent, iSetup );
   }
@@ -93,6 +94,7 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
     HcalDetId hId( spr::findDetIdHCAL( caloGeom, iJet->eta(), iJet->phi(), false ) );
     if ( hId.subdet() != HcalBarrel && hId.subdet() != HcalEndcap ){
       vFailedJetIdx_.push_back(thisJetIdx);
+      std::cout << "Fail getting HBHE tower to jet position" << std::endl;
       continue;
     }
     HBHERecHitCollection::const_iterator iRHit( HBHERecHitsH_->find(hId) );
@@ -147,6 +149,7 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
     // Required to keep the seed at the image center
     if ( HBHE_IETA_MAX_HE-1 - ietaAbs_ < image_padding ) { 
       if ( debug ) std::cout << " Fail HE edge cut " << std::endl;
+      std::cout << " Fail HE edge cut " << std::endl;
       vFailedJetIdx_.push_back(thisJetIdx);
       continue;
     }
@@ -160,18 +163,17 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
 
   } // good jets 
 
-  
-
   // Remove jets that failed the Seed cuts 
   for(int failedJetIdx : vFailedJetIdx_)
     vJetIdxs.erase(std::remove(vJetIdxs.begin(),vJetIdxs.end(),failedJetIdx),vJetIdxs.end());
 
   if ( vJetIdxs.size() == 0){
     if ( debug ) std::cout << " No passing jets...  " << std::endl;
+    std::cout << " >> analyze failed: no passing jets" << std::endl;
     return false;
   }
 
-  
+  if ((nJets_ > 0) && nJet == nJets_) std::cout << " >> analyze failed: " << nJets_ << " passing jets" << std::endl;
   if ( (nJets_ > 0) && nJet != nJets_ ) return false;
   if ( debug ) std::cout << " >> analyze: passed" << std::endl;
 
@@ -179,11 +181,8 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   jet_runId_ = iEvent.id().run();
   jet_lumiId_ = iEvent.id().luminosityBlock();
 
-
-
-
-  if ( jetSelection == "dijet_gg_qq" ) {
-    fillEvtSel_jet_dijet_gg_qq( iEvent, iSetup );
+  if ( jetSelection == "dijet_tau" ) {
+    fillEvtSel_jet_dijet_tau( iEvent, iSetup );
   } else {
     fillEvtSel_jet_dijet( iEvent, iSetup );
   }

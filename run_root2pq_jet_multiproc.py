@@ -17,22 +17,22 @@ def run_process(process):
 
 xrootd='root://cmsxrootd.fnal.gov' # FNAL
 #xrootd='root://eoscms.cern.ch' # CERN
-eosDir='/eos/uscms/store/user/lpcml/mandrews/IMG'
+local='/afs/cern.ch/user/d/ddicroce/work/ML/TauIdentifier/CMSSW_9_4_17/src/MLAnalyzer/input'
 
-decay = 'QCDToGG_Pt_80_120_13TeV_TuneCUETP8M1_noPU_IMG'
+decay = 'input'
 
 # Paths to input files
-rhFileList = '%s/%s/*/*/output_*.root'%(eosDir, decay)
+rhFileList = '%s/%s/*.root'%(local, decay)
 print(" >> Input file list: %s"%rhFileList)
 rhFileList = glob.glob(rhFileList)
 assert len(rhFileList) > 0
 print(" >> %d files found"%len(rhFileList))
-rhFileList = [('%s/%s'%(xrootd, rhFile)).replace('/eos/uscms','') for rhFile in rhFileList]
+#rhFileList = [('%s/%s'%(xrootd, rhFile)).replace('/eos/uscms','') for rhFile in rhFileList]
 print(' >> Input File[0]: %s'%rhFileList[0])
 sort_nicely(rhFileList)
 
 # Output path
-outDir='/uscms/physics_grp/lpcml/nobackup/mandrews' # NOTE: Space here is limited, transfer files to EOS after processing
+outDir='/afs/cern.ch/user/d/ddicroce/work/ML/TauIdentifier/CMSSW_9_4_17/src/MLAnalyzer/'
 outDir='%s/%s'%(outDir, decay)
 if not os.path.isdir(outDir):
     os.makedirs(outDir)

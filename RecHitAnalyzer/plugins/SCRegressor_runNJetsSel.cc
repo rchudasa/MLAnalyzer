@@ -42,8 +42,9 @@ bool SCRegressor::runNJetsSel ( const edm::Event& iEvent, const edm::EventSetup&
   std::vector<unsigned int> vRecoJetIdxs;
   for ( unsigned int iJ = 0; iJ < jets->size(); iJ++ ) {
     JetRef iJet( jets, iJ );
+    std::cout << "!!!!!!!!! RUNNING JET SELECTION HERE!!!!!!!!!" << std::endl;
     if ( std::abs(iJet->pt()) < 20. ) continue;
-    if ( std::abs(iJet->eta()) > 1.4 ) continue;
+    if ( std::abs(iJet->eta()) > 2.4 ) continue;
     //if ( std::abs(iJet->eta()) > 1.442 && std::abs(iJet->eta()) < 1.566 ) continue;
     // isLooseJet
     float NHF      = iJet->neutralHadronEnergyFraction();
