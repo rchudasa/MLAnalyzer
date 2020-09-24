@@ -318,19 +318,46 @@ void RecHitAnalyzer::fillTRKlayersAtEBEE ( const edm::Event& iEvent, const edm::
     DetId ecalId( spr::findDetIdECAL( caloGeom, eta, phi, false ) );
     //if (std::abs(eta) > 1.479) std::cout << "eta:" << eta << std::endl;
 
+    //case 3:{//TIB
+    //  //TIBDetId pdetId = TIBDetId(detid);
+    //  //return pdetId.layer();
+    //  SiStripDetId pdetId = SiStripDetId(detid);
+    //  return pdetId.moduleGeometry();
+    //}break;
+
+    //case 4:{//TID
+    //  //TIDDetId pdetId = TIDDetId(detid);
+    //  //return pdetId.wheel();
+    //  SiStripDetId pdetId = SiStripDetId(detid);
+    //  return pdetId.moduleGeometry();
+    //}break;
+
+    //case 5:{//TOB
+    //  //TOBDetId pdetId = TOBDetId(detid);
+    //  //return pdetId.layer();
+    //  SiStripDetId pdetId = SiStripDetId(detid);
+    //  return pdetId.moduleGeometry();
+    //}break;
+
+    //case 6:{//TEC
+    //  //TECDetId pdetId = TECDetId(detid);
+    //  //return pdetId.wheel();
+    //  SiStripDetId pdetId = SiStripDetId(detid);
+    //  return pdetId.moduleGeometry();
+
+
     if ( tkId.subdetId() == StripSubdetector::TOB ) {
-
-      layer = TOBDetId( tkId ).layer();
+      //layer = TOBDetId( tkId ).layer();
+      layer = SiStripDetId( tkId ).moduleGeometry();
       hTOB_layers->Fill(layer);
-
       if ( ecalId.subdetId() == EcalBarrel )
         fillTRKatEB( EBDetId(ecalId), layer-1, hTOB_EB, vTOB_EB_ );
       else if ( ecalId.subdetId() == EcalEndcap )
         fillTRKatEE( EEDetId(ecalId), layer-1, hTOB_EE, vTOB_EE_ );
 
     } else if ( tkId.subdetId() == StripSubdetector::TEC ) {
-    
-      layer = TECDetId( tkId ).wheel();
+      //layer = TECDetId( tkId ).wheel();
+      layer = SiStripDetId( tkId ).moduleGeometry();
       hTEC_layers->Fill(layer);
       if ( ecalId.subdetId() == EcalBarrel )
         fillTRKatEB( EBDetId(ecalId), layer-1, hTEC_EB, vTEC_EB_ );
@@ -338,8 +365,8 @@ void RecHitAnalyzer::fillTRKlayersAtEBEE ( const edm::Event& iEvent, const edm::
         fillTRKatEE( EEDetId(ecalId), layer-1, hTEC_EE, vTEC_EE_ );
 
     } else if ( tkId.subdetId() == StripSubdetector::TIB ) {
-    
-      layer = TIBDetId( tkId ).layer();
+      //layer = TIBDetId( tkId ).layer();
+      layer = SiStripDetId( tkId ).moduleGeometry();
       hTIB_layers->Fill(layer);
       if ( ecalId.subdetId() == EcalBarrel )
         fillTRKatEB( EBDetId(ecalId), layer-1, hTIB_EB, vTIB_EB_ );
@@ -347,8 +374,8 @@ void RecHitAnalyzer::fillTRKlayersAtEBEE ( const edm::Event& iEvent, const edm::
         fillTRKatEE( EEDetId(ecalId), layer-1, hTIB_EE, vTIB_EE_ );
 
     } else if ( tkId.subdetId() == StripSubdetector::TID ) {
-    
-      layer = TIDDetId( tkId ).wheel();
+      //layer = TIDDetId( tkId ).wheel();
+      layer = SiStripDetId( tkId ).moduleGeometry();
       hTID_layers->Fill(layer);
       if ( ecalId.subdetId() == EcalBarrel )
         fillTRKatEB( EBDetId(ecalId), layer-1, hTID_EB, vTID_EB_ );
@@ -356,7 +383,6 @@ void RecHitAnalyzer::fillTRKlayersAtEBEE ( const edm::Event& iEvent, const edm::
         fillTRKatEE( EEDetId(ecalId), layer-1, hTID_EE, vTID_EE_ );
 
     } else if ( tkId.subdetId() == PixelSubdetector::PixelBarrel ) {
-    
       layer = PXBDetId( tkId ).layer();
       hBPIX_layers->Fill(layer);
       if ( ecalId.subdetId() == EcalBarrel )
@@ -365,7 +391,6 @@ void RecHitAnalyzer::fillTRKlayersAtEBEE ( const edm::Event& iEvent, const edm::
         fillTRKatEE( EEDetId(ecalId), layer-1, hBPIX_EE, vBPIX_EE_ );
 
     } else if ( tkId.subdetId() == PixelSubdetector::PixelEndcap ) {
-    
       layer = PXFDetId( tkId ).disk();
       hFPIX_layers->Fill(layer);
       if ( ecalId.subdetId() == EcalBarrel )

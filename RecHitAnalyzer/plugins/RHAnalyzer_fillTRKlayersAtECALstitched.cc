@@ -269,23 +269,31 @@ unsigned int RecHitAnalyzer::getLayer(const DetId& detid) {
     }break;
 
     case 3:{//TIB
-      TIBDetId pdetId = TIBDetId(detid);
-      return pdetId.layer();
+      //TIBDetId pdetId = TIBDetId(detid);
+      //return pdetId.layer();
+      SiStripDetId pdetId = SiStripDetId(detid);
+      return pdetId.moduleGeometry();
     }break;
 
     case 4:{//TID
-      TIDDetId pdetId = TIDDetId(detid);
-      return pdetId.wheel();
+      //TIDDetId pdetId = TIDDetId(detid);
+      //return pdetId.wheel();
+      SiStripDetId pdetId = SiStripDetId(detid);
+      return pdetId.moduleGeometry();
     }break;
 
     case 5:{//TOB
-      TOBDetId pdetId = TOBDetId(detid);
-      return pdetId.layer();
+      //TOBDetId pdetId = TOBDetId(detid);
+      //return pdetId.layer();
+      SiStripDetId pdetId = SiStripDetId(detid);
+      return pdetId.moduleGeometry();
     }break;
 
     case 6:{//TEC
-      TECDetId pdetId = TECDetId(detid);
-      return pdetId.wheel();
+      //TECDetId pdetId = TECDetId(detid);
+      //return pdetId.wheel();
+      SiStripDetId pdetId = SiStripDetId(detid);
+      return pdetId.moduleGeometry();
     }break;
 
   }
