@@ -1,0 +1,4 @@
+cmsrel CMSSW_10_2_20_UL
+cd CMSSW_10_2_20_UL/src/
+cmsenv 
+git clone https://github.com/davidedicroce/MLAnalyzer.git
