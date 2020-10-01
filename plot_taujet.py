@@ -10,7 +10,7 @@ import h5py
 from scipy.misc import imresize
 
 import matplotlib.pyplot as plt
-%matplotlib inline
+#%matplotlib inline
 from matplotlib.colors import LogNorm
 import matplotlib.ticker as ticker
 from matplotlib.ticker import MultipleLocator
