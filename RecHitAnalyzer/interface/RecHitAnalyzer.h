@@ -246,8 +246,8 @@ static const int nTOB = 6;
 static const int nTEC = 9;
 static const int nTIB = 4;
 static const int nTID = 3;
-static const int nBPIX = 4;
-static const int nFPIX = 3;
+static const int nBPIX = 5;
+static const int nFPIX = 16;
 
 static const int EB_IPHI_MIN = EBDetId::MIN_IPHI;//1;
 static const int EB_IPHI_MAX = EBDetId::MAX_IPHI;//360;

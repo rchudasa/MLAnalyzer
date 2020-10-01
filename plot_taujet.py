@@ -25,6 +25,7 @@ from numpy.lib.stride_tricks import as_strided
 import argparse
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('-i', '--infile', default='output_DoubleTau.root', type=str, help='Input root file.')
+parser.add_argument('-n', '--nEvents', default=10, type=int, help='Number of events.')
 args = parser.parse_args()
 
 fileStr = args.infile
@@ -50,10 +51,14 @@ class ParquetDataset(Dataset):
         return self.parquet.num_row_groups
 
 def plotJet(img, mins, maxs, str_):
-    plt.imshow(np.zeros_like(img[2,:,:]), cmap='Greys', vmin=0., vmax=1., alpha=0.9)
-    if maxs[-1] > 0 : plt.imshow(img[2,:,:], cmap='Greys', norm=LogNorm(), alpha=0.9, vmin=mins[-1], vmax=maxs[-1])
-    if maxs[-2] > 0 : plt.imshow(img[1,:,:], cmap='Blues', norm=LogNorm(), alpha=0.9, vmin=mins[-2], vmax=maxs[-2])
-    if maxs[-3] > 0 : plt.imshow(img[0,:,:], cmap='Oranges', norm=LogNorm(), alpha=0.9, vmin=mins[-3], vmax=maxs[-3])
+    plt.imshow(np.zeros_like(img[6,:,:]), cmap='Greys', vmin=0., vmax=1., alpha=0.9)
+    if maxs[-1] > 0 : plt.imshow(img[6,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-1], vmax=maxs[-1])
+    if maxs[-2] > 0 : plt.imshow(img[5,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-2], vmax=maxs[-2])
+    if maxs[-3] > 0 : plt.imshow(img[4,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-3], vmax=maxs[-3])
+    if maxs[-4] > 0 : plt.imshow(img[3,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-4], vmax=maxs[-4])
+    if maxs[-5] > 0 : plt.imshow(img[2,:,:], cmap='Greys',  norm=LogNorm(), alpha=0.9, vmin=mins[-5], vmax=maxs[-5])
+    if maxs[-6] > 0 : plt.imshow(img[1,:,:], cmap='Blues',  norm=LogNorm(), alpha=0.9, vmin=mins[-6], vmax=maxs[-6])
+    if maxs[-7] > 0 : plt.imshow(img[0,:,:], cmap='Oranges',norm=LogNorm(), alpha=0.9, vmin=mins[-7], vmax=maxs[-7])
     #plt.colorbar(fraction=0.046, pad=0.04)
     ax = plt.axes()
     plt.xlim([0., 125.+0.])
@@ -98,7 +103,7 @@ train_loader = DataLoader(dataset=dset_train, batch_size=4, num_workers=0, shuff
 print dset_train
 for i, data in enumerate(train_loader):
     print("Loop ", i)
-    if i > 10: break
+    if i > args.nEvents: break
     #print data
     #print data['X_jet']
     X_train = data['X_jet']
@@ -110,7 +115,7 @@ for i, data in enumerate(train_loader):
     plt.rcParams["figure.figsize"] = (5,5)
     plt.rcParams.update({'font.size': 26})
     
-    cmap = ['Oranges', 'Blues', 'Greys']
+    cmap = ['Oranges','Blues','Greys','Greens','Greens','Greens','Greens']
 
     event = 0
 
@@ -132,7 +137,7 @@ for i, data in enumerate(train_loader):
     #Selecting only taus
     if y_train[event] == 0: continue
 
-    for j in range(3):
+    for j in range(7):
     #for i in [1,0,2]:
         #print (X_train[event,i,:,:], "SHAPE : ", X_train[event,i,:,:].shape)
         img_ = img[j,:,:]
@@ -143,8 +148,8 @@ for i, data in enumerate(train_loader):
         plotJet_chnl(img_, cmap[j], min_, max_, 'images/tau_event%d_jet0_chnl%d.png'%(i,j))
         #plotJet_chnl(img_, cmap[i], 1.e-3, img_.max(), 'images/single_event%d_jet0_chnl%d.jpg'%(event,i))
 
-    mins = [0.0001]*3
-    maxs = [X_train[event,0,:,:].max(), X_train[event,1,:,:].max(), X_train[event,2,:,:].max()]
+    mins = [0.0001]*7
+    maxs = [X_train[event,0,:,:].max(), X_train[event,1,:,:].max(), X_train[event,2,:,:].max(), X_train[event,3,:,:].max(), X_train[event,4,:,:].max(), X_train[event,5,:,:].max(), X_train[event,6,:,:].max()]
     print "Min = ", mins, " | Max = ", maxs
     #plotJet(X_train[event,:,:,:], mins, maxs, 'images/single_event%d_jet0.png'%(event))
     plotJet(img, mins, maxs, 'images/tau_event%d_jet0.png'%(i))

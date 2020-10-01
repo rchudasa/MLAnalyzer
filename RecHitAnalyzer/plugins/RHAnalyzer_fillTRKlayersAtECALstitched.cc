@@ -230,13 +230,18 @@ void fillTRKLayerAtEB (DetId id, int layer_, unsigned int proj, TH2F *hSUBDET_EC
   int ieta_signed = ieta_;
   int ieta_global = ieta_ + EB_IETA_MAX + ieta_global_offset;
   int idx_ = ieta_global*EB_IPHI_MAX + iphi_; 
-  vSUBDET_ECAL_[layer_-1][proj][idx_] += 1.0;
-  hSUBDET_ECAL[layer_-1][proj]->Fill( iphi_, ieta_signed, 1. );
+  std::cout << "Layer " << layer_ << " , proj " << proj << std::endl;
+  vSUBDET_ECAL_[layer_][proj][idx_] += 1.0;
+  std::cout << "Before filling TRKLayerAtEB histogram" << std::endl;
+  hSUBDET_ECAL[layer_][proj]->Fill( iphi_, ieta_signed, 1. );
+  std::cout << "After filling TRKLayerAtEB histogram" << std::endl;
 }
 
 void fillHelperAtEE ( float phi_, float eta_, int layer_, TH2F *hEvt_EE_SUBDET[][nEE]) {
   int iz_ = (eta_ > 0.) ? 1 : 0;
-  hEvt_EE_SUBDET[layer_-1][iz_]->Fill( phi_, eta_);
+  std::cout << "Layer " << layer_ << " , iz " << iz_ << std::endl;
+  hEvt_EE_SUBDET[layer_][iz_]->Fill( phi_, eta_);
+  std::cout << "After filling fillHelperAtEE histogram" << std::endl;
 }
 
 unsigned int RecHitAnalyzer::getLayer(const DetId& detid, const TrackerTopology* tTopo) {
@@ -244,34 +249,34 @@ unsigned int RecHitAnalyzer::getLayer(const DetId& detid, const TrackerTopology*
   unsigned int subid=detid.subdetId();
   switch(subid){
 
-    case 1:{//BPIX
+    case PixelSubdetector::PixelBarrel:{//BPIX
       std::cout << "BPIX" << std::endl;
       PXBDetId pdetId = PXBDetId(detid);
       return pdetId.layer();
     }break;
 
-    case 2:{//FPIX
+    case PixelSubdetector::PixelEndcap:{//FPIX
       std::cout << "FPIX" << std::endl;
       PXFDetId pdetId = PXFDetId(detid.rawId());
       return pdetId.disk();
     }break;
 
-    case 3:{//TIB
+    case SiStripDetId::TIB:{//TIB
       std::cout << "TIB" << std::endl;
       return tTopo->layer(SiStripDetId(detid));
     }break;
 
-    case 4:{//TID
+    case SiStripDetId::TID:{//TID
       std::cout << "TID" << std::endl;
       return tTopo->layer(SiStripDetId(detid));
     }break;
 
-    case 5:{//TOB
+    case SiStripDetId::TOB:{//TOB
       std::cout << "TOB" << std::endl;
       return tTopo->layer(SiStripDetId(detid));
     }break;
 
-    case 6:{//TEC
+    case SiStripDetId::TEC:{//TEC
       std::cout << "TEC" << std::endl;
       return tTopo->layer(SiStripDetId(detid));
     }break;
@@ -361,12 +366,7 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
       continue;
     }
     unsigned int layer = getLayer(detId, tTopo);
-    const GeomDetUnit      * geoUnit    = geom->idToDet( detId );
-    //const GeomDetUnit      * geoUnit    = geom->idToDetUnit( detId );
-    const PixelGeomDetUnit * theGeomDet = dynamic_cast<const PixelGeomDetUnit*>(geoUnit);
-    //const PixelGeomDetUnit* theGeomDet  = dynamic_cast<const PixelGeomDetUnit*> (theTracker.idToDetUnit(detId) );
-    //const PixelGeomDetUnit* theGeomDet  = dynamic_cast<const PixelGeomDetUnit*> (theTracker.idToDet(detId) );
-    //const PixelTopology* topo = static_cast<const PixelTopology*>(&detUnit->specificTopology());
+    const PixelGeomDetUnit* theGeomDet  = dynamic_cast<const PixelGeomDetUnit*> (theTracker.idToDetUnit(detId) );
 
     SiPixelRecHitCollection::DetSet::const_iterator pixeliter=detset.begin();
     SiPixelRecHitCollection::DetSet::const_iterator rechitRangeIteratorEnd   = detset.end();
@@ -417,10 +417,13 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
         }
         else if ( subid == PixelSubdetector::PixelEndcap )
         {
+          std::cout << "!!!!!!  RUNNING FILLER !!!!!! | Ecal ID: " << ecalId.subdetId() << " | TRK LAYER: " << layer << " | Proj: " << proj << std::endl;
           if ( ecalId.subdetId() == EcalBarrel ){
+            std::cout << "ECAL Barrel" << std::endl;
             fillTRKLayerAtEB ( ecalId, layer, proj, hFPIX_ECAL, vFPIX_ECAL_ );
           }
           else if ( ecalId.subdetId() == EcalEndcap ){
+            std::cout << "ECAL ENDCAP" << std::endl;
             fillHelperAtEE ( phi, eta, layer, hEvt_EE_FPIX);
           }
         }
