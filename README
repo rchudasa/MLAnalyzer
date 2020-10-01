@@ -5,3 +5,4 @@ git cms-init
 git cms-addpkg Configuration/Generator
 git clone https://github.com/davidedicroce/MLAnalyzer.git
 scram b
+source /cvmfs/sft.cern.ch/lcg/views/LCG_97/x86_64-centos7-gcc8-opt/setup.sh #For plotting

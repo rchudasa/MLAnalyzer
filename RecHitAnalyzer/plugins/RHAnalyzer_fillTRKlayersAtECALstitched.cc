@@ -40,158 +40,142 @@ void RecHitAnalyzer::branchesTRKlayersAtECALstitched ( TTree* tree, edm::Service
   const double * eta_bins_EE[2] = {eta_bins_EEm,eta_bins_EEp};
 
   for ( unsigned int proj=0; proj < Nhitproj; proj++ ) {
-  //TOB 
 
-  	for ( int iL(0); iL < nTOB; iL++ ) {
-    	// Branches for images
-    	layer = iL + 1;
-    	sprintf(hname, "TOB_layer%d_ECAL%s",layer,hit_projections[proj].c_str());
-    	tree->Branch(hname,        &vTOB_ECAL_[iL][proj]);
-
-    	// Histograms for monitoring
-    	sprintf(htitle,"N(i#phi,i#eta);i#phi;i#eta");
-    	hTOB_ECAL[iL][proj] = fs->make<TH2F>(hname, htitle,
-        	EB_IPHI_MAX  , EB_IPHI_MIN-1, EB_IPHI_MAX,
-        	2*ECAL_IETA_MAX_EXT,-ECAL_IETA_MAX_EXT,   ECAL_IETA_MAX_EXT );
-
-    	if (proj==0)
-    		for ( int iz(0); iz < nEE; iz++ ) {
-      			const char *zside = (iz > 0) ? "p" : "m";
-      			sprintf(hname, "evt_TOB_layer%d_EE%s",layer,zside);
-      			sprintf(htitle,"N(ix,iy);ix;iy");
-      			hEvt_EE_TOB[iL][iz] = new TH2F(hname, htitle,
-      			EB_IPHI_MAX, -TMath::Pi(), TMath::Pi(),
-      			5*(HBHE_IETA_MAX_HE-1-HBHE_IETA_MAX_EB), eta_bins_EE[iz] );
-    		} // iz
-  	} // iL
+    //TOB 
+    for ( int iL(0); iL < nTOB; iL++ ) {
+    // Branches for images
+    layer = iL + 1;
+    sprintf(hname, "TOB_layer%d_ECAL%s",layer,hit_projections[proj].c_str());
+    tree->Branch(hname,        &vTOB_ECAL_[iL][proj]);
+    // Histograms for monitoring
+    sprintf(htitle,"N(i#phi,i#eta);i#phi;i#eta");
+    hTOB_ECAL[iL][proj] = fs->make<TH2F>(hname, htitle,
+      EB_IPHI_MAX  , EB_IPHI_MIN-1, EB_IPHI_MAX,
+      2*ECAL_IETA_MAX_EXT,-ECAL_IETA_MAX_EXT,   ECAL_IETA_MAX_EXT );
+    if (proj==0)
+      for ( int iz(0); iz < nEE; iz++ ) {
+      	const char *zside = (iz > 0) ? "p" : "m";
+      	sprintf(hname, "evt_TOB_layer%d_EE%s",layer,zside);
+      	sprintf(htitle,"N(ix,iy);ix;iy");
+      	hEvt_EE_TOB[iL][iz] = new TH2F(hname, htitle,
+      	EB_IPHI_MAX, -TMath::Pi(), TMath::Pi(),
+      	5*(HBHE_IETA_MAX_HE-1-HBHE_IETA_MAX_EB), eta_bins_EE[iz] );
+      } // iz
+    } // iL
   
 
-  //TEC
-       for ( int iL(0); iL < nTEC; iL++ ) {
-	    // Branches for images
-	    layer = iL + 1;
-	    sprintf(hname, "TEC_layer%d_ECAL%s",layer,hit_projections[proj].c_str());
-	    tree->Branch(hname,        &vTEC_ECAL_[iL][proj]);
+    //TEC
+    for ( int iL(0); iL < nTEC; iL++ ) {
+      // Branches for images
+      layer = iL + 1;
+      sprintf(hname, "TEC_layer%d_ECAL%s",layer,hit_projections[proj].c_str());
+      tree->Branch(hname,        &vTEC_ECAL_[iL][proj]);
+      // Histograms for monitoring
+      sprintf(htitle,"N(i#phi,i#eta);i#phi;i#eta");
+      hTEC_ECAL[iL][proj] = fs->make<TH2F>(hname, htitle,
+        EB_IPHI_MAX  , EB_IPHI_MIN-1, EB_IPHI_MAX,
+        2*ECAL_IETA_MAX_EXT,-ECAL_IETA_MAX_EXT,   ECAL_IETA_MAX_EXT );
+      if (proj==0)
+        for ( int iz(0); iz < nEE; iz++ ) {
+          const char *zside = (iz > 0) ? "p" : "m";
+          sprintf(hname, "evt_TEC_layer%d_EE%s",layer,zside);
+          sprintf(htitle,"N(ix,iy);ix;iy");
+          hEvt_EE_TEC[iL][iz] = new TH2F(hname, htitle,
+          EB_IPHI_MAX, -TMath::Pi(), TMath::Pi(),
+          5*(HBHE_IETA_MAX_HE-1-HBHE_IETA_MAX_EB), eta_bins_EE[iz] );
+        } // iz
+    } // iL
 
-	    // Histograms for monitoring
-	    sprintf(htitle,"N(i#phi,i#eta);i#phi;i#eta");
-	    hTEC_ECAL[iL][proj] = fs->make<TH2F>(hname, htitle,
-	        EB_IPHI_MAX  , EB_IPHI_MIN-1, EB_IPHI_MAX,
-	        2*ECAL_IETA_MAX_EXT,-ECAL_IETA_MAX_EXT,   ECAL_IETA_MAX_EXT );
+    //TIB
+    for ( int iL(0); iL < nTIB; iL++ ) {
+      // Branches for images
+      layer = iL + 1;
+      sprintf(hname, "TIB_layer%d_ECAL%s",layer,hit_projections[proj].c_str());
+      tree->Branch(hname,        &vTIB_ECAL_[iL][proj]);
+      // Histograms for monitoring
+      sprintf(htitle,"N(i#phi,i#eta);i#phi;i#eta");
+      hTIB_ECAL[iL][proj] = fs->make<TH2F>(hname, htitle,
+        EB_IPHI_MAX  , EB_IPHI_MIN-1, EB_IPHI_MAX,
+        2*ECAL_IETA_MAX_EXT,-ECAL_IETA_MAX_EXT,   ECAL_IETA_MAX_EXT );
+      if (proj==0)
+        for ( int iz(0); iz < nEE; iz++ ) {
+          const char *zside = (iz > 0) ? "p" : "m";
+          sprintf(hname, "evt_TIB_layer%d_EE%s",layer,zside);
+          sprintf(htitle,"N(ix,iy);ix;iy");
+          hEvt_EE_TIB[iL][iz] = new TH2F(hname, htitle,
+          EB_IPHI_MAX, -TMath::Pi(), TMath::Pi(),
+          5*(HBHE_IETA_MAX_HE-1-HBHE_IETA_MAX_EB), eta_bins_EE[iz] );
+        } // iz
+    } // iL
 
-	    if (proj==0)
-		    for ( int iz(0); iz < nEE; iz++ ) {
-		      const char *zside = (iz > 0) ? "p" : "m";
-		      sprintf(hname, "evt_TEC_layer%d_EE%s",layer,zside);
-		      sprintf(htitle,"N(ix,iy);ix;iy");
-		      hEvt_EE_TEC[iL][iz] = new TH2F(hname, htitle,
-		      EB_IPHI_MAX, -TMath::Pi(), TMath::Pi(),
-		      5*(HBHE_IETA_MAX_HE-1-HBHE_IETA_MAX_EB), eta_bins_EE[iz] );
-		    } // iz
+    //TID
+    for ( int iL(0); iL < nTID; iL++ ) {
+      // Branches for images
+      layer = iL + 1;
+      sprintf(hname, "TID_layer%d_ECAL%s",layer,hit_projections[proj].c_str());
+      tree->Branch(hname,        &vTID_ECAL_[iL][proj]);
+      // Histograms for monitoring
+      sprintf(htitle,"N(i#phi,i#eta);i#phi;i#eta");
+      hTID_ECAL[iL][proj] = fs->make<TH2F>(hname, htitle,
+        EB_IPHI_MAX  , EB_IPHI_MIN-1, EB_IPHI_MAX,
+        2*ECAL_IETA_MAX_EXT,-ECAL_IETA_MAX_EXT,   ECAL_IETA_MAX_EXT );
+      if (proj==0)
+        for ( int iz(0); iz < nEE; iz++ ) {
+          const char *zside = (iz > 0) ? "p" : "m";
+          sprintf(hname, "evt_TID_layer%d_EE%s",layer,zside);
+          sprintf(htitle,"N(ix,iy);ix;iy");
+          hEvt_EE_TID[iL][iz] = new TH2F(hname, htitle,
+          EB_IPHI_MAX, -TMath::Pi(), TMath::Pi(),
+          5*(HBHE_IETA_MAX_HE-1-HBHE_IETA_MAX_EB), eta_bins_EE[iz] );
+        } // iz
+    } // iL
+    
+    //BPIX
+    for ( int iL(0); iL < nBPIX; iL++ ) {
+      // Branches for images
+      layer = iL + 1;
+      //std::cout << "!!!!!!!! RUNNING BPIX HISTOS !!!!!!!!" << std::endl;
+      sprintf(hname, "BPIX_layer%d_ECAL%s",layer,hit_projections[proj].c_str());
+      tree->Branch(hname,        &vBPIX_ECAL_[iL][proj]);
+      // Histograms for monitoring
+      sprintf(htitle,"N(i#phi,i#eta);i#phi;i#eta");
+      hBPIX_ECAL[iL][proj] = fs->make<TH2F>(hname, htitle,
+        EB_IPHI_MAX  , EB_IPHI_MIN-1, EB_IPHI_MAX,
+        2*ECAL_IETA_MAX_EXT,-ECAL_IETA_MAX_EXT,   ECAL_IETA_MAX_EXT );
+      if (proj==0)
+        for ( int iz(0); iz < nEE; iz++ ) {
+          const char *zside = (iz > 0) ? "p" : "m";
+          sprintf(hname, "evt_BPIX_layer%d_EE%s",layer,zside);
+          sprintf(htitle,"N(ix,iy);ix;iy");
+          hEvt_EE_BPIX[iL][iz] = new TH2F(hname, htitle,
+          EB_IPHI_MAX, -TMath::Pi(), TMath::Pi(),
+          5*(HBHE_IETA_MAX_HE-1-HBHE_IETA_MAX_EB), eta_bins_EE[iz] );
+        } // iz
+    } // iL
 
-	  } // iL
+    //FPIX
+    for ( int iL(0); iL < nFPIX; iL++ ) {
+      // Branches for images
+      layer = iL + 1;
+      sprintf(hname, "FPIX_layer%d_ECAL%s",layer,hit_projections[proj].c_str());
+      tree->Branch(hname,        &vFPIX_ECAL_[iL][proj]);
+      // Histograms for monitoring
+      sprintf(htitle,"N(i#phi,i#eta);i#phi;i#eta");
+      hFPIX_ECAL[iL][proj] = fs->make<TH2F>(hname, htitle,
+        EB_IPHI_MAX  , EB_IPHI_MIN-1, EB_IPHI_MAX,
+        2*ECAL_IETA_MAX_EXT,-ECAL_IETA_MAX_EXT,   ECAL_IETA_MAX_EXT );
+      if (proj==0)
+        for ( int iz(0); iz < nEE; iz++ ) {
+          const char *zside = (iz > 0) ? "p" : "m";
+          sprintf(hname, "evt_FPIX_layer%d_EE%s",layer,zside);
+          sprintf(htitle,"N(ix,iy);ix;iy");
+          hEvt_EE_FPIX[iL][iz] = new TH2F(hname, htitle,
+          EB_IPHI_MAX, -TMath::Pi(), TMath::Pi(),
+          5*(HBHE_IETA_MAX_HE-1-HBHE_IETA_MAX_EB), eta_bins_EE[iz] );
+        } // iz
+    } // iL
 
-	  //TIB
-	  for ( int iL(0); iL < nTIB; iL++ ) {
-	    // Branches for images
-	    layer = iL + 1;
-	    sprintf(hname, "TIB_layer%d_ECAL%s",layer,hit_projections[proj].c_str());
-	    tree->Branch(hname,        &vTIB_ECAL_[iL][proj]);
-
-	    // Histograms for monitoring
-	    sprintf(htitle,"N(i#phi,i#eta);i#phi;i#eta");
-	    hTIB_ECAL[iL][proj] = fs->make<TH2F>(hname, htitle,
-	        EB_IPHI_MAX  , EB_IPHI_MIN-1, EB_IPHI_MAX,
-	        2*ECAL_IETA_MAX_EXT,-ECAL_IETA_MAX_EXT,   ECAL_IETA_MAX_EXT );
-
-	    if (proj==0)
-		    for ( int iz(0); iz < nEE; iz++ ) {
-		      const char *zside = (iz > 0) ? "p" : "m";
-		      sprintf(hname, "evt_TIB_layer%d_EE%s",layer,zside);
-		      sprintf(htitle,"N(ix,iy);ix;iy");
-		      hEvt_EE_TIB[iL][iz] = new TH2F(hname, htitle,
-		      EB_IPHI_MAX, -TMath::Pi(), TMath::Pi(),
-		      5*(HBHE_IETA_MAX_HE-1-HBHE_IETA_MAX_EB), eta_bins_EE[iz] );
-		    } // iz
-
-	  } // iL
-
-  //TID
-	  for ( int iL(0); iL < nTID; iL++ ) {
-	    // Branches for images
-	    layer = iL + 1;
-	    sprintf(hname, "TID_layer%d_ECAL%s",layer,hit_projections[proj].c_str());
-	    tree->Branch(hname,        &vTID_ECAL_[iL][proj]);
-
-	    // Histograms for monitoring
-	    sprintf(htitle,"N(i#phi,i#eta);i#phi;i#eta");
-	    hTID_ECAL[iL][proj] = fs->make<TH2F>(hname, htitle,
-	        EB_IPHI_MAX  , EB_IPHI_MIN-1, EB_IPHI_MAX,
-	        2*ECAL_IETA_MAX_EXT,-ECAL_IETA_MAX_EXT,   ECAL_IETA_MAX_EXT );
-
-	    if (proj==0)
-		    for ( int iz(0); iz < nEE; iz++ ) {
-		      const char *zside = (iz > 0) ? "p" : "m";
-		      sprintf(hname, "evt_TID_layer%d_EE%s",layer,zside);
-		      sprintf(htitle,"N(ix,iy);ix;iy");
-		      hEvt_EE_TID[iL][iz] = new TH2F(hname, htitle,
-		      EB_IPHI_MAX, -TMath::Pi(), TMath::Pi(),
-		      5*(HBHE_IETA_MAX_HE-1-HBHE_IETA_MAX_EB), eta_bins_EE[iz] );
-		    } // iz
-
-	  } // iL
-
-	  //BPIX
-	  for ( int iL(0); iL < nBPIX; iL++ ) {
-	    // Branches for images
-	    layer = iL + 1;
-	    sprintf(hname, "BPIX_layer%d_ECAL%s",layer,hit_projections[proj].c_str());
-	    tree->Branch(hname,        &vBPIX_ECAL_[iL][proj]);
-
-	    // Histograms for monitoring
-	    sprintf(htitle,"N(i#phi,i#eta);i#phi;i#eta");
-	    hBPIX_ECAL[iL][proj] = fs->make<TH2F>(hname, htitle,
-	        EB_IPHI_MAX  , EB_IPHI_MIN-1, EB_IPHI_MAX,
-	        2*ECAL_IETA_MAX_EXT,-ECAL_IETA_MAX_EXT,   ECAL_IETA_MAX_EXT );
-
-	    if (proj==0)
-		    for ( int iz(0); iz < nEE; iz++ ) {
-		      const char *zside = (iz > 0) ? "p" : "m";
-		      sprintf(hname, "evt_BPIX_layer%d_EE%s",layer,zside);
-		      sprintf(htitle,"N(ix,iy);ix;iy");
-		      hEvt_EE_BPIX[iL][iz] = new TH2F(hname, htitle,
-		      EB_IPHI_MAX, -TMath::Pi(), TMath::Pi(),
-		      5*(HBHE_IETA_MAX_HE-1-HBHE_IETA_MAX_EB), eta_bins_EE[iz] );
-		    } // iz
-
-	  } // iL
-
-  //FPIX
-	  for ( int iL(0); iL < nFPIX; iL++ ) {
-	    // Branches for images
-	    layer = iL + 1;
-	    sprintf(hname, "FPIX_layer%d_ECAL%s",layer,hit_projections[proj].c_str());
-	    tree->Branch(hname,        &vFPIX_ECAL_[iL][proj]);
-
-	    // Histograms for monitoring
-	    sprintf(htitle,"N(i#phi,i#eta);i#phi;i#eta");
-	    hFPIX_ECAL[iL][proj] = fs->make<TH2F>(hname, htitle,
-	        EB_IPHI_MAX  , EB_IPHI_MIN-1, EB_IPHI_MAX,
-	        2*ECAL_IETA_MAX_EXT,-ECAL_IETA_MAX_EXT,   ECAL_IETA_MAX_EXT );
-
-	    if (proj==0)
-		    for ( int iz(0); iz < nEE; iz++ ) {
-		      const char *zside = (iz > 0) ? "p" : "m";
-		      sprintf(hname, "evt_FPIX_layer%d_EE%s",layer,zside);
-		      sprintf(htitle,"N(ix,iy);ix;iy");
-		      hEvt_EE_FPIX[iL][iz] = new TH2F(hname, htitle,
-		      EB_IPHI_MAX, -TMath::Pi(), TMath::Pi(),
-		      5*(HBHE_IETA_MAX_HE-1-HBHE_IETA_MAX_EB), eta_bins_EE[iz] );
-		    } // iz
-
-	  } // iL
-}//proj
-
+  }//proj
 } // branchesEB()
 
 
@@ -357,91 +341,100 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
   iSetup.get<TrackerTopologyRcd>().get(tTopoHandle);
   const TrackerTopology* const tTopo = tTopoHandle.product();
 
-  /*SiPixelRecHitCollection::const_iterator recHitIdIterator      = (recHitColl.product())->begin();
-  SiPixelRecHitCollection::const_iterator recHitIdIteratorEnd   = (recHitColl.product())->end();
+  std::cout << "!!!!! RUNNING PIXEL !!!!!" << std::endl;
+
+  SiPixelRecHitCollection::const_iterator recHitIdIterator    = (recHitColl.product())->begin();
+  SiPixelRecHitCollection::const_iterator recHitIdIteratorEnd = (recHitColl.product())->end();
   for ( ; recHitIdIterator != recHitIdIteratorEnd; recHitIdIterator++)
   {
+    std::cout << "!!!!! RUNNING PIXEL REC HIT COLLECTION !!!!!" << std::endl;
     SiPixelRecHitCollection::DetSet detset = *recHitIdIterator;
     DetId detId = DetId(detset.detId()); // Get the Detid object
-  */
-  std::map<uint32_t,SiPixelRecHitModule*>::iterator struct_iter;
-  for (struct_iter = thePixelStructure.begin() ; struct_iter != thePixelStructure.end() ; struct_iter++) {
-    uint32_t TheID = (*struct_iter).first;
-    SiPixelRecHitCollection::const_iterator match = recHitColl->find(TheID);
-    // if( pixelrechitRangeIteratorBegin == pixelrechitRangeIteratorEnd) {cout << "oops" << endl;}
-    //int rechit_count = 0;
-    if (match != recHitColl->end()) {
-      SiPixelRecHitCollection::DetSet pixelrechitRange = *match;
-      SiPixelRecHitCollection::DetSet::const_iterator pixelrechitRangeIteratorBegin = pixelrechitRange.begin();
-      SiPixelRecHitCollection::DetSet::const_iterator pixelrechitRangeIteratorEnd = pixelrechitRange.end();
-      SiPixelRecHitCollection::DetSet::const_iterator pixeliter = pixelrechitRangeIteratorBegin;
+    //uint32_t TheID = detset.first;
+    //DetId detId = DetId(TheID); // Get the Detid object
+    unsigned int detType=detId.det(); // det type, tracker=1
+    unsigned int subid=detId.subdetId(); //subdetector type, barrel=1, fpix=2
+    std::cout<<"Det: "<<detId.rawId()<<" "<<detId.null()<<" , type = "<<detType<<" , subId = "<<subid<<std::endl;
+    unsigned int layer = getLayer(detId, tTopo);
+    const GeomDetUnit      * geoUnit    = geom->idToDet( detId );
+    //const GeomDetUnit      * geoUnit    = geom->idToDetUnit( detId );
+    const PixelGeomDetUnit * theGeomDet = dynamic_cast<const PixelGeomDetUnit*>(geoUnit);
+    //const PixelGeomDetUnit* theGeomDet  = dynamic_cast<const PixelGeomDetUnit*> (theTracker.idToDetUnit(detId) );
+    //const PixelGeomDetUnit* theGeomDet  = dynamic_cast<const PixelGeomDetUnit*> (theTracker.idToDet(detId) );
+    //const PixelTopology* topo = static_cast<const PixelTopology*>(&detUnit->specificTopology());
 
-      DetId detId = DetId(TheID); // Get the Detid object
-      unsigned int detType=detId.det(); // det type, tracker=1
-      unsigned int subid=detId.subdetId(); //subdetector type, barrel=1, fpix=2
-      std::cout<<"Det: "<<detId.rawId()<<" "<<detId.null()<<" , type = "<<detType<<" , subId = "<<subid<<std::endl;
-      unsigned int layer = getLayer(detId, tTopo);
-      //const GeomDetUnit      * geoUnit    = geom->idToDetUnit( detId );
-      //const PixelGeomDetUnit * theGeomDet = dynamic_cast<const PixelGeomDetUnit*>(geoUnit);
-      //const PixelGeomDetUnit* theGeomDet  = dynamic_cast<const PixelGeomDetUnit*> (theTracker.idToDetUnit(detId) );
-      const PixelGeomDetUnit* theGeomDet  = dynamic_cast<const PixelGeomDetUnit*> (theTracker.idToDet(detId) );
-      //const PixelTopology* topo = static_cast<const PixelTopology*>(&detUnit->specificTopology());
+    SiPixelRecHitCollection::DetSet::const_iterator pixeliter=detset.begin();
+    SiPixelRecHitCollection::DetSet::const_iterator rechitRangeIteratorEnd   = detset.end();
+  
+    //for (struct_iter = thePixelStructure.begin() ; struct_iter != thePixelStructure.end() ; struct_iter++) {
+    //uint32_t TheID = (*struct_iter).first;
+    //SiPixelRecHitCollection::const_iterator match = recHitColl->find(TheID);
 
-      //SiPixelRecHitCollection::DetSet::const_iterator pixeliter=detset.begin();
-      //SiPixelRecHitCollection::DetSet::const_iterator rechitRangeIteratorEnd   = detset.end();
-      //for(;pixeliter!=rechitRangeIteratorEnd;++pixeliter)
-      for(;pixeliter!=pixelrechitRangeIteratorEnd;++pixeliter)
-      {//loop on the rechit
-        if (pixeliter->isValid())
+    //DetId detId = DetId(TheID); // Get the Detid object
+    //unsigned int detType=detId.det(); // det type, tracker=1
+    //unsigned int subid=detId.subdetId(); //subdetector type, barrel=1, fpix=2
+    //std::cout<<"Det: "<<detId.rawId()<<" "<<detId.null()<<" , type = "<<detType<<" , subId = "<<subid<<std::endl;
+    //unsigned int layer = getLayer(detId, tTopo);
+    //const GeomDetUnit      * geoUnit    = geom->idToDetUnit( detId );
+    //const PixelGeomDetUnit * theGeomDet = dynamic_cast<const PixelGeomDetUnit*>(geoUnit);
+    //const PixelGeomDetUnit* theGeomDet  = dynamic_cast<const PixelGeomDetUnit*> (theTracker.idToDetUnit(detId) );
+    //const PixelGeomDetUnit* theGeomDet  = dynamic_cast<const PixelGeomDetUnit*> (theTracker.idToDet(detId) );
+    //const PixelTopology* topo = static_cast<const PixelTopology*>(&detUnit->specificTopology());
+
+    for(;pixeliter!=rechitRangeIteratorEnd;++pixeliter)
+    {//loop on the rechit
+      if (pixeliter->isValid())
+      {
+        LocalPoint lp = pixeliter->localPosition();
+        GlobalPoint GP = theGeomDet->surface().toGlobal(Local3DPoint(lp));
+        phi=0.;
+        eta=0.;
+        switch (proj)
         {
-          LocalPoint lp = pixeliter->localPosition();
-          GlobalPoint GP = theGeomDet->surface().toGlobal(Local3DPoint(lp));
-          phi=0.;
-          eta=0.;
-          switch (proj)
+          case 0:
           {
-            case 0:
-            {
-              phi = GP.phi();
-              eta = GP.eta();
-              break;
-            }
-            case 1:
-            {
-              TVector3 GP_v(GP.x(),GP.y(),GP.z());
-              GP_v=GP_v-pv_v;
-              phi=GP_v.Phi();
-              eta=GP_v.Eta();
-              break;
-            }
-            default:
-            {
-              phi=0.;
-              eta=0.;
-              break;
-            }
+            phi = GP.phi();
+            eta = GP.eta();
+            break;
           }
-          //if ( std::abs(eta) > 3. ) continue;
-          DetId ecalId( spr::findDetIdECAL( caloGeom, eta, phi, false ) );
-          if ( subid == PixelSubdetector::PixelBarrel ){
-            if ( ecalId.subdetId() == EcalBarrel ){
-              fillTRKLayerAtEB ( ecalId, layer, proj, hBPIX_ECAL, vBPIX_ECAL_ );
-            }
-            else if ( ecalId.subdetId() == EcalEndcap ){
-              fillHelperAtEE ( phi, eta, layer, hEvt_EE_BPIX );
-            }
-          }
-          else if ( subid == PixelSubdetector::PixelEndcap )
+          case 1:
           {
-            if ( ecalId.subdetId() == EcalBarrel ){
-              fillTRKLayerAtEB ( ecalId, layer, proj, hFPIX_ECAL, vFPIX_ECAL_ );
-            }
-            else if ( ecalId.subdetId() == EcalEndcap ){
-              fillHelperAtEE ( phi, eta, layer, hEvt_EE_FPIX);
-            }
+            TVector3 GP_v(GP.x(),GP.y(),GP.z());
+            GP_v=GP_v-pv_v;
+            phi=GP_v.Phi();
+            eta=GP_v.Eta();
+            break;
+          }
+          default:
+          {
+            phi=0.;
+            eta=0.;
+            break;
           }
         }
-      }
+        //if ( std::abs(eta) > 3. ) continue;
+        DetId ecalId( spr::findDetIdECAL( caloGeom, eta, phi, false ) );
+        if ( subid == PixelSubdetector::PixelBarrel ){
+          std::cout << "!!!!!!  RUNNING FILLER !!!!!! | Ecal ID: " << ecalId.subdetId() << " | TRK LAYER: " << layer << " | Proj: " << proj << std::endl;
+          if ( ecalId.subdetId() == EcalBarrel ){
+            std::cout << "ECAL Barrel" << std::endl;
+            fillTRKLayerAtEB ( ecalId, layer, proj, hBPIX_ECAL, vBPIX_ECAL_ );
+          }
+          else if ( ecalId.subdetId() == EcalEndcap ){
+            std::cout << "ECAL ENDCAP" << std::endl;
+            fillHelperAtEE ( phi, eta, layer, hEvt_EE_BPIX );
+          }
+        }
+        else if ( subid == PixelSubdetector::PixelEndcap )
+        {
+          if ( ecalId.subdetId() == EcalBarrel ){
+            fillTRKLayerAtEB ( ecalId, layer, proj, hFPIX_ECAL, vFPIX_ECAL_ );
+          }
+          else if ( ecalId.subdetId() == EcalEndcap ){
+            fillHelperAtEE ( phi, eta, layer, hEvt_EE_FPIX);
+          }
+        }
+      } else std::cout << "!!!!!!!!!!!!!! NO PIXEL HITS ARE VALID !!!!!!!!!!!!!!" << std::endl;
     }
   }
 
