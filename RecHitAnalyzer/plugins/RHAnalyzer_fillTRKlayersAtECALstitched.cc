@@ -366,21 +366,6 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
     SiPixelRecHitCollection::DetSet::const_iterator pixeliter=detset.begin();
     SiPixelRecHitCollection::DetSet::const_iterator rechitRangeIteratorEnd   = detset.end();
   
-    //for (struct_iter = thePixelStructure.begin() ; struct_iter != thePixelStructure.end() ; struct_iter++) {
-    //uint32_t TheID = (*struct_iter).first;
-    //SiPixelRecHitCollection::const_iterator match = recHitColl->find(TheID);
-
-    //DetId detId = DetId(TheID); // Get the Detid object
-    //unsigned int detType=detId.det(); // det type, tracker=1
-    //unsigned int subid=detId.subdetId(); //subdetector type, barrel=1, fpix=2
-    //std::cout<<"Det: "<<detId.rawId()<<" "<<detId.null()<<" , type = "<<detType<<" , subId = "<<subid<<std::endl;
-    //unsigned int layer = getLayer(detId, tTopo);
-    //const GeomDetUnit      * geoUnit    = geom->idToDetUnit( detId );
-    //const PixelGeomDetUnit * theGeomDet = dynamic_cast<const PixelGeomDetUnit*>(geoUnit);
-    //const PixelGeomDetUnit* theGeomDet  = dynamic_cast<const PixelGeomDetUnit*> (theTracker.idToDetUnit(detId) );
-    //const PixelGeomDetUnit* theGeomDet  = dynamic_cast<const PixelGeomDetUnit*> (theTracker.idToDet(detId) );
-    //const PixelTopology* topo = static_cast<const PixelTopology*>(&detUnit->specificTopology());
-
     for(;pixeliter!=rechitRangeIteratorEnd;++pixeliter)
     {//loop on the rechit
       if (pixeliter->isValid())
