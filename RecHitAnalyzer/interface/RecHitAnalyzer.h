@@ -40,6 +40,9 @@
 #include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
 #include "DataFormats/SiStripDetId/interface/StripSubdetector.h"
 
+#include "DQM/SiPixelMonitorRecHit/interface/SiPixelRecHitModule.h"
+//#include "DQM/SiPixelMonitorRecHit/interface/SiPixelClusterModule.h"
+
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 #include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
@@ -91,6 +94,7 @@
 #include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/BTauReco/interface/CandIPTagInfo.h"
 
+#include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHitCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripMatchedRecHit2DCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
@@ -138,11 +142,12 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<edm::View<reco::Jet> > recoJetsT_;
     edm::EDGetTokenT<reco::JetTagCollection> jetTagCollectionT_;
     edm::EDGetTokenT<std::vector<reco::CandIPTagInfo> >    ipTagInfoCollectionT_;
-    
+ 
     typedef std::vector<reco::PFCandidate>  PFCollection;
     edm::EDGetTokenT<PFCollection> pfCollectionT_;
 
-    edm::InputTag siPixelRecHitCollectionT_;
+    //edm::InputTag siPixelRecHitCollectionT_;
+    edm::EDGetTokenT<SiPixelRecHitCollection> siPixelRecHitCollectionT_;
     std::vector<edm::InputTag> siStripRecHitCollectionT_;
     //edm::InputTag trackTags_; //used to select what tracks to read from configuration file
 
@@ -204,7 +209,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     int   getTruthLabel(const reco::PFJetRef& recJet, edm::Handle<reco::GenParticleCollection> genParticles, float dRMatch = 0.4, bool debug = false);
     float getBTaggingValue(const reco::PFJetRef& recJet, edm::Handle<edm::View<reco::Jet> >& recoJetCollection, edm::Handle<reco::JetTagCollection>& btagCollection, float dRMatch = 0.1, bool debug= false );
 
-    unsigned int getLayer(const DetId& detid);
+    unsigned int getLayer(const DetId& detid, const TrackerTopology* tTopo);
 
     // Jet level functions
     std::string mode_;  // EventLevel / JetLevel
@@ -225,6 +230,8 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void fillEvtSel_jet_dijet_gg_qq( const edm::Event&, const edm::EventSetup& );
 
     int nTotal, nPassed;
+
+    std::map<uint32_t,SiPixelRecHitModule*> thePixelStructure;
 
 }; // class RecHitAnalyzer
 

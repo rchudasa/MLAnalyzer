@@ -14,9 +14,9 @@ cfg='RecHitAnalyzer/python/ConfFile_cfg.py'
 
 #inputFiles_='/store/group/lpcml/mandrews/AODSIM/QCDToGG_Pt_80_120_13TeV_TuneCUETP8M1_noPU_AODSIM/180809_215549/0000/step_full_1.root'
 #inputFiles_='/store/group/lpcml/AODSIM/h24gamma_1j_1M_200MeV_2016_25ns_Moriond17MC_PoissonOOTPU_AODSIM/180907_083212/0000/step_full_1.root'
-#inputFiles_='file:./DoubleTau_20_150_pythia8.root'
+inputFiles_='file:./DoubleTauPt5_50_pythia8_noPU.root'
 #inputFiles_='file:./W_plus_Jets_Pt_20_150_ToLNu_13TeV.root'
-inputFiles_='file:./HToAAToTauTau_13TeV.root'
+#inputFiles_='file:./HToAAToTauTau_13TeV.root'
 #inputFiles_='file:./QCD_Pt_20_150_13TeV.root'
 #inputFiles_='/store/group/lpcml/mandrews/AODSIM/SM2gammaj_1j_1M_2016_25ns_Moriond17MC_PoissonOOTPU_AODSIM/180906_154222/0000/step_full_98.root'
 
