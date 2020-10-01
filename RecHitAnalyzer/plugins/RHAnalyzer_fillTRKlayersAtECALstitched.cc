@@ -341,10 +341,11 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
   iSetup.get<TrackerTopologyRcd>().get(tTopoHandle);
   const TrackerTopology* const tTopo = tTopoHandle.product();
 
-  std::cout << "!!!!! RUNNING PIXEL !!!!!" << std::endl;
+  std::cout <<" FOUND "<<(recHitColl.product())->dataSize()<<" Pixel Hits" << std::endl;
 
   SiPixelRecHitCollection::const_iterator recHitIdIterator    = (recHitColl.product())->begin();
   SiPixelRecHitCollection::const_iterator recHitIdIteratorEnd = (recHitColl.product())->end();
+
   for ( ; recHitIdIterator != recHitIdIteratorEnd; recHitIdIterator++)
   {
     std::cout << "!!!!! RUNNING PIXEL REC HIT COLLECTION !!!!!" << std::endl;
@@ -355,6 +356,10 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
     unsigned int detType=detId.det(); // det type, tracker=1
     unsigned int subid=detId.subdetId(); //subdetector type, barrel=1, fpix=2
     std::cout<<"Det: "<<detId.rawId()<<" "<<detId.null()<<" , type = "<<detType<<" , subId = "<<subid<<std::endl;
+    if( detset.empty() ) {
+      std::cout << "detset is empty" << std::endl;
+      continue;
+    }
     unsigned int layer = getLayer(detId, tTopo);
     const GeomDetUnit      * geoUnit    = geom->idToDet( detId );
     //const GeomDetUnit      * geoUnit    = geom->idToDetUnit( detId );
@@ -424,6 +429,7 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
   }
 
   //sistrip
+  /*
   for (const auto & itoken: siStripRecHitCollectionT_)
   {
     edm::Handle<SiStripRecHit2DCollection> stripRecHitColl;
@@ -511,13 +517,13 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
       }
     }
   }
-
+  */
   fillTRKLayerAtECAL_with_EEproj( hEvt_EE_BPIX, vBPIX_ECAL_, hBPIX_ECAL, nBPIX, proj);
   fillTRKLayerAtECAL_with_EEproj( hEvt_EE_FPIX, vFPIX_ECAL_, hFPIX_ECAL, nFPIX, proj);
-  fillTRKLayerAtECAL_with_EEproj( hEvt_EE_TOB, vTOB_ECAL_, hTOB_ECAL, nTOB, proj);
-  fillTRKLayerAtECAL_with_EEproj( hEvt_EE_TEC, vTEC_ECAL_, hTEC_ECAL, nTEC, proj);
-  fillTRKLayerAtECAL_with_EEproj( hEvt_EE_TIB, vTIB_ECAL_, hTIB_ECAL, nTIB, proj);
-  fillTRKLayerAtECAL_with_EEproj( hEvt_EE_TID, vTID_ECAL_, hTID_ECAL, nTID, proj);
+  //fillTRKLayerAtECAL_with_EEproj( hEvt_EE_TOB, vTOB_ECAL_, hTOB_ECAL, nTOB, proj);
+  //fillTRKLayerAtECAL_with_EEproj( hEvt_EE_TEC, vTEC_ECAL_, hTEC_ECAL, nTEC, proj);
+  //fillTRKLayerAtECAL_with_EEproj( hEvt_EE_TIB, vTIB_ECAL_, hTIB_ECAL, nTIB, proj);
+  //fillTRKLayerAtECAL_with_EEproj( hEvt_EE_TID, vTID_ECAL_, hTID_ECAL, nTID, proj);
 
 } // fillEB()
 
