@@ -54,8 +54,8 @@ def plotJet(img, mins, maxs, str_):
     plt.imshow(np.zeros_like(img[6,:,:]), cmap='Greys', vmin=0., vmax=1., alpha=0.9)
     if maxs[-1] > 0 : plt.imshow(img[6,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-1], vmax=maxs[-1])
     if maxs[-2] > 0 : plt.imshow(img[5,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-2], vmax=maxs[-2])
-    if maxs[-3] > 0 : plt.imshow(img[4,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-3], vmax=maxs[-3])
-    if maxs[-4] > 0 : plt.imshow(img[3,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-4], vmax=maxs[-4])
+    if maxs[-3] > 0 : plt.imshow(img[4,:,:], cmap='Purples', norm=LogNorm(), alpha=0.9, vmin=mins[-3], vmax=maxs[-3])
+    if maxs[-4] > 0 : plt.imshow(img[3,:,:], cmap='Reds', norm=LogNorm(), alpha=0.9, vmin=mins[-4], vmax=maxs[-4])
     if maxs[-5] > 0 : plt.imshow(img[2,:,:], cmap='Greys',  norm=LogNorm(), alpha=0.9, vmin=mins[-5], vmax=maxs[-5])
     if maxs[-6] > 0 : plt.imshow(img[1,:,:], cmap='Blues',  norm=LogNorm(), alpha=0.9, vmin=mins[-6], vmax=maxs[-6])
     if maxs[-7] > 0 : plt.imshow(img[0,:,:], cmap='Oranges',norm=LogNorm(), alpha=0.9, vmin=mins[-7], vmax=maxs[-7])
@@ -75,10 +75,8 @@ def plotJet(img, mins, maxs, str_):
 
 
 def plotJet_chnl(img, cmap_, xmin, xmax, str_):
-#def plotJet_chnl(img, cmap_):
     plt.imshow(np.zeros_like(img), cmap='Greys', vmin=0., vmax=1., alpha=0.9)
     plt.imshow(img, cmap=cmap_, norm=LogNorm(), alpha=0.9, vmin=xmin, vmax=xmax)
-    #plt.imshow(img, cmap=cmap_, norm=LogNorm(), alpha=0.9)
     ax = plt.axes()
     plt.xlim([0., 125.+0.])
     plt.xticks(np.arange(0,150,25))
@@ -88,9 +86,6 @@ def plotJet_chnl(img, cmap_, xmin, xmax, str_):
     plt.yticks(np.arange(0,150,25))
     plt.ylabel(r"$\mathrm{i\eta}'$", size=28) #28, 30
     ax.yaxis.set_tick_params(direction='in', which='major', length=6.)
-    #plt.colorbar()
-    #plt.savefig(str_)
-    #plt.savefig(str_, bbox_inches='tight')
     plt.savefig(str_, bbox_inches='tight', format='png')
     plt.show()
 
@@ -102,10 +97,8 @@ train_sampler = sampler.SubsetRandomSampler(idxs[:train_cut])
 train_loader = DataLoader(dataset=dset_train, batch_size=4, num_workers=0, shuffle=False, pin_memory=True)
 print dset_train
 for i, data in enumerate(train_loader):
+    if i == args.nEvents: break
     print("Loop ", i)
-    if i > args.nEvents: break
-    #print data
-    #print data['X_jet']
     X_train = data['X_jet']
     print X_train.shape
     print len(X_train)
@@ -115,52 +108,23 @@ for i, data in enumerate(train_loader):
     plt.rcParams["figure.figsize"] = (5,5)
     plt.rcParams.update({'font.size': 26})
     
-    cmap = ['Oranges','Blues','Greys','Greens','Greens','Greens','Greens']
-
-    event = 0
-
-    #xmin, xmax = {}, {}
-    #img0 = {}
-    #for i in range(3):
-    #    print(X_train[:,i,:,:])
-    #    print(da.mean(X_train[:,i,:,:], axis=0))
-    #    img0[i] = da.mean(X_train[:,i,:,:], axis=0)
-    #    print(img0[i].shape)
-    #    xmin[i] = da.min(img0[i]).compute()
-    #    xmax[i] = da.max(img0[i]).compute()
-    #    print(xmin[i], xmax[i])
-    
+    cmap = ['Oranges','Blues','Greys','Reds','Purples','Greens','Greens']
     min_ = 0.0001
 
-    img = X_train[event,:,:,:]
-    print("JET LABEL IS  ", y_train[event])
-    #Selecting only taus
-    if y_train[event] == 0: continue
+    for jet in range(2):
+        img = X_train[jet,:,:,:]
+        print("JET LABEL IS  ", y_train[jet])
+        #Selecting only taus
+        if y_train[jet] == 0: continue
 
-    for j in range(7):
-    #for i in [1,0,2]:
-        #print (X_train[event,i,:,:], "SHAPE : ", X_train[event,i,:,:].shape)
-        img_ = img[j,:,:]
-        max_ = img_.max()
-        if max_ == 0: continue
-        print("Channel ", j, " , Max = ", max_)
-        #plotJet_chnl(img_, cmap[i], 1.e-3, img_.max(), 'images/single_event%d_jet0_chnl%d.png'%(event,i))
-        plotJet_chnl(img_, cmap[j], min_, max_, 'images/tau_event%d_jet0_chnl%d.png'%(i,j))
-        #plotJet_chnl(img_, cmap[i], 1.e-3, img_.max(), 'images/single_event%d_jet0_chnl%d.jpg'%(event,i))
+        for ch in range(7):
+            img_ = img[ch,:,:]
+            max_ = img_.max()
+            if max_ == 0: continue
+            print("Channel ", ch, " , Max = ", max_)
+            plotJet_chnl(img_, cmap[ch], min_, max_, 'images/tau_event%d_jet%d_chnl%d.png'%(i,jet,ch))
 
-    mins = [0.0001]*7
-    maxs = [X_train[event,0,:,:].max(), X_train[event,1,:,:].max(), X_train[event,2,:,:].max(), X_train[event,3,:,:].max(), X_train[event,4,:,:].max(), X_train[event,5,:,:].max(), X_train[event,6,:,:].max()]
-    print "Min = ", mins, " | Max = ", maxs
-    #plotJet(X_train[event,:,:,:], mins, maxs, 'images/single_event%d_jet0.png'%(event))
-    plotJet(img, mins, maxs, 'images/tau_event%d_jet0.png'%(i))
-    
-#print len(f0s)
-#assert len(f0s) == 3, len(f0s)
-#d0s = [h5py.File(f) for f in f0s]
-#print(list(d0s[0].keys()))
-
-#f1s = glob.glob('%s/QCD_Pt_80_170_00001_IMGjet_n*_event1_jet0_run?.hdf5'%(indir))
-#assert len(f1s) == 3, len(f1s)
-#d1s = [h5py.File(f) for f in f1s]
-#print(list(d1s[0].keys()))
-
+        mins = [0.0001]*7
+        maxs = [X_train[jet,0,:,:].max(), X_train[jet,1,:,:].max(), X_train[jet,2,:,:].max(), X_train[jet,3,:,:].max(), X_train[jet,4,:,:].max(), X_train[jet,5,:,:].max(), X_train[jet,6,:,:].max()]
+        print "Min = ", mins, " | Max = ", maxs
+        plotJet(img, mins, maxs, 'images/tau_event%d_jet%d.png'%(i,jet))

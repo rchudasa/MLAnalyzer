@@ -2,7 +2,7 @@
 
 using std::vector;
 
-const unsigned nJets = 2; //TODO: use cfg level nJets_
+const unsigned nJets = 4; //TODO: use cfg level nJets_
 TH1D *h_tau_jet_pT;
 TH1D *h_tau_jet_E;
 TH1D *h_tau_jet_eta;
@@ -23,13 +23,13 @@ vector<float> v_tau_subJetPz_[nJets];
 // Initialize branches _____________________________________________________//
 void RecHitAnalyzer::branchesEvtSel_jet_dijet_tau ( TTree* tree, edm::Service<TFileService> &fs ) {
 
-  h_tau_jet_pT    = fs->make<TH1D>("h_jet_pT"  , "p_{T};p_{T};Particles", 100,  0., 500.);
-  h_tau_jet_E     = fs->make<TH1D>("h_jet_E"   , "E;E;Particles"        , 100,  0., 800.);
-  h_tau_jet_eta   = fs->make<TH1D>("h_jet_eta" , "#eta;#eta;Particles"  , 100, -5., 5.);
-  h_tau_jet_nJet  = fs->make<TH1D>("h_jet_nJet", "nJet;nJet;Events"     ,  10,  0., 10.);
-  h_tau_jet_m0    = fs->make<TH1D>("h_jet_m0"  , "m0;m0;Events"         , 100,  0., 100.);
-  h_nNonTau        = fs->make<TH1D>("h_nNonTau"  , "nNonTau;nNonTau;Events" ,   3,  0.,   3.);
-  h_nIsTau           = fs->make<TH1D>("h_nIsTau"     , "nIsTau;nIsTau;Events"       ,   3,  0.,   3.);
+  h_tau_jet_pT    = fs->make<TH1D>("h_jet_pT"  , "p_{T};p_{T};Particles" , 100,  0., 500.);
+  h_tau_jet_E     = fs->make<TH1D>("h_jet_E"   , "E;E;Particles"         , 100,  0., 800.);
+  h_tau_jet_eta   = fs->make<TH1D>("h_jet_eta" , "#eta;#eta;Particles"   , 100, -5.,   5.);
+  h_tau_jet_nJet  = fs->make<TH1D>("h_jet_nJet", "nJet;nJet;Events"      ,  10,  0.,  10.);
+  h_tau_jet_m0    = fs->make<TH1D>("h_jet_m0"  , "m0;m0;Events"          , 100,  0., 100.);
+  h_nNonTau       = fs->make<TH1D>("h_nNonTau" , "nNonTau;nNonTau;Events",   3,  0.,   3.);
+  h_nIsTau        = fs->make<TH1D>("h_nIsTau"  , "nIsTau;nIsTau;Events"  ,   3,  0.,   3.);
 
   tree->Branch("jetM",       &v_tau_jet_m0_);
   tree->Branch("jetPt",      &v_tau_jet_pt_);
@@ -71,54 +71,48 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
 
   unsigned nNonTau = 0;
   unsigned nIsTau = 0;
+  unsigned int nMatchedParticles = 0;
+  unsigned int nMatchedJets = 0;
 
   if ( debug ) std::cout << " >>>>>>>>>>>>>>>>>>>> evt:" << std::endl;
-  for (reco::GenParticleCollection::const_iterator iGen = genParticles->begin();
-      iGen != genParticles->end();
-      ++iGen) {
+  std::cout << " JETS IN THE EVENT = " << jets->size() << " | Selection requires minpT = " << minJetPt_ << " and maxEta = "<< maxJetEta_ << std::endl;
+  // Loop over jets
+  unsigned int lastMatchedJet = -1; 
+  for ( unsigned iJ(0); iJ != jets->size(); ++iJ ) {
+    reco::PFJetRef iJet( jets, iJ );
+    if ( std::abs(iJet->pt())  < minJetPt_ ) continue;
+    if ( std::abs(iJet->eta()) > maxJetEta_ ) continue;
 
-    //std::cout << " DEBUG >> GEN particle status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " | pt:"<< iGen->pt() << " eta:" <<iGen->eta() << " phi:" <<iGen->phi() << " nMoms:" <<iGen->numberOfMothers()<< std::endl;
-    //if (!( (abs(iGen->pdgId()) == 15 && iGen->numberOfMothers() == 0) || ( iGen->status() == 23 || iGen->status() == 33 || iGen->status() == 43 || iGen->status() == 44 ))) continue;
-    //if (!( (abs(iGen->pdgId()) == 15 && iGen->numberOfMothers() == 0) || ( iGen->status() == 23 || iGen->status() == 33 || iGen->status() == 44 ))) continue;
-    if (!( (abs(iGen->pdgId()) == 15 && iGen->numberOfMothers() == 0) || ( iGen->status() == 23 || iGen->status() == 33 ))) continue;
-    //if ( iGen->status() != 3 ) continue; // pythia6: 3 = hard scatter particle
-    //if ( iGen->status() != 23 ) continue; // pythia8: 23 = outgoing particle from hard scatter
-    std::cout << " DEBUG >> GEN particle status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " | pt:"<< iGen->pt() << " eta:" <<iGen->eta() << " phi:" <<iGen->phi() << " nMoms:" <<iGen->numberOfMothers()<< std::endl;
-    if ( debug ) std::cout << " >> id:" << iGen->pdgId() << " status:" << iGen->status() << " nDaught:" << iGen->numberOfDaughters() << " pt:"<< iGen->pt() << " eta:" <<iGen->eta() << " phi:" <<iGen->phi() << " nMoms:" <<iGen->numberOfMothers()<< std::endl;
+    unsigned int iGenParticle = 0; 
+    for (reco::GenParticleCollection::const_iterator iGen = genParticles->begin(); iGen != genParticles->end(); ++iGen) {
+      if ( !( abs(iGen->pdgId()) == 15 && iGen->status() == 2 ) ) continue; // pythia8: 23 = outgoing particle from hard scatter
+      ++iGenParticle;
+      std::cout << "   GEN particle " << iGenParticle << " -> status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " | pt:"<< iGen->pt() << " eta:" <<iGen->eta() << " phi:" <<iGen->phi() << " nMoms:" <<iGen->numberOfMothers()<< std::endl;
+      if ( debug ) std::cout << " >> id:" << iGen->pdgId() << " status:" << iGen->status() << " nDaught:" << iGen->numberOfDaughters() << " pt:"<< iGen->pt() << " eta:" <<iGen->eta() << " phi:" <<iGen->phi() << " nMoms:" <<iGen->numberOfMothers()<< std::endl;
 
-    // Loop over jets
-    std::cout << "  JETS IN THE EVENT = " << jets->size() << " | Selection requires minpT = " << minJetPt_ << " and maxEta = "<< maxJetEta_ << std::endl;
-    for ( unsigned iJ(0); iJ != jets->size(); ++iJ ) {
-      reco::PFJetRef iJet( jets, iJ );
-      //std::cout << "Jet[" << iJ << "] : pt = " << iJet->pt() << " , eta = " << iJet->eta() << std::endl;
-      if ( std::abs(iJet->pt())  < minJetPt_ ) continue;
-      if ( std::abs(iJet->eta()) > maxJetEta_ ) continue;
       dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->eta(),iGen->phi() );
-      //std::cout << "Jet[" << iJ << "] PASSED MIN PT and MAX ETA! |  dR = " << dR << std::endl;
-      std::cout << " >>>>>> jet[" << iJ << "] Pt:" << iJet->pt() << " jetEta:" << iJet->eta() << " jetPhi:" << iJet->phi() << std::endl;
-      if ( debug ) {
-        std::cout << " >>>>>> jet[" << iJ << "] Pt:" << iJet->pt() << " jetEta:" << iJet->eta() << " jetPhi:" << iJet->phi()
+      if ( debug ) std::cout << "  >>>>>> jet[" << iJ << "] Pt:" << iJet->pt() << " jetEta:" << iJet->eta() << " jetPhi:" << iJet->phi()
         << " dR:" << dR << std::endl;
-      }
       if ( dR > 0.4 ) {
-        std::cout << "FAIL dR SELECTION, dR = " << dR << std::endl;
+        //std::cout << "FAIL dR SELECTION, dR = " << dR << std::endl;
         continue;
       }
-      std::cout << " >>>>>> DR matched: jet[" << iJ << "] pdgId: " << std::abs(iGen->pdgId()) << " | dR: " << dR << "| Pt: " << iJet->pt() << ", Eta: " << iJet->eta() << ", Phi: " << iJet->phi() << std::endl;
-      vJetIdxs.push_back( iJ );
-      v_tau_jetPdgIds_.push_back( std::abs(iGen->pdgId()) );
-      if ( debug ) {
-        std::cout << " >>>>>> DR matched: jet[" << iJ << "] pdgId:" << std::abs(iGen->pdgId()) << std::endl;
-      }
-      break;
-    } // reco jets
+      ++nMatchedParticles;
+      std::cout << "  >>>>>> Jet [" << iJ << "] matched particle [" << iGenParticle << "] -> pdgId: " << std::abs(iGen->pdgId()) << " | dR: " << dR << "| Pt: " << iJet->pt() << ", Eta: " << iJet->eta() << ", Phi: " << iJet->phi() << std::endl;
+      if (lastMatchedJet != iJ){
+        lastMatchedJet = iJ;
+        nMatchedJets++;
+        vJetIdxs.push_back( iJ );
+        v_tau_jetPdgIds_.push_back( std::abs(iGen->pdgId()) );
+      } 
+    } // gen particles
 
-  } // gen particles
+  } // reco jets
+  std::cout << " Matched jets " << nMatchedJets << " - matched particles " << nMatchedParticles << std::endl; 
 
   // Check jet multiplicity
   //std::cout << "    --- Jet multiplicity: vJetIdxs.size() = " << vJetIdxs.size() << " | nJets = " << nJets << std::endl;
-  //if ( vJetIdxs.size() != nJets ) return false;
-  if ( vJetIdxs.size() < 1 || vJetIdxs.size() > 2) return false; // Requiring at least one jet
+  if ( nMatchedJets != 2 || nMatchedParticles != 4 ) return false;
 
   // Check jet identities
   for ( unsigned iJ(0); iJ != vJetIdxs.size(); ++iJ ) {
