@@ -21,11 +21,12 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     , vertexCollection = cms.InputTag("offlinePrimaryVertices")
     , siPixelRecHitCollection = cms.InputTag("siPixelRecHits")
     , siStripRecHitCollection = cms.VInputTag("siStripMatchedRecHits")
-    , pfCollection = cms.InputTag("particleFlow")
+    , pfCollection        = cms.InputTag("particleFlow")
     , recoJetsForBTagging = cms.InputTag("ak4PFJetsCHS")
     , jetTagCollection    = cms.InputTag("pfCombinedInclusiveSecondaryVertexV2BJetTags")
+    , tauCollection       = cms.InputTag("hpsPFTauProducer")
     , ipTagInfoCollection = cms.InputTag("pfImpactParameterTagInfos")
-    , mode = cms.string("JetLevel")
+    , mode                = cms.string("JetLevel")
 
     # Jet level cfg
     , nJets = cms.int32(-1)

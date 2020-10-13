@@ -38,6 +38,8 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   ipTagInfoCollectionT_   = consumes<std::vector<reco::CandIPTagInfo> > (iConfig.getParameter<edm::InputTag>("ipTagInfoCollection"));
 
   siPixelRecHitCollectionT_ = consumes<SiPixelRecHitCollection>(iConfig.getParameter<edm::InputTag>("siPixelRecHitCollection"));
+ 
+  tauCollectionT_         = consumes<reco::PFTauCollection>(iConfig.getParameter<edm::InputTag>("tauCollection"));
                               //iConfig.getParameter<edm::InputTag>("siPixelRecHitCollection");
   //siStripRecHitCollectionT_ = iConfig.getParameter<std::vector<edm::InputTag> >("siStripRecHitCollection");
 

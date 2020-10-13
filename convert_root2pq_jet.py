@@ -106,17 +106,21 @@ for iEvt in range(iEvtStart,iEvtEnd):
     data['X_CMSII'] = np.stack([TracksAtECAL_pt, ECAL_energy, HBHE_energy, PixAtEcal_1, PixAtEcal_2, PixAtEcal_3, PixAtEcal_4], axis=0) # (7, 280, 360)
 
     # Jet attributes 
-    ys  = rhTree.jetIsTau
-    pts = rhTree.jetPt
-    m0s = rhTree.jetM
-    iphis = rhTree.jetSeed_iphi
-    ietas = rhTree.jetSeed_ieta
+    ys     = rhTree.jetIsDiTau
+    ams    = rhTree.a_m
+    dRs    = rhTree.TaudR
+    pts    = rhTree.jetPt
+    m0s    = rhTree.jetM
+    iphis  = rhTree.jetSeed_iphi
+    ietas  = rhTree.jetSeed_ieta
     pdgIds = rhTree.jetPdgIds
-    njets = len(ys)
+    njets  = len(ys)
 
     for i in range(njets):
 
-        data['y'] = ys[i]
+        data['y']  = ys[i]
+        data['am'] = ams[i]
+        data['dR'] = dRs[i]
         data['pt'] = pts[i]
         data['m0'] = m0s[i]
         data['iphi'] = iphis[i]
@@ -147,7 +151,7 @@ print "========================================================"
 pqIn = pq.ParquetFile(outStr)
 print(pqIn.metadata)
 print(pqIn.schema)
-X = pqIn.read_row_group(0, columns=['y','pt','m0','iphi','ieta','pdgId']).to_pydict()
+X = pqIn.read_row_group(0, columns=['y','am','dR','pt','m0','iphi','ieta','pdgId']).to_pydict()
 print(X)
 #X = pqIn.read_row_group(0, columns=['X_jet.list.item.list.item.list.item']).to_pydict()['X_jet'] # read row-by-row 
 #X = pqIn.read(['X_jet.list.item.list.item.list.item', 'y']).to_pydict()['X_jet'] # read entire column(s)

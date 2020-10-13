@@ -14,7 +14,7 @@ from scipy.misc import imresize
 
 import matplotlib.pyplot as plt
 #%matplotlib inline
-from matplotlib.colors import LogNorm
+from matplotlib.colors import LogNorm, ListedColormap, LinearSegmentedColormap
 import matplotlib.ticker as ticker
 from matplotlib.ticker import MultipleLocator
 import matplotlib.gridspec as gridspec
@@ -25,10 +25,13 @@ from numpy.lib.stride_tricks import as_strided
 import argparse
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('-i', '--infile', default='output_DoubleTau.root', type=str, help='Input root file.')
+parser.add_argument('-o', '--outdir', default='HToAAToTauTau', type=str, help='Output directory.')
 parser.add_argument('-n', '--nEvents', default=10, type=int, help='Number of events.')
+parser.add_argument('-s', '--skipEvents', default=-1, type=int, help='Number of events.')
 args = parser.parse_args()
 
 fileStr = args.infile
+outDir  = args.outdir
 f0s = glob.glob(fileStr)
 
 class ParquetDataset(Dataset):
@@ -44,17 +47,23 @@ class ParquetDataset(Dataset):
         data['pt'] = np.float32(data['pt'])
         # Preprocessing
         data['X_jet'][data['X_jet'] < 1.e-3] = 0. # Zero-Suppression
-        data['X_jet'][-1,...] = 25.*data['X_jet'][-1,...] # For HCAL: to match pixel intensity dist of other layers
+        data['X_jet'][-5,...] = 25.*data['X_jet'][-5,...] # For HCAL: to match pixel intensity dist of other layers
         data['X_jet'] = data['X_jet']/100. # To standardize
         return dict(data)
     def __len__(self):
         return self.parquet.num_row_groups
 
+def custom_div_cmap(numcolors=11, name='custom_div_cmap',mincol='blue', midcol='white', maxcol='red'):
+    cmap = LinearSegmentedColormap.from_list(name=name,colors=[mincol, midcol, maxcol],N=numcolors)
+    return cmap
+
+pink_map = custom_div_cmap(50, mincol='#FFFFFF', midcol='#F699CD' ,maxcol='#FF1694')
+
 def plotJet(img, mins, maxs, str_):
     plt.imshow(np.zeros_like(img[6,:,:]), cmap='Greys', vmin=0., vmax=1., alpha=0.9)
     if maxs[-1] > 0 : plt.imshow(img[6,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-1], vmax=maxs[-1])
-    if maxs[-2] > 0 : plt.imshow(img[5,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-2], vmax=maxs[-2])
-    if maxs[-3] > 0 : plt.imshow(img[4,:,:], cmap='Purples', norm=LogNorm(), alpha=0.9, vmin=mins[-3], vmax=maxs[-3])
+    if maxs[-2] > 0 : plt.imshow(img[5,:,:], cmap='Purples', norm=LogNorm(), alpha=0.9, vmin=mins[-2], vmax=maxs[-2])
+    if maxs[-3] > 0 : plt.imshow(img[4,:,:], cmap=pink_map, norm=LogNorm(), alpha=0.9, vmin=mins[-3], vmax=maxs[-3])
     if maxs[-4] > 0 : plt.imshow(img[3,:,:], cmap='Reds', norm=LogNorm(), alpha=0.9, vmin=mins[-4], vmax=maxs[-4])
     if maxs[-5] > 0 : plt.imshow(img[2,:,:], cmap='Greys',  norm=LogNorm(), alpha=0.9, vmin=mins[-5], vmax=maxs[-5])
     if maxs[-6] > 0 : plt.imshow(img[1,:,:], cmap='Blues',  norm=LogNorm(), alpha=0.9, vmin=mins[-6], vmax=maxs[-6])
@@ -71,7 +80,49 @@ def plotJet(img, mins, maxs, str_):
     ax.yaxis.set_tick_params(direction='in', which='major', length=6.)
     #plt.savefig(str_, bbox_inches='tight')
     plt.savefig(str_, bbox_inches='tight', format='png')
-    plt.show()
+    plt.clf()
+    #plt.show()
+
+def plotJet_PBX12(img, mins, maxs, str_):
+    plt.imshow(np.zeros_like(img[4,:,:]), cmap='Greys', vmin=0., vmax=1., alpha=0.9)
+    if maxs[-3] > 0 : plt.imshow(img[4,:,:], cmap=pink_map, norm=LogNorm(), alpha=0.9, vmin=mins[-3], vmax=maxs[-3])
+    if maxs[-4] > 0 : plt.imshow(img[3,:,:], cmap='Reds', norm=LogNorm(), alpha=0.9, vmin=mins[-4], vmax=maxs[-4])
+    #plt.colorbar(fraction=0.046, pad=0.04)
+    ax = plt.axes()
+    plt.xlim([0., 125.+0.])
+    plt.xticks(np.arange(0,150,25))
+    plt.xlabel(r"$\mathrm{i\varphi}'$", size=28) #28, 30
+    ax.xaxis.set_tick_params(direction='in', which='major', length=6.)
+    plt.ylim([0., 125.+0.])
+    plt.yticks(np.arange(0,150,25))
+    plt.ylabel(r"$\mathrm{i\eta}'$", size=28) #28, 30
+    ax.yaxis.set_tick_params(direction='in', which='major', length=6.)
+    #plt.savefig(str_, bbox_inches='tight')
+    plt.savefig(str_, bbox_inches='tight', format='png')
+    plt.clf()
+    #plt.show()
+
+def plotJet_PBX(img, mins, maxs, str_):
+    plt.imshow(np.zeros_like(img[6,:,:]), cmap='Greys', vmin=0., vmax=1., alpha=0.9)
+    if maxs[-1] > 0 : plt.imshow(img[6,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-1], vmax=maxs[-1])
+    if maxs[-2] > 0 : plt.imshow(img[5,:,:], cmap='Purples', norm=LogNorm(), alpha=0.9, vmin=mins[-2], vmax=maxs[-2])
+    if maxs[-3] > 0 : plt.imshow(img[4,:,:], cmap=pink_map, norm=LogNorm(), alpha=0.9, vmin=mins[-3], vmax=maxs[-3])
+    if maxs[-4] > 0 : plt.imshow(img[3,:,:], cmap='Reds', norm=LogNorm(), alpha=0.9, vmin=mins[-4], vmax=maxs[-4])
+    if maxs[-7] > 0 : plt.imshow(img[0,:,:], cmap='Oranges',norm=LogNorm(), alpha=0.9, vmin=mins[-7], vmax=maxs[-7])
+    #plt.colorbar(fraction=0.046, pad=0.04)
+    ax = plt.axes()
+    plt.xlim([0., 125.+0.])
+    plt.xticks(np.arange(0,150,25))
+    plt.xlabel(r"$\mathrm{i\varphi}'$", size=28) #28, 30
+    ax.xaxis.set_tick_params(direction='in', which='major', length=6.)
+    plt.ylim([0., 125.+0.])
+    plt.yticks(np.arange(0,150,25))
+    plt.ylabel(r"$\mathrm{i\eta}'$", size=28) #28, 30
+    ax.yaxis.set_tick_params(direction='in', which='major', length=6.)
+    #plt.savefig(str_, bbox_inches='tight')
+    plt.savefig(str_, bbox_inches='tight', format='png')
+    plt.clf()
+    #plt.show()
 
 
 def plotJet_chnl(img, cmap_, xmin, xmax, str_):
@@ -87,28 +138,32 @@ def plotJet_chnl(img, cmap_, xmin, xmax, str_):
     plt.ylabel(r"$\mathrm{i\eta}'$", size=28) #28, 30
     ax.yaxis.set_tick_params(direction='in', which='major', length=6.)
     plt.savefig(str_, bbox_inches='tight', format='png')
-    plt.show()
+    plt.clf()
+    #plt.show()
 
 dset_train = ParquetDataset(fileStr)
 train_cut = 50
 idxs = np.random.permutation(len(dset_train))
 train_sampler = sampler.SubsetRandomSampler(idxs[:train_cut])
 #train_loader = DataLoader(dataset=dset_train, batch_size=32, num_workers=0, sampler=train_sampler, pin_memory=True)
-train_loader = DataLoader(dataset=dset_train, batch_size=4, num_workers=0, shuffle=False, pin_memory=True)
-print dset_train
+train_loader = DataLoader(dataset=dset_train, batch_size=2, num_workers=0, shuffle=False, pin_memory=True)
+evt = 0
 for i, data in enumerate(train_loader):
-    if i == args.nEvents: break
-    print("Loop ", i)
+    if i*2 < args.skipEvents: continue
+    if (i % 2 == 0):
+      evt = evt + 1
+    print i, " Event ", evt, ": ", i
+      
+    if i == args.nEvents*2: break
     X_train = data['X_jet']
-    print X_train.shape
-    print len(X_train)
     y_train = data['y']
 
     plt.rcParams["font.family"] = "Helvetica"
-    plt.rcParams["figure.figsize"] = (5,5)
+    plt.rcParams["figure.figsize"] = (12,12)
+    #plt.rcParams["axes.facecolor"] = "white"
     plt.rcParams.update({'font.size': 26})
     
-    cmap = ['Oranges','Blues','Greys','Reds','Purples','Greens','Greens']
+    cmap = ['Oranges','Blues','Greys','Reds',pink_map,'Purples','Greens']
     min_ = 0.0001
 
     for jet in range(2):
@@ -121,10 +176,12 @@ for i, data in enumerate(train_loader):
             img_ = img[ch,:,:]
             max_ = img_.max()
             if max_ == 0: continue
-            print("Channel ", ch, " , Max = ", max_)
-            plotJet_chnl(img_, cmap[ch], min_, max_, 'images/tau_event%d_jet%d_chnl%d.png'%(i,jet,ch))
+            print "Channel ", ch, " , Max = ", max_
+            plotJet_chnl(img_, cmap[ch], min_, max_, 'images/%s/tau_event%d_jet%d_chnl%d.png'%(outDir,evt,jet,ch))
 
         mins = [0.0001]*7
         maxs = [X_train[jet,0,:,:].max(), X_train[jet,1,:,:].max(), X_train[jet,2,:,:].max(), X_train[jet,3,:,:].max(), X_train[jet,4,:,:].max(), X_train[jet,5,:,:].max(), X_train[jet,6,:,:].max()]
         print "Min = ", mins, " | Max = ", maxs
-        plotJet(img, mins, maxs, 'images/tau_event%d_jet%d.png'%(i,jet))
+        plotJet(img, mins, maxs, 'images/%s/tau_event%d_jet%d.png'%(outDir,evt,jet))
+        plotJet_PBX12(img, mins, maxs, 'images/%s/tau_event%d_jet%d_PBX12.png'%(outDir,evt,jet))
+        plotJet_PBX(img, mins, maxs, 'images/%s/tau_event%d_jet%d_PBX.png'%(outDir,evt,jet))

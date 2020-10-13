@@ -89,6 +89,8 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
+#include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/TauReco/interface/PFTauFwd.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "DataFormats/BTauReco/interface/JetTag.h"
@@ -142,6 +144,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<edm::View<reco::Jet> > recoJetsT_;
     edm::EDGetTokenT<reco::JetTagCollection> jetTagCollectionT_;
     edm::EDGetTokenT<std::vector<reco::CandIPTagInfo> >    ipTagInfoCollectionT_;
+    edm::EDGetTokenT<reco::PFTauCollection> tauCollectionT_;
  
     typedef std::vector<reco::PFCandidate>  PFCollection;
     edm::EDGetTokenT<PFCollection> pfCollectionT_;
@@ -238,8 +241,8 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //
 // constants, enums and typedefs
 //
-//static const bool debug = true;
-static const bool debug = false;
+static const bool debug = true;
+//static const bool debug = false;
 
 static const int nEE = 2;
 static const int nTOB = 6;
