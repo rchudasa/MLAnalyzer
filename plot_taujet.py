@@ -147,14 +147,11 @@ idxs = np.random.permutation(len(dset_train))
 train_sampler = sampler.SubsetRandomSampler(idxs[:train_cut])
 #train_loader = DataLoader(dataset=dset_train, batch_size=32, num_workers=0, sampler=train_sampler, pin_memory=True)
 train_loader = DataLoader(dataset=dset_train, batch_size=2, num_workers=0, shuffle=False, pin_memory=True)
-evt = 0
 for i, data in enumerate(train_loader):
-    if i*2 < args.skipEvents: continue
-    if (i % 2 == 0):
-      evt = evt + 1
-    print i, " Event ", evt, ": ", i
+    if i < args.skipEvents: continue
+    print " Event ", i
       
-    if i == args.nEvents*2: break
+    if i == args.nEvents: break
     X_train = data['X_jet']
     y_train = data['y']
 
@@ -177,11 +174,11 @@ for i, data in enumerate(train_loader):
             max_ = img_.max()
             if max_ == 0: continue
             print "Channel ", ch, " , Max = ", max_
-            plotJet_chnl(img_, cmap[ch], min_, max_, 'images/%s/tau_event%d_jet%d_chnl%d.png'%(outDir,evt,jet,ch))
+            plotJet_chnl(img_, cmap[ch], min_, max_, 'images/%s/tau_event%d_jet%d_chnl%d.png'%(outDir,i,jet,ch))
 
         mins = [0.0001]*7
         maxs = [X_train[jet,0,:,:].max(), X_train[jet,1,:,:].max(), X_train[jet,2,:,:].max(), X_train[jet,3,:,:].max(), X_train[jet,4,:,:].max(), X_train[jet,5,:,:].max(), X_train[jet,6,:,:].max()]
         print "Min = ", mins, " | Max = ", maxs
-        plotJet(img, mins, maxs, 'images/%s/tau_event%d_jet%d.png'%(outDir,evt,jet))
-        plotJet_PBX12(img, mins, maxs, 'images/%s/tau_event%d_jet%d_PBX12.png'%(outDir,evt,jet))
-        plotJet_PBX(img, mins, maxs, 'images/%s/tau_event%d_jet%d_PBX.png'%(outDir,evt,jet))
+        plotJet(img, mins, maxs, 'images/%s/tau_event%d_jet%d.png'%(outDir,i,jet))
+        plotJet_PBX12(img, mins, maxs, 'images/%s/tau_event%d_jet%d_PBX12.png'%(outDir,i,jet))
+        plotJet_PBX(img, mins, maxs, 'images/%s/tau_event%d_jet%d_PBX.png'%(outDir,i,jet))
