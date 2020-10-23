@@ -130,7 +130,7 @@ RecHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
 
   if ( !passedSelection ) {
-    std::cout << "!!!!!!!!!!! DID NOT PASS EVENT/JET SELECTION !!!!!!!!!!!" << std::endl;
+    if ( debug ) std::cout << "!!!!!!!!!!! DID NOT PASS EVENT/JET SELECTION !!!!!!!!!!!" << std::endl;
     h_sel->Fill( 0. );;
     return;
   }

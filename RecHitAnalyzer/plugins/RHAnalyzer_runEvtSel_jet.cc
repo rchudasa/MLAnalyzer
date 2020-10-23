@@ -49,7 +49,7 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   bool hasPassed;
   if ( jetSelection == "dijet_tau" ) {
     hasPassed = runEvtSel_jet_dijet_tau( iEvent, iSetup );
-    if ( hasPassed ) std::cout << "!!!!!!   JET SELECTION HAS PASSED! " << std::endl; 
+    if ( debug && hasPassed ) std::cout << "!!!!!!   JET SELECTION HAS PASSED! " << std::endl; 
   } else {
     hasPassed = runEvtSel_jet_dijet( iEvent, iSetup );
   }

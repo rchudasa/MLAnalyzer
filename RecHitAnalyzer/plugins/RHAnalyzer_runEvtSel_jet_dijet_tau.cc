@@ -63,25 +63,39 @@ int sum(vector <int> dist) {
     return std::accumulate(dist.begin(), dist.end(), 0);
 }
 
-int max_element(vector <int> dist) {
+int max_element(vector <float> dist) {
     int max = 0;
     int s = dist.size();
-      for (int i = 0; i < s; i++) {
+    for (int i = 0; i < s; i++) {
         int el = dist[i];
         if (max < el){max = el;}
-              }
-        return max;
+    }
+    return max;
 }
+
+//vector <float> get_inverse_pdf(vector <int> dist) {
+//    vector <float> invpdf(dist.size());
+//      float summax = sum(dist) / max_element(dist);
+//      int s = dist.size();
+//      for (int i = 0; i < s; i++) {
+//              if (dist[i] != 0 ) {invpdf[i] = summax / dist[i];}
+//              else {invpdf[i] = 1;}
+//                }
+//          return invpdf;
+//}
 
 vector <float> get_inverse_pdf(vector <int> dist) {
     vector <float> invpdf(dist.size());
-      float summax = sum(dist) / max_element(dist);
-      int s = dist.size();
-      for (int i = 0; i < s; i++) {
-              if (dist[i] != 0 ) {invpdf[i] = summax / dist[i];}
-              else {invpdf[i] = 1;}
-                }
-          return invpdf;
+    float sum_hist = sum(dist);
+    int s = dist.size();
+    for (int i = 0; i < s; i++) {
+        if (dist[i] != 0 ) {invpdf[i] = sum_hist / dist[i];}
+        else {invpdf[i] = 1;}
+    }
+    float max_invpdf = max_element(invpdf);
+    for (int i = 0; i < s; i++) {
+        invpdf[i] = invpdf[i] / max_invpdf;}
+    return invpdf;
 }
 
 float lookup_pt_invpdf(int pTgen, vector <int> pT_bins, vector <float> pT_invpdf) {
@@ -208,13 +222,14 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
   float n1dR   = -99.;
   float n2dR   = -99.;
 
-  vector <int> pT_bins = {0, 37, 155, 261, 266, 236, 236, 294, 234, 254};
-  vector <int> m_bins  = {206, 228, 186, 191, 210, 218, 196, 179, 203, 176};
+  //vector <int> pT_bins = {0,   37,   155,   261,   266,   236,   236,   294,   234,   254};
+  vector <int> pT_bins = {0, 5496, 25355, 34946, 37209, 38147, 38281, 38120, 38665, 38362};
+  vector <int> m_bins  = {32680, 32453, 31829, 30453, 29426, 28658, 27860, 27542, 27207, 26493};
   vector <float> m_invpdf = get_inverse_pdf(m_bins);
   vector <float> pT_invpdf = get_inverse_pdf(pT_bins);
 
   if ( debug ) std::cout << " >>>>>>>>>>>>>>>>>>>> evt:" << std::endl;
-  std::cout << " JETS IN THE EVENT = " << jets->size() << " | Selection requires minpT = " << minJetPt_ << " and maxEta = "<< maxJetEta_ << std::endl;
+  if ( debug ) std::cout << " JETS IN THE EVENT = " << jets->size() << " | Selection requires minpT = " << minJetPt_ << " and maxEta = "<< maxJetEta_ << std::endl;
   // Loop over jets
   for ( unsigned iJ(0); iJ != jets->size(); ++iJ ) {
     reco::PFJetRef iJet( jets, iJ );
@@ -238,10 +253,10 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
       int pT_gen = iGen -> pt();
       int m_gen  = iGen -> mass();
       float pT_wgt = lookup_pt_invpdf(pT_gen, pT_bins, pT_invpdf);
-      std::cout << " wgt pT " << pT_wgt  << " | rand_sampler_pT " << rand_sampler_pT << std::endl;
+      if (debug) std::cout << " wgt pT " << pT_wgt  << " | rand_sampler_pT " << rand_sampler_pT << std::endl;
       float m_wgt = lookup_pt_invpdf(m_gen, m_bins, m_invpdf);
-      std::cout << " wgt m " << m_wgt  << " | rand_sampler_m "<< rand_sampler_m << std::endl;
-      //if (rand_sampler_pT > pT_wgt) continue;
+      if (debug) std::cout << " wgt m " << m_wgt  << " | rand_sampler_m "<< rand_sampler_m << std::endl;
+      if (rand_sampler_pT > pT_wgt) continue;
       if (rand_sampler_m > m_wgt) continue;
 
       passedGenSel = true;
@@ -423,7 +438,6 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
       v_tau_subJetPy_[iJ].push_back( subJet->py() );
       v_tau_subJetPz_[iJ].push_back( subJet->pz() );
     }
-    std::cout << "Passing branches" << std::endl;
   }
 
 } // fillEvtSel_jet_dijet_tau()
