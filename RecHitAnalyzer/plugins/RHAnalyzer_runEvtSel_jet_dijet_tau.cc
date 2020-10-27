@@ -63,26 +63,15 @@ int sum(vector <int> dist) {
     return std::accumulate(dist.begin(), dist.end(), 0);
 }
 
-int max_element(vector <float> dist) {
-    int max = 0;
+float max_element(vector <float> dist) {
+    float max = 0;
     int s = dist.size();
     for (int i = 0; i < s; i++) {
-        int el = dist[i];
+        float el = dist[i];
         if (max < el){max = el;}
     }
     return max;
 }
-
-//vector <float> get_inverse_pdf(vector <int> dist) {
-//    vector <float> invpdf(dist.size());
-//      float summax = sum(dist) / max_element(dist);
-//      int s = dist.size();
-//      for (int i = 0; i < s; i++) {
-//              if (dist[i] != 0 ) {invpdf[i] = summax / dist[i];}
-//              else {invpdf[i] = 1;}
-//                }
-//          return invpdf;
-//}
 
 vector <float> get_inverse_pdf(vector <int> dist) {
     vector <float> invpdf(dist.size());
@@ -98,16 +87,30 @@ vector <float> get_inverse_pdf(vector <int> dist) {
     return invpdf;
 }
 
+float lookup_mass_invpdf(float Mgen, vector <float> M_bins, vector <float> M_invpdf) {
+    int ipt = 0;
+    int s1 = M_bins.size();
+    int s2 = M_invpdf.size();
+    for (int ib = 0; ib < s1; ib++) {
+        ipt = ib;
+        if (ib + 1 >  s2 - 1) { break; }
+        if (Mgen <= M_bins[ib]) { break; }
+    }
+    if (debug) std::cout << "mass gen = " << Mgen << " | bin = " << ipt << " | mass bin = " << M_bins[ipt] << " | inv mass bin = " << M_invpdf[ipt] << std::endl;
+    return M_invpdf[ipt];
+}
+
 float lookup_pt_invpdf(int pTgen, vector <int> pT_bins, vector <float> pT_invpdf) {
     int ipt = 0;
     int s1 = pT_bins.size();
     int s2 = pT_invpdf.size();
     for (int ib = 0; ib < s1; ib++) {
-            ipt = ib;
-            if (ib + 1 >  s2 - 1) { break; }
-            if (pTgen <= pT_bins[ib]) { break; }
-                        }
-        return pT_invpdf[ipt];
+        ipt = ib;
+        if (ib + 1 >  s2 - 1) { break; }
+        if (pTgen <= pT_bins[ib]) { break; }
+    }
+    if (debug) std::cout << "pT gen = " << pTgen << " | bin = " << ipt << " | pt bin = " << pT_bins[ipt] << " | inv pt bin = " << pT_invpdf[ipt] << std::endl;
+    return pT_invpdf[ipt];
 }
 
 
@@ -119,21 +122,21 @@ float get_rand_el(vector <int> dist) {
 // Initialize branches _____________________________________________________//
 void RecHitAnalyzer::branchesEvtSel_jet_dijet_tau ( TTree* tree, edm::Service<TFileService> &fs ) {
 
-  h_tau_jet_a_m_pt     = fs->make<TH2D>("h_a_m_pT"         , "m^{a} vs p_{T}^{a};m^{a} vs p_{T}^{a};Jets" , 10, 3.6,  15., 10, 0., 200.);
   h_tau_jet_E          = fs->make<TH1D>("h_jet_E"          , "E;E;Jets"                                   , 100,  0., 800.);
   h_tau_jet_pT         = fs->make<TH1D>("h_jet_pT"         , "p_{T};p_{T};Jets"                           , 100,  0., 800.);
   h_tau_jet_eta        = fs->make<TH1D>("h_jet_eta"        , "#eta;#eta;Jets"                             , 100, -5.,   5.);
   h_tau_jet_nJet       = fs->make<TH1D>("h_jet_nJet"       , "nJet;nJet;Events"                           ,  10,  0.,  10.);
   h_tau_jet_m0         = fs->make<TH1D>("h_jet_m0"         , "m_{jet};m_{jet};Jets"                       , 100,  0., 100.);
-  h_tau_jet_ma         = fs->make<TH1D>("h_jet_ma"         , "m^{a};m^{a};Jets"                           ,  10, 3.6, 15.);
-  h_tau_jet_pta        = fs->make<TH1D>("h_jet_pta"        , "p_{T}^{a};p_{T}^{a};Jets"                   ,  10,  0., 200.);
+  h_tau_jet_a_m_pt     = fs->make<TH2D>("h_a_m_pT"         , "m^{a} vs p_{T}^{a};m^{a} vs p_{T}^{a};Jets" ,  12, 3.6,  15.,  20, 0., 200.);
+  h_tau_jet_ma         = fs->make<TH1D>("h_jet_ma"         , "m^{a};m^{a};Jets"                           ,  12, 3.6,  15.);
+  h_tau_jet_pta        = fs->make<TH1D>("h_jet_pta"        , "p_{T}^{a};p_{T}^{a};Jets"                   ,  20,  0., 200.);
   h_tau_jet_isDiTau    = fs->make<TH1D>("h_jet_isDiTau"    , "nIsDiTau;nIsDiTau;Jets"                     ,  10,  0.,  10.);
   h_tau_jet_dR         = fs->make<TH1D>("h_jet_dR"         , "dR_{a,j};dR_{a,j};Jets"                     ,  50,  0.,  0.5);
-  h_tau_jet_TaudR      = fs->make<TH1D>("h_jet_TaudR"      , "dR_{#tau,#tau};dR_{#tau,#tau};Jets"         ,  50,  0.,  1);
+  h_tau_jet_TaudR      = fs->make<TH1D>("h_jet_TaudR"      , "dR_{#tau,#tau};dR_{#tau,#tau};Jets"         ,  50,  0.,   1.);
   h_tau_jet_Tau1dR     = fs->make<TH1D>("h_jet_Tau1dR"     , "dR_{#tau_{1},j};dR_{#tau_{1},j};Jets"       ,  50,  0.,  0.5);
   h_tau_jet_Tau2dR     = fs->make<TH1D>("h_jet_Tau2dR"     , "dR_{#tau_{2},j};dR_{#tau_{2},j};Jets"       ,  50,  0.,  0.5);
-  h_tau_jet_NGenTaus  = fs->make<TH1D>("h_jet_NGenTaus"    , "N#tau^{RECO};N#tau^{RECO};Jets"             ,   5, 0.,   5.);
-  h_tau_jet_NrecoTaus  = fs->make<TH1D>("h_jet_NrecoTaus"  , "N#tau^{RECO};N#tau^{RECO};Jets"             ,   5, 0.,   5.);
+  h_tau_jet_NGenTaus  = fs->make<TH1D>("h_jet_NGenTaus"    , "N#tau^{RECO};N#tau^{RECO};Jets"             ,   5,  0.,   5.);
+  h_tau_jet_NrecoTaus  = fs->make<TH1D>("h_jet_NrecoTaus"  , "N#tau^{RECO};N#tau^{RECO};Jets"             ,   5,  0.,   5.);
   h_tau_jet_recoTau1dR = fs->make<TH1D>("h_jet_recoTau1dR" , "dR_{#tau_{1}^{RECO},j};dR_{#tau_{1}^{RECO},j};Jets" ,  50,  0.,  0.5);
   h_tau_jet_recoTau2dR = fs->make<TH1D>("h_jet_recoTau2dR" , "dR_{#tau_{2}^{RECO},j};dR_{#tau_{2}^{RECO},j};Jets" ,  25,  0.,  0.5);
   h_tau_jet_n1dR       = fs->make<TH1D>("h_jet_n1dR"       , "dR_{#eta_{1},j};dR_{#eta_{1},j};Jets" ,  25,  0.,  0.5);
@@ -222,11 +225,12 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
   float n1dR   = -99.;
   float n2dR   = -99.;
 
-  //vector <int> pT_bins = {0,   37,   155,   261,   266,   236,   236,   294,   234,   254};
-  vector <int> pT_bins = {0, 5496, 25355, 34946, 37209, 38147, 38281, 38120, 38665, 38362};
-  vector <int> m_bins  = {32680, 32453, 31829, 30453, 29426, 28658, 27860, 27542, 27207, 26493};
-  vector <float> m_invpdf = get_inverse_pdf(m_bins);
-  vector <float> pT_invpdf = get_inverse_pdf(pT_bins);
+  vector <int> pT_bins  = {40, 60, 80, 100, 120, 140, 160, 180, 200};
+  vector <int> pT_occ   = {25081, 113920, 158016, 167288, 172264, 172800, 172829, 174200, 173920};
+  vector <float> m_bins = {4.74, 5.88, 7.02, 8.16, 9.3, 10.44, 11.58, 12.72, 13.86, 15};
+  vector <int> m_occ    = {147101, 147957, 142590, 137724, 134015, 128584, 125929, 124459, 121719, 120240};
+  vector <float> m_invpdf = get_inverse_pdf(m_occ);
+  vector <float> pT_invpdf = get_inverse_pdf(pT_occ);
 
   if ( debug ) std::cout << " >>>>>>>>>>>>>>>>>>>> evt:" << std::endl;
   if ( debug ) std::cout << " JETS IN THE EVENT = " << jets->size() << " | Selection requires minpT = " << minJetPt_ << " and maxEta = "<< maxJetEta_ << std::endl;
@@ -240,24 +244,24 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
     unsigned int NTau1Daughters = 0;
     unsigned int NTau2Daughters = 0;
     for (reco::GenParticleCollection::const_iterator iGen = genParticles->begin(); iGen != genParticles->end(); ++iGen) {
-      //if ( iJ == 0 && debug ) std::cout << "   GEN particle " << iGenParticle << " -> status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " nMoms: " <<iGen->numberOfMothers() << " | pt: "<< iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << std::endl;
-      if ( iGen->status() != 2 ) continue;
       if ( abs(iGen->pdgId()) != 15 ) continue;
+      if (iGen->numberOfMothers() != 1) continue;
+      if (iGen->mother()->pdgId() != 25) continue;
       ++iGenParticle;
       if ( debug ) std::cout << "   GEN particle " << iGenParticle << " -> status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " nMoms: " <<iGen->numberOfMothers() << " | pt: "<< iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << std::endl;
       float dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->eta(),iGen->phi() );
       if ( dR > 0.4 ) continue;
 
-      double rand_sampler_pT = rand() / double(RAND_MAX);
-      float rand_sampler_m   = rand() / double(RAND_MAX);
-      int pT_gen = iGen -> pt();
-      int m_gen  = iGen -> mass();
+      float rand_sampler_pT  = rand() / float(RAND_MAX);
+      float rand_sampler_m  = rand() / float(RAND_MAX);
+      int pT_gen   = iGen->mother()->pt();
+      float m_gen  = iGen->mother()->mass();
       float pT_wgt = lookup_pt_invpdf(pT_gen, pT_bins, pT_invpdf);
       if (debug) std::cout << " wgt pT " << pT_wgt  << " | rand_sampler_pT " << rand_sampler_pT << std::endl;
-      float m_wgt = lookup_pt_invpdf(m_gen, m_bins, m_invpdf);
+      float m_wgt = lookup_mass_invpdf(m_gen, m_bins, m_invpdf);
       if (debug) std::cout << " wgt m " << m_wgt  << " | rand_sampler_m "<< rand_sampler_m << std::endl;
-      if (rand_sampler_pT > pT_wgt) continue;
-      if (rand_sampler_m > m_wgt) continue;
+      //if (rand_sampler_pT > pT_wgt) continue;
+      //if (rand_sampler_m  > m_wgt) continue;
 
       passedGenSel = true;
 
