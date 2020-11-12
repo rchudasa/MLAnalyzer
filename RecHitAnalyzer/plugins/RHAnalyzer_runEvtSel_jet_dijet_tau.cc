@@ -127,9 +127,9 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_tau ( TTree* tree, edm::Service<TF
   h_tau_jet_eta        = fs->make<TH1D>("h_jet_eta"        , "#eta;#eta;Jets"                             , 100, -5.,   5.);
   h_tau_jet_nJet       = fs->make<TH1D>("h_jet_nJet"       , "nJet;nJet;Events"                           ,  10,  0.,  10.);
   h_tau_jet_m0         = fs->make<TH1D>("h_jet_m0"         , "m_{jet};m_{jet};Jets"                       , 100,  0., 100.);
-  h_tau_jet_a_m_pt     = fs->make<TH2D>("h_a_m_pT"         , "m^{a} vs p_{T}^{a};m^{a} vs p_{T}^{a};Jets" ,  12, 3.6,  15.,  20, 0., 200.);
-  h_tau_jet_ma         = fs->make<TH1D>("h_jet_ma"         , "m^{a};m^{a};Jets"                           ,  12, 3.6,  15.);
-  h_tau_jet_pta        = fs->make<TH1D>("h_jet_pta"        , "p_{T}^{a};p_{T}^{a};Jets"                   ,  20,  0., 200.);
+  h_tau_jet_a_m_pt     = fs->make<TH2D>("h_a_m_pT"         , "m^{a} vs p_{T}^{a};m^{a} vs p_{T}^{a};Jets" ,  24, 3.6,  15.,  30, 20., 200.);
+  h_tau_jet_ma         = fs->make<TH1D>("h_jet_ma"         , "m^{a};m^{a};Jets"                           ,  24, 3.6,  15.);
+  h_tau_jet_pta        = fs->make<TH1D>("h_jet_pta"        , "p_{T}^{a};p_{T}^{a};Jets"                   ,  30,  20., 200.);
   h_tau_jet_isDiTau    = fs->make<TH1D>("h_jet_isDiTau"    , "nIsDiTau;nIsDiTau;Jets"                     ,  10,  0.,  10.);
   h_tau_jet_dR         = fs->make<TH1D>("h_jet_dR"         , "dR_{a,j};dR_{a,j};Jets"                     ,  50,  0.,  0.5);
   h_tau_jet_TaudR      = fs->make<TH1D>("h_jet_TaudR"      , "dR_{#tau,#tau};dR_{#tau,#tau};Jets"         ,  50,  0.,   1.);
@@ -225,10 +225,13 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
   float n1dR   = -99.;
   float n2dR   = -99.;
 
+  //vector <int> pT_bins  = {40, 60, 80, 100, 120, 140, 160, 180, 200};
+  //vector <int> pT_occ   = {25081, 113920, 158016, 167288, 172264, 172800, 172829, 174200, 173920};
+  //vector <float> m_bins = {4.74, 5.88, 7.02, 8.16, 9.3, 10.44, 11.58, 12.72, 13.86, 15};
+  //vector <int> m_occ    = {147101, 147957, 142590, 137724, 134015, 128584, 125929, 124459, 121719, 120240};
   vector <int> pT_bins  = {40, 60, 80, 100, 120, 140, 160, 180, 200};
-  vector <int> pT_occ   = {25081, 113920, 158016, 167288, 172264, 172800, 172829, 174200, 173920};
-  vector <float> m_bins = {4.74, 5.88, 7.02, 8.16, 9.3, 10.44, 11.58, 12.72, 13.86, 15};
-  vector <int> m_occ    = {147101, 147957, 142590, 137724, 134015, 128584, 125929, 124459, 121719, 120240};
+  vector <float> m_bins = {4.075  ,  4.55  ,  5.025  ,  5.5  ,  5.975  ,  6.45  ,  6.925  ,  7.4  ,  7.875  ,  8.35  ,  8.825  ,  9.3  ,  9.775  ,  10.25  ,  10.725  ,  11.2  ,  11.675  ,  12.15  ,  12.625  ,  13.1  ,  13.575  ,  14.05  ,  14.525};
+  vector <int> occ    = {147101, 147957, 142590, 137724, 134015, 128584, 125929, 124459, 121719, 120240};
   vector <float> m_invpdf = get_inverse_pdf(m_occ);
   vector <float> pT_invpdf = get_inverse_pdf(pT_occ);
 

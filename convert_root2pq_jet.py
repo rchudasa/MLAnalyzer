@@ -6,6 +6,8 @@ import glob, os
 from skimage.measure import block_reduce # pip install scikit-image
 from numpy.lib.stride_tricks import as_strided
 
+#print(os.environ)
+
 import argparse
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('-i', '--infile', default='output_qqgg.root', type=str, help='Input root file.')
@@ -108,7 +110,9 @@ for iEvt in range(iEvtStart,iEvtEnd):
     # Jet attributes 
     ys     = rhTree.jetIsDiTau
     ams    = rhTree.a_m
-    dRs    = rhTree.TaudR
+    apts   = rhTree.a_pt
+    taudRs = rhTree.TaudR
+    dRs    = rhTree.jetadR
     pts    = rhTree.jetPt
     m0s    = rhTree.jetM
     iphis  = rhTree.jetSeed_iphi
@@ -118,13 +122,15 @@ for iEvt in range(iEvtStart,iEvtEnd):
 
     for i in range(njets):
 
-        data['y']  = ys[i]
-        data['am'] = ams[i]
-        data['dR'] = dRs[i]
-        data['pt'] = pts[i]
-        data['m0'] = m0s[i]
-        data['iphi'] = iphis[i]
-        data['ieta'] = ietas[i]
+        data['y']     = ys[i]
+        data['am']    = ams[i]
+        data['apt']   = apts[i]
+        data['taudR'] = taudRs[i]
+        data['dR']    = dRs[i]
+        data['pt']    = pts[i]
+        data['m0']    = m0s[i]
+        data['iphi']  = iphis[i]
+        data['ieta']  = ietas[i]
         data['pdgId'] = pdgIds[i]
         data['X_jet'] = crop_jet(data['X_CMSII'], data['iphi'], data['ieta']) # (7, 125, 125)
 
