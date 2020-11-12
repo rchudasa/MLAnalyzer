@@ -115,19 +115,23 @@ float lookup_pt_invpdf(int pTgen, vector <int> pT_bins, vector <float> pT_invpdf
 
 float lookup_invpdf(float Mgen, vector <float> M_bins, int pTgen, vector <int> pT_bins, vector <float> invpdf) {
     int ibin = 0;
+    int ibinx = 0;
+    int ibiny = 0;
     int m1  = M_bins.size();
     int pt1 = pT_bins.size();
     int inv = invpdf.size();
     for (int ibx = 0; ibx < m1; ibx++) {
         for (int iby = 0; iby < pt1; iby++) {
         ibin = (ibx*pt1)+ iby + 1;
-        if ((ibx*pt1)+ iby + 1 >  inv - 1) { break; }
+        ibinx = ibx;
+        ibiny = iby;
+        if ((ibx*pt1) + iby + 1 >  inv - 1) { break; }
         if (Mgen  <= M_bins[ibx]) { break; }
         if (pTgen <= pT_bins[iby]) { break; }
     }
-    std::cout << "mass gen = " << Mgen  << " | bin = " << ibx << " | mass bin = " << M_bins[ibx]  << std::endl;
-    std::cout << "pt gen   = " << pTgen << " | bin = " << iby << " | pt bin   = " << pT_bins[iby] << std::endl;
-    std::cout << "Global bin = " << ibin << " | inv mass bin = " << invpdf[bin] << std::endl;
+    std::cout << "mass gen   = " << Mgen  << " | bin = " << ibinx << " | mass bin = " << M_bins[ibinx]  << std::endl;
+    std::cout << "pt gen     = " << pTgen << " | bin = " << ibiny << " | pt bin   = " << pT_bins[ibiny] << std::endl;
+    std::cout << "Global bin = " << ibin <<  " | inv mass bin = " << invpdf[bin] << std::endl;
     return invpdf[ibin];
 }
 
@@ -277,10 +281,12 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
       float rand_sampler_m  = rand() / float(RAND_MAX);
       int pT_gen   = iGen->mother()->pt();
       float m_gen  = iGen->mother()->mass();
-      float pT_wgt = lookup_pt_invpdf(pT_gen, pT_bins, pT_invpdf);
-      if (debug) std::cout << " wgt pT " << pT_wgt  << " | rand_sampler_pT " << rand_sampler_pT << std::endl;
-      float m_wgt = lookup_mass_invpdf(m_gen, m_bins, m_invpdf);
-      if (debug) std::cout << " wgt m " << m_wgt  << " | rand_sampler_m "<< rand_sampler_m << std::endl;
+      float wgt = lookup_invpdf(m_gen, m_bins, pT_gen, pT_bins, invpdf);
+      if (debug) std::cout << " wgt " << wgt  << " | rand_sampler pt " << rand_sampler_pT << " | rand_sampler_m " << rand_sampler_m << std::endl;
+      //float pT_wgt = lookup_pt_invpdf(pT_gen, pT_bins, pT_invpdf);
+      //if (debug) std::cout << " wgt pT " << pT_wgt  << " | rand_sampler_pT " << rand_sampler_pT << std::endl;
+      //float m_wgt = lookup_mass_invpdf(m_gen, m_bins, m_invpdf);
+      //if (debug) std::cout << " wgt m " << m_wgt  << " | rand_sampler_m "<< rand_sampler_m << std::endl;
       //if (rand_sampler_pT > pT_wgt) continue;
       //if (rand_sampler_m  > m_wgt) continue;
 
