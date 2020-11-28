@@ -21,7 +21,8 @@ decay='HToTauTau_m3p6To15_pT0To200_ctau0To3_eta0To1p4'
 
 #xrootd='root://cmsxrootd.fnal.gov' # FNAL
 xrootd='root://eoscms.cern.ch' # CERN
-local='/eos/user/d/ddicroce/ML/TauClassifier/HToTauTau_m3p6To15_pT0To200_ctau0To3_eta0To1p4_biased/HToTauTau_m3p6To15_pT0To200_ctau0To3_eta0To1p4_biased_v2/201027_101416/0000/'
+local='/eos/user/d/ddicroce/HToTauTau_m3p6To15_pT20To200_ctau0To3_eta0To1p4_RHAnalyzer_gen_unbiased'
+#local='/eos/user/d/ddicroce/ML/TauClassifier/HToTauTau_m3p6To15_pT0To200_ctau0To3_eta0To1p4_biased/HToTauTau_m3p6To15_pT0To200_ctau0To3_eta0To1p4_biased_v2/201027_101416/0000/'
 #local='/uscms/home/ddicroce/nobackup/TauClassifier/HToTauTau_m3p6To15_pT0To200_ctau0To3_eta0To1p4_biased_v2/201027_101416/0000'
 
 # Paths to input files
@@ -42,7 +43,7 @@ file_idx_.append( len(rhFileList) )
 print ( file_idx_ )
 
 for irun_ in range( n_iter_ ):
-    if (irun_ < 20) : continue
+    #if (irun_ < 8) : continue
     files_ = rhFileList[ file_idx_[ irun_ ] : file_idx_[irun_+1] ]  
     for idx_, file_ in enumerate(files_):
         print(' >> Input File[%d]: %s' % ( idx_, file_ ) )

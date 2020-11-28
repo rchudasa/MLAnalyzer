@@ -291,22 +291,21 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
       float dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->eta(),iGen->phi() );
       if ( dR > 0.4 ) continue;
 
-      bool unbiasing = true;
+      bool unbiasing = false;
       if ( unbiasing ) {
+          // 2D
           float rand_sampler  = rand() / float(RAND_MAX);
-          //float rand_sampler_pT  = rand() / float(RAND_MAX);
-          //float rand_sampler_m  = rand() / float(RAND_MAX);
-          int pT_gen   = iGen->mother()->pt();
-          float m_gen  = iGen->mother()->mass();
-          float wgt = lookup_invpdf(m_gen, m_bins, pT_gen, pT_bins, invpdf);
+          float pT_gen        = iGen->mother()->pt();
+          float m_gen         = iGen->mother()->mass();
+          float wgt           = lookup_invpdf(m_gen, m_bins, pT_gen, pT_bins, invpdf);
           if (debug) std::cout << " wgt " << wgt  << " | rand_sampler " << rand_sampler << std::endl;
           if (rand_sampler > wgt) continue;
           // 2 x 1D
           //float rand_sampler_pT  = rand() / float(RAND_MAX);
-          //float rand_sampler_m  = rand() / float(RAND_MAX);
-          //float pT_wgt = lookup_pt_invpdf(pT_gen, pT_bins, pT_invpdf);
+          //float rand_sampler_m   = rand() / float(RAND_MAX);
+          //float pT_wgt           = lookup_pt_invpdf(pT_gen, pT_bins, pT_invpdf);
+          //float m_wgt            = lookup_mass_invpdf(m_gen, m_bins, m_invpdf);
           //if (debug) std::cout << " wgt pT " << pT_wgt  << " | rand_sampler_pT " << rand_sampler_pT << std::endl;
-          //float m_wgt = lookup_mass_invpdf(m_gen, m_bins, m_invpdf);
           //if (debug) std::cout << " wgt m " << m_wgt  << " | rand_sampler_m "<< rand_sampler_m << std::endl;
           //if (rand_sampler_pT > pT_wgt) continue;
           //if (rand_sampler_m  > m_wgt) continue;

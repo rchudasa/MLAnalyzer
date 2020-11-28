@@ -4,7 +4,8 @@ config = config()
 
 #idx = '00000'
 #CFG = 'QCD_Pt_80_170_%s'%idx
-CFG = 'HToTauTau_m3p6To15_pT0To200_ctau0To3_eta0To1p4_biased_v2'
+#CFG = 'HToTauTau_m3p6To15_pT0To200_ctau0To3_eta0To1p4_biased_v2'
+CFG = 'HToTauTau_m3p6To15_pT20To200_ctau0To3_eta0To1p4_gen_unbiased_v1'
 
 # To submit to crab:
 # crab submit -c crabConfig_data.py
@@ -26,7 +27,7 @@ config.JobType.maxMemoryMB = 2800
 
 # Define input and units per job here:
 #config.Data.userInputFiles = open('MLAnalyzer/list_production.txt'%idx).readlines()
-config.Data.userInputFiles = open('MLAnalyzer/list_production.txt').readlines()
+config.Data.userInputFiles = open('MLAnalyzer/list_prod_unbiased.txt').readlines()
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 10 # units: as defined by config.Data.splitting
 config.Data.totalUnits = -1 # -1: all inputs. total jobs submitted = totalUnits / unitsPerJob. cap of 10k jobs per submission
@@ -38,5 +39,6 @@ config.Data.publication = False
 config.Site.storageSite = 'T3_US_FNALLPC'
 #config.Site.storageSite = 'T2_CH_CERN'
 config.Data.outLFNDirBase = '/store/user/ddicroce/' # add your username as subdirectory
-config.Data.outputPrimaryDataset = 'HToTauTau_m3p6To15_pT0To200_ctau0To3_eta0To1p4_biased'
+#config.Data.outputPrimaryDataset = 'HToTauTau_m3p6To15_pT0To200_ctau0To3_eta0To1p4_biased'
+config.Data.outputPrimaryDataset = 'HToTauTau_m3p6To15_pT20To200_ctau0To3_eta0To1p4_gen_unbiased'
 config.Data.outputDatasetTag = config.General.requestName
