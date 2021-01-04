@@ -57,16 +57,21 @@ def loadlegend(top, bottom, left, right):
   return legend
 
 histos={}
-eosDir='/eos/user/d/ddicroce/ML/TauClassifier/HToTauTau_m3p6To15_pT0To200_ctau0To3_eta0To1p4_biased/201021_154550/0000'
-
-firstfile = True
+eosDir='root://cmsxrootd.fnal.gov//store/user/ddicroce/test'
+#eosDir='/eos/uscms/store/user/ddicroce/test'
 
 files_ = []
-paths = ['%s'%(path) for path in glob('%s/*root'%(eosDir))]
+firstfile = True
+filelist = '/uscms/home/ddicroce/nobackup/TauClassifier/CMSSW_10_2_20_UL/src/MLAnalyzer/list_HTauTau_biased.txt'
+with open(filelist) as list_:
+    content = list_.readlines()
+paths = [x.strip() for x in content] 
+print(paths)
+
 for path in paths:
   #print(path)
-  files_.append( TFile(path) )
-  #print(infile)
+  files_.append( TFile.Open(path) )
+  #print(file)
   tmp_2d = files_[-1].Get('fevt/h_a_m_pT')
   tmp_m  = files_[-1].Get('fevt/h_jet_ma')
   tmp_pt = files_[-1].Get('fevt/h_jet_pta')
@@ -80,33 +85,62 @@ for path in paths:
     histos['mass'].Add(tmp_m)
     histos['pt'].Add(tmp_pt)
 
-#print (histos['mVSpT'].GetNbinsX())
-#print (histos['mVSpT'].GetNbinsY())
+print (histos['mVSpT'].GetNbinsX())
+print (histos['mVSpT'].GetNbinsY())
+binx = []
+biny = []
+binz = []
+
+histos['mVSpT_inverted'] = histos['mVSpT'].Clone('mVSpT_inverted')
+binint = histos['mVSpT'].Integral()
 binmax = 0
 for iBinX in range(histos['mVSpT'].GetNbinsX()):
+  #binx.append(histos['mVSpT'].GetXaxis().GetBinUpEdge(iBinX+1))
   for iBinY in range(histos['mVSpT'].GetNbinsY()):
+    binz.append(histos['mVSpT'].GetBinContent(iBinX+1,iBinY+1))
     if (histos['mVSpT'].GetBinContent(iBinX+1,iBinY+1) > binmax):
       binmax = histos['mVSpT'].GetBinContent(iBinX+1,iBinY+1)
+print(binmax)
+
 histos['mVSpT_ratio'] = histos['mVSpT'].Clone('mVSpT_ratio')
 for iBinX in range(histos['mVSpT_ratio'].GetNbinsX()):
   for iBinY in range(histos['mVSpT_ratio'].GetNbinsY()):
     histos['mVSpT_ratio'].SetBinContent(iBinX+1, iBinY+1, ((1/binmax)*(histos['mVSpT'].GetBinContent(iBinX+1,iBinY+1))) )
+    histos['mVSpT_inverted'].SetBinContent(iBinX+1, iBinY+1, (1/binmax)*(binint/histos['mVSpT'].GetBinContent(iBinX+1,iBinY+1)))
 
 histos['mass_inverted'] = histos['mass'].Clone('mass_inverted')
 massint = histos['mass'].Integral()
-#massmax = 0
-#for iBin in range(histos['mass_inverted'].GetNbins()):
-  #if (massmax > massint/histos['mass'].GetBinContent(iBin+1)): 
-  #  massmax = massint/histos['mass'].GetBinContent(iBin+1)
-  #histos['mass_inverted'].SetBinContent(iBinX+1, iBinY+1, massint/histos['mass'].GetBinContent(iBin+1) 
+massmax = 0
+for iBinX in range(histos['mass'].GetNbinsX()):
+  binx.append(histos['mass'].GetXaxis().GetBinUpEdge(iBinX+1))
+  if (massmax < massint/histos['mass'].GetBinContent(iBinX+1)): 
+    massmax = massint/histos['mass'].GetBinContent(iBinX+1)
+for iBinX in range(histos['mass_inverted'].GetNbinsX()):
+  histos['mass_inverted'].SetBinContent(iBinX+1, (1/massmax)*(massint/histos['mass'].GetBinContent(iBinX+1)))
+
+histos['pt_inverted'] = histos['pt'].Clone('pt_inverted')
+ptint = histos['pt'].Integral()
+ptmax = 0
+for iBinX in range(histos['pt'].GetNbinsX()):
+  biny.append(histos['pt'].GetXaxis().GetBinUpEdge(iBinX+1))
+  if (ptmax < ptint/histos['pt'].GetBinContent(iBinX+1)):
+    ptmax = ptint/histos['pt'].GetBinContent(iBinX+1)
+for iBinX in range(histos['pt_inverted'].GetNbinsX()):
+  histos['pt_inverted'].SetBinContent(iBinX+1, (1/ptmax)*(ptint/histos['pt'].GetBinContent(iBinX+1)))
   
+print(binx)
+print(biny)
+print(binz)
+
 canvas = loadcanvas("c1")
 canvas.cd()
 histos['mVSpT'].GetXaxis().SetTitle("m^{a} (GeV)")
 histos['mVSpT'].GetYaxis().SetTitle("p_{T}^{a} (GeV)")
+histos['mVSpT'].SetMinimum(0)
 histos['mVSpT'].Draw('COLZ TEXT')
 CMS_lumi.CMS_lumi(canvas, iPeriod, iPos)
 canvas.Update()
+canvas.SaveAs('a_massVspT_biased.root')
 canvas.SaveAs('a_massVspT_biased.png')
 
 canvas = loadcanvas("c2")
@@ -114,13 +148,15 @@ canvas.cd()
 legend = loadlegend(canvas.GetTopMargin(), canvas.GetBottomMargin(), canvas.GetLeftMargin(), canvas.GetRightMargin())
 histos['mass'].SetLineColor(2)
 histos['mass'].SetLineWidth(3)
-histos['mass'].SetXTitle("m^{a} GeV")
+histos['mass'].SetXTitle("m^{a} (GeV)")
 histos['mass'].SetYTitle("Jets")
+histos['mass'].SetMinimum(0)
 histos['mass'].Draw('COLZ TEXT')
 legend.AddEntry(histos['mass'], 'Biased','lf')
 CMS_lumi.CMS_lumi(canvas, iPeriod, iPos)
 canvas.Update()
 legend.Draw()
+canvas.SaveAs('a_m_biased.root')
 canvas.SaveAs('a_m_biased.png')
 
 canvas = loadcanvas("c3")
@@ -128,22 +164,26 @@ canvas.cd()
 legend = loadlegend(canvas.GetTopMargin(), canvas.GetBottomMargin(), canvas.GetLeftMargin(), canvas.GetRightMargin())
 histos['pt'].SetLineColor(2)
 histos['pt'].SetLineWidth(3)
-histos['pt'].SetXTitle("p_{T}^{a} GeV")
+histos['pt'].SetXTitle("p_{T}^{a} (GeV)")
 histos['pt'].SetYTitle("Jets")
+histos['pt'].SetMinimum(0)
 histos['pt'].Draw('COLZ TEXT')
 legend.AddEntry(histos['pt'], 'Biased','lf')
 CMS_lumi.CMS_lumi(canvas, iPeriod, iPos)
 canvas.Update()
 legend.Draw()
+canvas.SaveAs('a_pt_biased.root')
 canvas.SaveAs('a_pt_biased.png')
 
 canvas = loadcanvas("c4")
 canvas.cd()
 histos['mVSpT_ratio'].GetXaxis().SetTitle("m^{a} (GeV)")
 histos['mVSpT_ratio'].GetYaxis().SetTitle("p_{T}^{a} (GeV)")
+histos['mVSpT_ratio'].SetMinimum(0)
 histos['mVSpT_ratio'].Draw('COLZ TEXT')
 CMS_lumi.CMS_lumi(canvas, iPeriod, iPos)
 canvas.Update()
+canvas.SaveAs('a_massVspT_ratio_biased.root')
 canvas.SaveAs('a_massVspT_ratio_biased.png')
 
 canvas = loadcanvas("c5")
@@ -151,12 +191,38 @@ canvas.cd()
 legend = loadlegend(canvas.GetTopMargin(), canvas.GetBottomMargin(), canvas.GetLeftMargin(), canvas.GetRightMargin())
 histos['mass_inverted'].SetLineColor(2)
 histos['mass_inverted'].SetLineWidth(3)
-histos['mass_inverted'].SetXTitle("m^{a} GeV")
+histos['mass_inverted'].SetXTitle("m^{a} (GeV)")
 histos['mass_inverted'].SetYTitle("Jets")
 histos['mass_inverted'].Draw('COLZ TEXT')
 legend.AddEntry(histos['mass_inverted'], 'Biased','lf')
 CMS_lumi.CMS_lumi(canvas, iPeriod, iPos)
 canvas.Update()
 legend.Draw()
+canvas.SaveAs('a_m_inverted_biased.root')
 canvas.SaveAs('a_m_inverted_biased.png')
 
+canvas = loadcanvas("c6")
+canvas.cd()
+legend = loadlegend(canvas.GetTopMargin(), canvas.GetBottomMargin(), canvas.GetLeftMargin(), canvas.GetRightMargin())
+histos['pt_inverted'].SetLineColor(2)
+histos['pt_inverted'].SetLineWidth(3)
+histos['pt_inverted'].SetXTitle("p_{T}^{a} (GeV)")
+histos['pt_inverted'].SetYTitle("Jets")
+histos['pt_inverted'].Draw('COLZ TEXT')
+legend.AddEntry(histos['pt_inverted'], 'Biased','lf')
+CMS_lumi.CMS_lumi(canvas, iPeriod, iPos)
+canvas.Update()
+legend.Draw()
+canvas.SaveAs('a_pt_inverted_biased.root')
+canvas.SaveAs('a_pt_inverted_biased.png')
+
+canvas = loadcanvas("c7")
+canvas.cd()
+histos['mVSpT_inverted'].GetXaxis().SetTitle("m^{a} (GeV)")
+histos['mVSpT_inverted'].GetYaxis().SetTitle("p_{T}^{a} (GeV)")
+histos['mVSpT_inverted'].SetMinimum(0)
+histos['mVSpT_inverted'].Draw('COLZ TEXT')
+CMS_lumi.CMS_lumi(canvas, iPeriod, iPos)
+canvas.Update()
+canvas.SaveAs('a_massVspT_inverted_biased.root')
+canvas.SaveAs('a_massVspT_inverted_biased.png')
