@@ -6,6 +6,8 @@ import glob, os
 from skimage.measure import block_reduce # pip install scikit-image
 from numpy.lib.stride_tricks import as_strided
 
+#print(os.environ)
+
 import argparse
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('-i', '--infile', default='output_qqgg.root', type=str, help='Input root file.')
@@ -99,16 +101,21 @@ for iEvt in range(iEvtStart,iEvtEnd):
     HBHE_energy = np.array(rhTree.HBHE_energy).reshape(56,72)
     HBHE_energy = upsample_array(HBHE_energy, 5, 5) # (280, 360)
     TracksAtECAL_pt = np.array(rhTree.ECAL_tracksPt).reshape(280,360)
+    TracksAtECAL_dz = np.array(rhTree.ECAL_tracksz0_PV).reshape(280,360)
+    TracksAtECAL_d0 = np.array(rhTree.ECAL_tracksd0_PV).reshape(280,360)
     PixAtEcal_1 = np.array(rhTree.BPIX_layer1_ECAL_atPV).reshape(280,360)
     PixAtEcal_2 = np.array(rhTree.BPIX_layer2_ECAL_atPV).reshape(280,360)
     PixAtEcal_3 = np.array(rhTree.BPIX_layer3_ECAL_atPV).reshape(280,360)
     PixAtEcal_4 = np.array(rhTree.BPIX_layer4_ECAL_atPV).reshape(280,360)
-    data['X_CMSII'] = np.stack([TracksAtECAL_pt, ECAL_energy, HBHE_energy, PixAtEcal_1, PixAtEcal_2, PixAtEcal_3, PixAtEcal_4], axis=0) # (7, 280, 360)
+    data['X_CMSII'] = np.stack([TracksAtECAL_pt, ECAL_energy, HBHE_energy], axis=0) # (7, 280, 360)
+    #data['X_CMSII'] = np.stack([TracksAtECAL_pt, TracksAtECAL_dz, TracksAtECAL_d0, ECAL_energy, HBHE_energy, PixAtEcal_1, PixAtEcal_2, PixAtEcal_3, PixAtEcal_4], axis=0) # (7, 280, 360)
 
     # Jet attributes 
     ys     = rhTree.jetIsDiTau
     ams    = rhTree.a_m
-    dRs    = rhTree.TaudR
+    apts   = rhTree.a_pt
+    taudRs = rhTree.TaudR
+    dRs    = rhTree.jetadR
     pts    = rhTree.jetPt
     m0s    = rhTree.jetM
     iphis  = rhTree.jetSeed_iphi
@@ -118,13 +125,15 @@ for iEvt in range(iEvtStart,iEvtEnd):
 
     for i in range(njets):
 
-        data['y']  = ys[i]
-        data['am'] = ams[i]
-        data['dR'] = dRs[i]
-        data['pt'] = pts[i]
-        data['m0'] = m0s[i]
-        data['iphi'] = iphis[i]
-        data['ieta'] = ietas[i]
+        data['y']     = ys[i]
+        data['am']    = ams[i]
+        data['apt']   = apts[i]
+        data['taudR'] = taudRs[i]
+        data['dR']    = dRs[i]
+        data['pt']    = pts[i]
+        data['m0']    = m0s[i]
+        data['iphi']  = iphis[i]
+        data['ieta']  = ietas[i]
         data['pdgId'] = pdgIds[i]
         data['X_jet'] = crop_jet(data['X_CMSII'], data['iphi'], data['ieta']) # (7, 125, 125)
 
