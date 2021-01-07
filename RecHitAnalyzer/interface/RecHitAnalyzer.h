@@ -80,6 +80,7 @@
 #include "TStyle.h"
 #include "TMath.h"
 #include "TVector3.h"
+#include "TLorentzVector.h"
 
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
@@ -224,12 +225,18 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     std::vector<int> vJetIdxs;
     void branchesEvtSel_jet_dijet      ( TTree*, edm::Service<TFileService>& );
     void branchesEvtSel_jet_dijet_tau( TTree*, edm::Service<TFileService>& );
+    void branchesEvtSel_jet_dijet_ditaus( TTree*, edm::Service<TFileService>& );
+    void branchesEvtSel_jet_dijet_tau_massregression( TTree*, edm::Service<TFileService>& );
     void branchesEvtSel_jet_dijet_gg_qq( TTree*, edm::Service<TFileService>& );
     bool runEvtSel_jet_dijet      ( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet_dijet_tau( const edm::Event&, const edm::EventSetup& );
+    bool runEvtSel_jet_dijet_ditaus( const edm::Event&, const edm::EventSetup& );
+    bool runEvtSel_jet_dijet_tau_massregression( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet_dijet_gg_qq( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet      ( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet_tau( const edm::Event&, const edm::EventSetup& );
+    void fillEvtSel_jet_dijet_ditaus( const edm::Event&, const edm::EventSetup& );
+    void fillEvtSel_jet_dijet_tau_massregression( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet_gg_qq( const edm::Event&, const edm::EventSetup& );
 
     int nTotal, nPassed;
@@ -241,8 +248,8 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //
 // constants, enums and typedefs
 //
-//static const bool debug = true;
-static const bool debug = false;
+static const bool debug = true;
+//static const bool debug = false;
 
 static const int nEE = 2;
 static const int nTOB = 6;
