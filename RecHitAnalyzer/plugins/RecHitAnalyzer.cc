@@ -40,6 +40,7 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   siPixelRecHitCollectionT_ = consumes<SiPixelRecHitCollection>(iConfig.getParameter<edm::InputTag>("siPixelRecHitCollection"));
  
   tauCollectionT_         = consumes<reco::PFTauCollection>(iConfig.getParameter<edm::InputTag>("tauCollection"));
+  tauDiscriminatorT_      = consumes<reco::PFTauDiscriminator>(iConfig.getParameter<edm::InputTag>("tauDiscriminator"));
                               //iConfig.getParameter<edm::InputTag>("siPixelRecHitCollection");
   //siStripRecHitCollectionT_ = iConfig.getParameter<std::vector<edm::InputTag> >("siStripRecHitCollection");
 

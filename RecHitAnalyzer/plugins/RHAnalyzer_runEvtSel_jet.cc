@@ -20,7 +20,7 @@ vector<int>   vFailedJetIdx_;
 
 //const std::string jetSelection = "dijet_gg_qq"; // TODO: put switch at cfg level
 //const std::string jetSelection = "jet_tau";
-const std::string jetSelection = "dijet_ditaus";
+const std::string jetSelection = "dijet_ditau";
 //const std::string jetSelection = "dijet_tau_massregression";
 
 
@@ -36,8 +36,8 @@ void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService
   // Fill branches in explicit jet selection
   if ( jetSelection == "jet_tau" ) {
     branchesEvtSel_jet_dijet_tau( tree, fs );
-  } else if ( jetSelection == "dijet_ditaus" ) {
-    branchesEvtSel_jet_dijet_ditaus( tree, fs );
+  } else if ( jetSelection == "dijet_ditau" ) {
+    branchesEvtSel_jet_dijet_ditau( tree, fs );
   } else if ( jetSelection == "dijet_tau_massregression" ) {
     branchesEvtSel_jet_dijet_tau_massregression( tree, fs );
   } else {
@@ -56,8 +56,8 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   if ( jetSelection == "jet_tau" ) {
     hasPassed = runEvtSel_jet_dijet_tau( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET SELECTION HAS PASSED! " << std::endl; 
-  } else if ( jetSelection == "dijet_ditaus" ) {
-    hasPassed = runEvtSel_jet_dijet_ditaus( iEvent, iSetup );
+  } else if ( jetSelection == "dijet_ditau" ) {
+    hasPassed = runEvtSel_jet_dijet_ditau( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET SELECTION HAS PASSED! " << std::endl;
   } else if ( jetSelection == "dijet_tau_massregression" ) {
     hasPassed = runEvtSel_jet_dijet_tau_massregression( iEvent, iSetup );
@@ -195,8 +195,8 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
 
   if ( jetSelection == "jet_tau" ) {
     fillEvtSel_jet_dijet_tau( iEvent, iSetup );
-  } else if ( jetSelection == "dijet_ditaus" ) {
-    fillEvtSel_jet_dijet_ditaus( iEvent, iSetup );
+  } else if ( jetSelection == "dijet_ditau" ) {
+    fillEvtSel_jet_dijet_ditau( iEvent, iSetup );
   } else if ( jetSelection == "dijet_tau_massregression" ) {
     fillEvtSel_jet_dijet_tau_massregression( iEvent, iSetup );
   } else {

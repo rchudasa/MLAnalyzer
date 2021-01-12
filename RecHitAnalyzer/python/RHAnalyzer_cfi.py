@@ -25,6 +25,7 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     , recoJetsForBTagging = cms.InputTag("ak4PFJetsCHS")
     , jetTagCollection    = cms.InputTag("pfCombinedInclusiveSecondaryVertexV2BJetTags")
     , tauCollection       = cms.InputTag("hpsPFTauProducer")
+    , tauDiscriminator    = cms.InputTag("hpsPFTauDiscriminationByIsolationMVArun2v1DBoldDMwLTraw")
     , ipTagInfoCollection = cms.InputTag("pfImpactParameterTagInfos")
     , mode                = cms.string("JetLevel")
 
