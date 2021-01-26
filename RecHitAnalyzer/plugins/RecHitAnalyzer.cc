@@ -38,11 +38,12 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   ipTagInfoCollectionT_   = consumes<std::vector<reco::CandIPTagInfo> > (iConfig.getParameter<edm::InputTag>("ipTagInfoCollection"));
 
   siPixelRecHitCollectionT_ = consumes<SiPixelRecHitCollection>(iConfig.getParameter<edm::InputTag>("siPixelRecHitCollection"));
- 
-  tauCollectionT_         = consumes<reco::PFTauCollection>(iConfig.getParameter<edm::InputTag>("tauCollection"));
-  tauDiscriminatorT_      = consumes<reco::PFTauDiscriminator>(iConfig.getParameter<edm::InputTag>("tauDiscriminator"));
-                              //iConfig.getParameter<edm::InputTag>("siPixelRecHitCollection");
   //siStripRecHitCollectionT_ = iConfig.getParameter<std::vector<edm::InputTag> >("siStripRecHitCollection");
+ 
+  tauCollectionT_                = consumes<reco::PFTauCollection>(iConfig.getParameter<edm::InputTag>("tauCollection"));
+  tauMVAIsolationLoose_          = consumes<reco::PFTauDiscriminator>(iConfig.getParameter<edm::InputTag>("tauMVAIsolationLoose"));
+  tauMuonRejectionLoose_         = consumes<reco::PFTauDiscriminator>(iConfig.getParameter<edm::InputTag>("tauMuonRejectionLoose"));
+  tauElectronRejectionMVA6Loose_ = consumes<reco::PFTauDiscriminator>(iConfig.getParameter<edm::InputTag>("tauElectronRejectionMVA6Loose"));
 
   //johnda add configuration
   mode_      = iConfig.getParameter<std::string>("mode");
@@ -95,7 +96,7 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   //branchesTRKvolumeAtEBEE(RHTree, fs);
   //branchesTRKvolumeAtECAL(RHTree, fs);
   branchesJetInfoAtECALstitched( RHTree, fs);
-  branchesTRKlayersAtECALstitched(RHTree, fs);
+  //branchesTRKlayersAtECALstitched(RHTree, fs);
 
   // For FC inputs
   //RHTree->Branch("FC_inputs",      &vFC_inputs_);
@@ -150,11 +151,10 @@ RecHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //fillTRKvolumeAtEBEE( iEvent, iSetup );
   //fillTRKvolumeAtECAL( iEvent, iSetup );
   fillJetInfoAtECALstitched( iEvent, iSetup );
-  //fillTRKlayersAtECALstitched( iEvent, iSetup );
-  for (unsigned int i=0;i<Nhitproj;i++)
-  {
-    fillTRKlayersAtECALstitched( iEvent, iSetup, i );
-  }
+  //for (unsigned int i=0;i<Nhitproj;i++)
+  //{
+  //  fillTRKlayersAtECALstitched( iEvent, iSetup, i );
+  //}
 
 
   ////////////// 4-Momenta //////////

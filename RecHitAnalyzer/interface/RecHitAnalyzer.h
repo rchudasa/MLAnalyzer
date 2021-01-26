@@ -148,6 +148,10 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<std::vector<reco::CandIPTagInfo> >    ipTagInfoCollectionT_;
     edm::EDGetTokenT<reco::PFTauCollection> tauCollectionT_;
     edm::EDGetTokenT<reco::PFTauDiscriminator> tauDiscriminatorT_;
+
+    edm::EDGetTokenT<reco::PFTauDiscriminator> tauMVAIsolationLoose_;
+    edm::EDGetTokenT<reco::PFTauDiscriminator> tauMuonRejectionLoose_;
+    edm::EDGetTokenT<reco::PFTauDiscriminator> tauElectronRejectionMVA6Loose_;
  
     typedef std::vector<reco::PFCandidate>  PFCollection;
     edm::EDGetTokenT<PFCollection> pfCollectionT_;

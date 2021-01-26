@@ -24,8 +24,11 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     , pfCollection        = cms.InputTag("particleFlow")
     , recoJetsForBTagging = cms.InputTag("ak4PFJetsCHS")
     , jetTagCollection    = cms.InputTag("pfCombinedInclusiveSecondaryVertexV2BJetTags")
-    , tauCollection       = cms.InputTag("hpsPFTauProducer")
-    , tauDiscriminator    = cms.InputTag("hpsPFTauDiscriminationByIsolationMVArun2v1DBoldDMwLTraw")
+    , tauCollection                  = cms.InputTag("hpsPFTauProducer")
+    #, tauMVAIsolationLoose           = cms.InputTag("hpsPFTauDiscriminationByLooseIsolationMVArun2v1DBoldDMwLT")
+    , tauMVAIsolationLoose           = cms.InputTag("hpsPFTauDiscriminationByTightIsolationMVArun2v1DBoldDMwLT")
+    , tauMuonRejectionLoose          = cms.InputTag("hpsPFTauDiscriminationByLooseMuonRejection3")
+    , tauElectronRejectionMVA6Loose  = cms.InputTag("hpsPFTauDiscriminationByMVA6LooseElectronRejection")
     , ipTagInfoCollection = cms.InputTag("pfImpactParameterTagInfos")
     , mode                = cms.string("JetLevel")
 

@@ -25,7 +25,7 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi");
 #process.load("Geometry.CaloEventSetup.CaloGeometry_cfi");
 #process.load("Geometry.CaloEventSetup.CaloTopology_cfi");
-process.GlobalTag.globaltag = cms.string('102X_upgrade2018_realistic_v21')
+process.GlobalTag.globaltag = cms.string('102X_dataRun2_v13')
 #process.GlobalTag.globaltag = cms.string('80X_dataRun2_HLT_v12')
 process.es_prefer_GlobalTag = cms.ESPrefer('PoolDBESSource','GlobalTag')
 
@@ -42,21 +42,25 @@ process.source = cms.Source("PoolSource",
 print " >> Loaded",len(options.inputFiles),"input files from list."
 
 
+
+
 process.load("MLAnalyzer.RecHitAnalyzer.RHAnalyzer_cfi")
 process.fevt.mode = cms.string(options.processMode)
 #process.fevt.mode = cms.string("JetLevel") # for when using crab
 #process.fevt.mode = cms.string("EventLevel") # for when using crab
 print " >> Processing as:",(process.fevt.mode)
 
+
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string(options.outputFile)
     )
 
+
 process.hltFilter = cms.EDFilter("HLTHighLevel",
                                           eventSetupPathsKey = cms.string(''),
                                           TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
-                                          #HLTPaths = cms.vstring('HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg_v*','HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg_v*','HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg_v*'),
-                                          HLTPaths = cms.vstring('*','HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg_v*','HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg_v*','HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg_v*'),
+                                          HLTPaths = cms.vstring('HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg_v*','HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg_v*','HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg_v*'),
+                                          #HLTPaths = cms.vstring('*','HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg_v*','HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg_v*','HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg_v*'),
                                           andOr = cms.bool(True),
                                           throw = cms.bool(False)
                                           )
