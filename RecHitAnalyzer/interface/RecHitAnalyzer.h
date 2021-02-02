@@ -72,6 +72,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "TH1.h"
+#include "TH1F.h"
 #include "TH2.h"
 #include "TH3.h"
 #include "TProfile2D.h"
@@ -90,6 +91,10 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
+#include "DataFormats/METReco/interface/MET.h"
+#include "DataFormats/METReco/interface/METFwd.h"
+#include "DataFormats/METReco/interface/PFMET.h"
+#include "DataFormats/METReco/interface/PFMETFwd.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/TauReco/interface/PFTauFwd.h"
 #include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
@@ -102,6 +107,14 @@
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHitCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripMatchedRecHit2DCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
+
+#include "RecoMET/METProducers/interface/METSignificanceProducer.h"
+
+//#include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h"
+//#include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
+//#include "TauAnalysis/ClassicSVfit/interface/svFitHistogramAdapter.h"
+
+//using namespace classic_svFit;
 
 //
 // class declaration
@@ -146,12 +159,14 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<edm::View<reco::Jet> > recoJetsT_;
     edm::EDGetTokenT<reco::JetTagCollection> jetTagCollectionT_;
     edm::EDGetTokenT<std::vector<reco::CandIPTagInfo> >    ipTagInfoCollectionT_;
+    edm::EDGetTokenT<reco::PFMETCollection> metCollectionT_;
     edm::EDGetTokenT<reco::PFTauCollection> tauCollectionT_;
-    edm::EDGetTokenT<reco::PFTauDiscriminator> tauDiscriminatorT_;
 
-    edm::EDGetTokenT<reco::PFTauDiscriminator> tauMVAIsolationLoose_;
-    edm::EDGetTokenT<reco::PFTauDiscriminator> tauMuonRejectionLoose_;
-    edm::EDGetTokenT<reco::PFTauDiscriminator> tauElectronRejectionMVA6Loose_;
+    edm::EDGetTokenT<reco::PFTauDiscriminator> tauDiscriminatorT_;
+    edm::EDGetTokenT<reco::PFTauDiscriminator> tauDecayMode_;
+    edm::EDGetTokenT<reco::PFTauDiscriminator> tauMVAIsolation_;
+    edm::EDGetTokenT<reco::PFTauDiscriminator> tauMuonRejection_;
+    edm::EDGetTokenT<reco::PFTauDiscriminator> tauElectronRejectionMVA6_;
  
     typedef std::vector<reco::PFCandidate>  PFCollection;
     edm::EDGetTokenT<PFCollection> pfCollectionT_;

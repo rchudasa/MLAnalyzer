@@ -41,7 +41,6 @@ process.source = cms.Source("PoolSource",
     )
 print " >> Loaded",len(options.inputFiles),"input files from list."
 
-
 process.load("MLAnalyzer.RecHitAnalyzer.RHAnalyzer_cfi")
 process.fevt.mode = cms.string(options.processMode)
 #process.fevt.mode = cms.string("JetLevel") # for when using crab
