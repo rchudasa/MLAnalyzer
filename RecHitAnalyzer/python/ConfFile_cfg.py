@@ -29,6 +29,8 @@ process.GlobalTag.globaltag = cms.string('102X_upgrade2018_realistic_v21')
 #process.GlobalTag.globaltag = cms.string('80X_dataRun2_HLT_v12')
 process.es_prefer_GlobalTag = cms.ESPrefer('PoolDBESSource','GlobalTag')
 
+#process.load('PhysicsTools.PatAlgos.patSequences_cff')
+
 process.maxEvents = cms.untracked.PSet( 
     input = cms.untracked.int32(options.maxEvents) 
     )
@@ -63,5 +65,6 @@ process.hltFilter = cms.EDFilter("HLTHighLevel",
 #process.SimpleMemoryCheck = cms.Service( "SimpleMemoryCheck", ignoreTotal = cms.untracked.int32(1) )
 process.p = cms.Path(
   process.hltFilter*
+#  process.patDefaultSequence*
   process.fevt
 )

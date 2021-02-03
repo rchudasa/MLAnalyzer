@@ -28,10 +28,14 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   genParticleCollectionT_ = consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticleCollection"));
   photonCollectionT_      = consumes<reco::PhotonCollection>(iConfig.getParameter<edm::InputTag>("gedPhotonCollection"));
   jetCollectionT_         = consumes<reco::PFJetCollection>(iConfig.getParameter<edm::InputTag>("ak4PFJetCollection"));
+  pfjetsToken_            = consumes<edm::View<reco::Jet> >(iConfig.getParameter<edm::InputTag>("srcPfJets"));
   genJetCollectionT_      = consumes<reco::GenJetCollection>(iConfig.getParameter<edm::InputTag>("genJetCollection"));
   trackCollectionT_       = consumes<reco::TrackCollection>(iConfig.getParameter<edm::InputTag>("trackCollection"));
   pfCollectionT_          = consumes<PFCollection>(iConfig.getParameter<edm::InputTag>("pfCollection"));
-  vertexCollectionT_       = consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexCollection"));
+
+  //pfCandidatesToken_      = consumes<edm::View<reco::Candidate> >(iConfig.getParameter<edm::InputTag>("srcPFCandidates"));
+
+  vertexCollectionT_      = consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexCollection"));
 
   recoJetsT_              = consumes<edm::View<reco::Jet> >(iConfig.getParameter<edm::InputTag>("recoJetsForBTagging"));
   jetTagCollectionT_      = consumes<reco::JetTagCollection>(iConfig.getParameter<edm::InputTag>("jetTagCollection"));
@@ -47,6 +51,18 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   tauMVAIsolation_          = consumes<reco::PFTauDiscriminator>(iConfig.getParameter<edm::InputTag>("tauMVAIsolationRaw"));
   tauMuonRejection_         = consumes<reco::PFTauDiscriminator>(iConfig.getParameter<edm::InputTag>("tauMuonRejectionLoose"));
   tauElectronRejectionMVA6_ = consumes<reco::PFTauDiscriminator>(iConfig.getParameter<edm::InputTag>("tauElectronRejectionMVA6VLoose"));
+  
+  jetSFType_                = iConfig.getParameter<std::string>("srcJetSF");
+  jetResPtType_             = iConfig.getParameter<std::string>("srcJetResPt");
+  jetResPhiType_            = iConfig.getParameter<std::string>("srcJetResPhi");
+  rhoLabel_                 = consumes<double>(iConfig.getParameter<edm::InputTag>("rhoLabel"));
+
+  std::vector<edm::InputTag> srcLeptonsTags        = iConfig.getParameter< std::vector<edm::InputTag> >("srcLeptons");
+  for(std::vector<edm::InputTag>::const_iterator it=srcLeptonsTags.begin();it!=srcLeptonsTags.end();it++) {
+    lepTokens_.push_back( consumes<edm::View<reco::Candidate> >( *it ) );
+  }
+
+  //metSigAlgo_               = new metsig::METSignificance(iConfig);
 
   //johnda add configuration
   mode_      = iConfig.getParameter<std::string>("mode");
@@ -111,7 +127,7 @@ RecHitAnalyzer::~RecHitAnalyzer()
 
   // do anything here that needs to be done at desctruction time
   // (e.g. close files, deallocate resources etc.)
-
+  //delete metSigAlgo_;  //FIXME
 }
 //
 // member functions

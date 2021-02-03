@@ -14,6 +14,7 @@
 // system include files
 #include <memory>
 #include <vector>
+#include <string>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -83,18 +84,26 @@
 #include "TVector3.h"
 #include "TLorentzVector.h"
 
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Common/interface/View.h"
+#include "DataFormats/Common/interface/Handle.h"
+
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/EgammaCandidates/interface/PhotonFwd.h" // reco::PhotonCollection defined here
 #include "DataFormats/JetReco/interface/PFJet.h"
-#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
+
 #include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/METReco/interface/METFwd.h"
 #include "DataFormats/METReco/interface/PFMET.h"
 #include "DataFormats/METReco/interface/PFMETFwd.h"
+#include "DataFormats/METReco/interface/CommonMETData.h"
+#include "RecoMET/METProducers/interface/METSignificanceProducer.h"
+#include "RecoMET/METAlgorithms/interface/METSignificance.h"
+
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/TauReco/interface/PFTauFwd.h"
 #include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
@@ -108,13 +117,11 @@
 #include "DataFormats/TrackerRecHit2D/interface/SiStripMatchedRecHit2DCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
 
-#include "RecoMET/METProducers/interface/METSignificanceProducer.h"
+#include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h"
+#include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
+#include "TauAnalysis/ClassicSVfit/interface/svFitHistogramAdapter.h"
 
-//#include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h"
-//#include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
-//#include "TauAnalysis/ClassicSVfit/interface/svFitHistogramAdapter.h"
-
-//using namespace classic_svFit;
+using namespace classic_svFit;
 
 //
 // class declaration
@@ -153,6 +160,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<reco::GenParticleCollection> genParticleCollectionT_;
     edm::EDGetTokenT<reco::PhotonCollection> photonCollectionT_;
     edm::EDGetTokenT<reco::PFJetCollection> jetCollectionT_;
+    edm::EDGetTokenT<edm::View<reco::Jet> > pfjetsToken_;
     edm::EDGetTokenT<reco::GenJetCollection> genJetCollectionT_;
     edm::EDGetTokenT<reco::TrackCollection> trackCollectionT_;
     edm::EDGetTokenT<reco::VertexCollection> vertexCollectionT_;
@@ -167,9 +175,20 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<reco::PFTauDiscriminator> tauMVAIsolation_;
     edm::EDGetTokenT<reco::PFTauDiscriminator> tauMuonRejection_;
     edm::EDGetTokenT<reco::PFTauDiscriminator> tauElectronRejectionMVA6_;
+
+    edm::EDGetTokenT<double> rhoLabel_;
+    std::string jetSFType_;      //to set
+    std::string jetResPtType_;   //to set
+    std::string jetResPhiType_;  //to set
+ 
+    std::vector<edm::EDGetTokenT<edm::View<reco::Candidate> > > lepTokens_;
  
     typedef std::vector<reco::PFCandidate>  PFCollection;
     edm::EDGetTokenT<PFCollection> pfCollectionT_;
+
+    //edm::EDGetTokenT<edm::View<reco::Candidate> > pfCandidatesToken_;
+    
+    metsig::METSignificance* metSigAlgo_;
 
     //edm::InputTag siPixelRecHitCollectionT_;
     edm::EDGetTokenT<SiPixelRecHitCollection> siPixelRecHitCollectionT_;
@@ -263,7 +282,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     int nTotal, nPassed;
 
     std::map<uint32_t,SiPixelRecHitModule*> thePixelStructure;
-
+    
 }; // class RecHitAnalyzer
 
 //

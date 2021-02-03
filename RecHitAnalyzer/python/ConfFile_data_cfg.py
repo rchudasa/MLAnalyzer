@@ -29,6 +29,8 @@ process.GlobalTag.globaltag = cms.string('102X_dataRun2_v13')
 #process.GlobalTag.globaltag = cms.string('80X_dataRun2_HLT_v12')
 process.es_prefer_GlobalTag = cms.ESPrefer('PoolDBESSource','GlobalTag')
 
+#process.load('PhysicsTools.PatAlgos.patSequences_cff')
+
 process.maxEvents = cms.untracked.PSet( 
     input = cms.untracked.int32(options.maxEvents) 
     )
@@ -40,9 +42,6 @@ process.source = cms.Source("PoolSource",
     , skipEvents = cms.untracked.uint32(options.skipEvents)
     )
 print " >> Loaded",len(options.inputFiles),"input files from list."
-
-
-
 
 process.load("MLAnalyzer.RecHitAnalyzer.RHAnalyzer_cfi")
 process.fevt.mode = cms.string(options.processMode)
@@ -68,5 +67,10 @@ process.hltFilter = cms.EDFilter("HLTHighLevel",
 #process.SimpleMemoryCheck = cms.Service( "SimpleMemoryCheck", ignoreTotal = cms.untracked.int32(1) )
 process.p = cms.Path(
   process.hltFilter*
+#  process.patDefaultSequence*
   process.fevt
 )
+
+## for data:
+#from PhysicsTools.PatAlgos.tools.coreTools import runOnData
+#runOnData( process )
