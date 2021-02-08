@@ -186,7 +186,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     typedef std::vector<reco::PFCandidate>  PFCollection;
     edm::EDGetTokenT<PFCollection> pfCollectionT_;
 
-    //edm::EDGetTokenT<edm::View<reco::Candidate> > pfCandidatesToken_;
+    edm::EDGetTokenT<edm::View<reco::Candidate> > pfCandidatesToken_;
     
     metsig::METSignificance* metSigAlgo_;
 

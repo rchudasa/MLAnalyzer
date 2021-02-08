@@ -33,7 +33,7 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   trackCollectionT_       = consumes<reco::TrackCollection>(iConfig.getParameter<edm::InputTag>("trackCollection"));
   pfCollectionT_          = consumes<PFCollection>(iConfig.getParameter<edm::InputTag>("pfCollection"));
 
-  //pfCandidatesToken_      = consumes<edm::View<reco::Candidate> >(iConfig.getParameter<edm::InputTag>("srcPFCandidates"));
+  pfCandidatesToken_      = consumes<edm::View<reco::Candidate> >(iConfig.getParameter<edm::InputTag>("srcPFCandidates"));
 
   vertexCollectionT_      = consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexCollection"));
 
@@ -62,7 +62,7 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
     lepTokens_.push_back( consumes<edm::View<reco::Candidate> >( *it ) );
   }
 
-  //metSigAlgo_               = new metsig::METSignificance(iConfig);
+  metSigAlgo_               = new metsig::METSignificance(iConfig);
 
   //johnda add configuration
   mode_      = iConfig.getParameter<std::string>("mode");
@@ -127,7 +127,7 @@ RecHitAnalyzer::~RecHitAnalyzer()
 
   // do anything here that needs to be done at desctruction time
   // (e.g. close files, deallocate resources etc.)
-  //delete metSigAlgo_;  //FIXME
+  delete metSigAlgo_;  //FIXME
 }
 //
 // member functions

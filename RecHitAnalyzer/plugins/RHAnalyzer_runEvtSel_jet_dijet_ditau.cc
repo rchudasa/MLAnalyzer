@@ -189,8 +189,8 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   edm::Handle<PFCollection> pfCandsH_;
   iEvent.getByToken( pfCollectionT_, pfCandsH_ );
 
-  //edm::Handle<reco::CandidateView> pfCandidates;
-  //iEvent.getByToken( pfCandidatesToken_, pfCandidates );
+  edm::Handle<reco::CandidateView> pfCandidates;
+  iEvent.getByToken( pfCandidatesToken_, pfCandidates );
 
   std::vector< edm::Handle<reco::CandidateView> > leptons;
   for ( std::vector<edm::EDGetTokenT<edm::View<reco::Candidate> > >::const_iterator srcLeptons_i = lepTokens_.begin(); srcLeptons_i != lepTokens_.end(); ++srcLeptons_i ) {
@@ -273,10 +273,11 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   }
   for ( unsigned iT1(0); iT1 != taus->size(); ++iT1 ) {
     reco::PFTauRef iTau1( taus, iT1 );
-    //if (!((*MuonRejection)[iTau1])) continue;
-    //if (!((*ElectronRejectionMVA6)[iTau1])) continue;
-    //if ((*MVAIsolation)[iTau1] < -0.9) continue;  
-    //if ( iTau1->pt() < 35 ) continue;
+    //if ( iTau1->pt() < 20 ) continue;
+    if (!((*MuonRejection)[iTau1])) continue;
+    if (!((*ElectronRejectionMVA6)[iTau1])) continue;
+    if ((*MVAIsolation)[iTau1] < -0.9) continue;  
+    if ( iTau1->pt() < 35 ) continue;
     if ( debug ) std::cout << " TAU PASSED SELECTION "<< std::endl;
     if ( IsMC ) {
       bool skip_tau = true;
@@ -295,17 +296,16 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
         continue;
       }
     } 
-    //float mva_score = ((*MVAIsolation)[iTau1]);
-    //if ( debug ) std::cout << " TAU MVA SCORE = " << mva_score << std::endl;
 
     unsigned int tau_combinations = 0;
     for ( unsigned iT2(0); iT2 != taus->size(); ++iT2 ) {
       if ( iT2 == iT1 ) continue;
       reco::PFTauRef iTau2( taus, iT2 );
-      //if (!((*MuonRejection)[iTau2])) continue;
-      //if (!((*ElectronRejectionMVA6)[iTau2])) continue;
-      //if ((*MVAIsolation)[iTau2] < -0.9) continue;  
-      //if ( iTau2->pt() < 35 ) continue;
+      //if ( iTau2->pt() < 20 ) continue;
+      if (!((*MuonRejection)[iTau2])) continue;
+      if (!((*ElectronRejectionMVA6)[iTau2])) continue;
+      if ((*MVAIsolation)[iTau2] < -0.9) continue;  
+      if ( iTau2->pt() < 35 ) continue;
       if ( IsMC ) {
         bool skip_tau = true;
         edm::Handle<reco::GenParticleCollection> genParticles;
@@ -325,8 +325,8 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
         }
       }
       float recotaudR = reco::deltaR( iTau1->eta(),iTau1->phi(), iTau2->eta(),iTau2->phi() );
-      //if ( recotaudR < 0.5 ) continue;
-      //if ( debug ) std::cout << " RECO TAU dR = " << recotaudR << std::endl;
+      if ( recotaudR < 0.5 ) continue;
+      if ( debug ) std::cout << " RECO TAU dR = " << recotaudR << std::endl;
       ++tau_combinations;
      /* if ( ( iT2 != best_tau_1 && iT1 != best_tau_2 ) && ( best_tau_pt_1 < iTau1->pt() || best_tau_pt_2 < iTau2->pt() ) ) {
         if ( iTau1->pt() > iTau2->pt() ) {
@@ -393,24 +393,28 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   if ( debug ) std::cout << " PF MET X = " << measuredMETx << " | PF MET Y = " << measuredMETy << std::endl;
 
   // define MET covariance
-  //const reco::METCovMatrix cov = metSigAlgo_->getCovariance( *Jets, leptons, *pfCandidates, *rho, resPtObj, resPhiObj, resSFObj, iEvent.isRealData() );
+  const reco::METCovMatrix cov = metSigAlgo_->getCovariance( *Jets, leptons, pfCandidates, *rho, resPtObj, resPhiObj, resSFObj, iEvent.isRealData() );
   TMatrixD covMET(2, 2);
+  covMET[0][0] = cov[0][0]; 
+  covMET[1][1] = cov[1][1]; 
+  covMET[0][1] = cov[0][1]; 
+  covMET[1][0] = cov[1][0]; 
+  if ( debug ) std::cout << " MET COV xx = " << covMET[0][0] << std::endl;
+  if ( debug ) std::cout << " MET COV yy = " << covMET[1][1] << std::endl;
+  if ( debug ) std::cout << " MET COV xy = " << covMET[0][1] << std::endl;
+  if ( debug ) std::cout << " MET COV yx = " << covMET[1][0] << std::endl;
 
-  //covMET[0][0] = (pfmet->front()).getSignificanceMatrix().At(0,0);
-  //covMET[0][1] = (pfmet->front()).getSignificanceMatrix().At(0,1);
-  //covMET[1][0] = (pfmet->front()).getSignificanceMatrix().At(1,0);
-  //covMET[1][1] = (pfmet->front()).getSignificanceMatrix().At(1,1);
-
-  covMET[0][0] = 225;
-  covMET[0][1] = 112;
-  covMET[1][0] = 112;
-  covMET[1][1] = 225;
-  
   std::vector<MeasuredTauLepton> measuredTauLeptons;
   measuredTauLeptons.push_back(MeasuredTauLepton(MeasuredTauLepton::kTauToHadDecay,  iTau1->pt(), iTau1->eta(), iTau1->phi(), iTau1->mass()) );
   measuredTauLeptons.push_back(MeasuredTauLepton(MeasuredTauLepton::kTauToHadDecay,  iTau2->pt(), iTau2->eta(), iTau2->phi(), iTau2->mass()) );
 
-  int verbosity_svFit = 1;
+  double higgsMass_1stRun = -1;
+  double higgsMth_1stRun = -1;
+  double higgsMass_2ndRun = -1;
+  double higgsMth_2ndRun = -1;
+
+  int verbosity_svFit = 0;
+  //if ( debug ) verbosity_svFit = 1;
   ClassicSVfit svFitAlgo(verbosity_svFit);
   #ifdef USE_SVFITTF
   //HadTauTFCrystalBall2* hadTauTF = new HadTauTFCrystalBall2();
@@ -423,17 +427,13 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   //svFitAlgo.setLikelihoodFileName("testClassicSVfit.root");
   //svFitAlgo.addLogM_dynamic(true, "(m/1000.)*15.");
   //svFitAlgo.setMaxObjFunctionCalls(100000); // CV: default is 100000 evaluations of integrand per event
-  svFitAlgo.setLikelihoodFileName("testClassicSVfit.root");
+  //svFitAlgo.setLikelihoodFileName("testClassicSVfit.root");
   svFitAlgo.integrate(measuredTauLeptons, measuredMETx, measuredMETy, covMET);
   bool isValidSolution_1stRun = svFitAlgo.isValidSolution();
-  double higgsMass_1stRun = -1;
-  double higgsMth_1stRun = -1;
-  double higgsMass_2ndRun = -1;
-  double higgsMth_2ndRun = -1;
   if ( isValidSolution_1stRun ) {
     //double higgsMass_1stRun = static_cast<DiTauSystemHistogramAdapter*>(svFitAlgo.getHistogramAdapter())->getMass();
     higgsMass_1stRun = static_cast<HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getMassErr();
-    higgsMth_1stRun  = static_cast<HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getTransverseMass();
+    //higgsMth_1stRun  = static_cast<HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getTransverseMass();
     //double transverseMassErr_1stRun = static_cast<HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getTransverseMassErr();
     if (debug) std::cout << "found valid solution: mass = " << higgsMass_1stRun << " , transverse mass = " << higgsMth_1stRun <<std::endl;
     //std::cout << "found valid solution: mass = " << higgsMass_1stRun << " +/- " << massErr_1stRun << " (expected value = 115.746 +/- 87.0011),"
@@ -441,12 +441,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   } else {
     std::cout << "sorry, failed to find valid solution !!" << std::endl;
   }
-  //if (std::abs((mass_1stRun - 115.746) / 115.746) > 0.001) return 1;
-  //if (std::abs((massErr_1stRun - 87.001) / 87.0011) > 0.001) return 1;
-  //if (std::abs((transverseMass_1stRun - 114.242) / 114.242) > 0.001) return 1;
-  //if (std::abs((transverseMassErr_1stRun - 85.8296) / 85.8296) > 0.001) return 1;
-  
-   
+  /* 
   // re-run with mass constraint
   double massContraint = 125.06;
   std::cout << "Testing integration with ditau mass constraint set to " << massContraint << std::endl;
@@ -465,6 +460,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
     higgsMth_2ndRun  = ditau_mth;
     std::cout << "sorry, failed to find valid solution !!" << std::endl;
   }
+  */
   
   //Signal Region selection
   //if ( taudR > 3.0 ) IsSignal = true;

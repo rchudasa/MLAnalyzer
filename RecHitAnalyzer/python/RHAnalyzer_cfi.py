@@ -2,6 +2,8 @@
 
 import FWCore.ParameterSet.Config as cms 
 
+from RecoMET.METProducers.METSignificanceParams_cfi import METSignificanceParams
+
 fevt = cms.EDAnalyzer('RecHitAnalyzer'
     #, tracks = cms.untracked.InputTag('ctfWithMaterialTracks')
     #, EBRecHitCollection             = cms.InputTag('ecalRecHit:EcalRecHitsEB')
@@ -22,10 +24,10 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     , siPixelRecHitCollection        = cms.InputTag("siPixelRecHits")
     , siStripRecHitCollection        = cms.VInputTag("siStripMatchedRecHits")
     , pfCollection                   = cms.InputTag("particleFlow")
-    #, srcPFCandidates                = cms.InputTag("particleFlow")
+    , srcPFCandidates                = cms.InputTag("particleFlow")
     , recoJetsForBTagging            = cms.InputTag("ak4PFJetsCHS")
     , jetTagCollection               = cms.InputTag("pfCombinedInclusiveSecondaryVertexV2BJetTags")
-    , srcPfJets                      = cms.InputTag("pfCombinedInclusiveSecondaryVertexV2BJetTags")
+    , srcPfJets                      = cms.InputTag("ak4PFJets")
     , metCollection                  = cms.InputTag("pfMet")
     , tauCollection                  = cms.InputTag("hpsPFTauProducer")
     #, tauMVAIsolationLoose           = cms.InputTag("hpsPFTauDiscriminationByLooseIsolationMVArun2v1DBoldDMwLT")
@@ -52,4 +54,5 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     , minJetPt  = cms.double(20.)
     , maxJetEta = cms.double(2.4)
     , z0PVCut   = cms.double(0.1)
+    , parameters = METSignificanceParams
     )
