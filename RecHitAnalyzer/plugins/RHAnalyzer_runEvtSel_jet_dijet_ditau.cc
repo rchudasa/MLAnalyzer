@@ -15,9 +15,8 @@ TH1D *h_tau_att_dRtautau;
 TH1D *h_tau_att_Mvis;
 TH1D *h_tau_att_Mtautau;
 TH1D *h_tau_att_Mtautau_svFit;
-TH1D *h_tau_att_Mtautau_svFit_125;
 TH1D *h_tau_att_Mth_svFit;
-TH1D *h_tau_att_Mth_svFit_125;
+TH1D *h_tau_att_pTh_svFit;
 TH1D *h_tau_att_mth;
 TH1D *h_tau_att_pTvis;
 TH1D *h_tau_att_pTh;
@@ -38,9 +37,8 @@ float v_att_pTvis;
 float v_att_mth;
 float v_att_Mtautau;
 float v_att_Mtautau_svFit;
-float v_att_Mtautau_svFit_125;
 float v_att_Mth_svFit;
-float v_att_Mth_svFit_125;
+float v_att_pTh_svFit;
 float v_att_pTh;
 vector<float> v_att_gentau_Idxs;
 vector<float> v_att_tau_Idxs;
@@ -56,9 +54,8 @@ vector<float> v_att_Mvis_;
 vector<float> v_att_pTvis_;
 vector<float> v_att_Mtautau_;
 vector<float> v_att_Mtautau_svFit_;
-vector<float> v_att_Mtautau_svFit_125_;
 vector<float> v_att_Mth_svFit_;
-vector<float> v_att_Mth_svFit_125_;
+vector<float> v_att_pTh_svFit_;
 vector<float> v_att_pTh_;
 vector<float> v_att_tau_pT_;
 vector<float> v_att_tau_mva_;
@@ -105,15 +102,14 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_ditau ( TTree* tree, edm::Service<
   h_tau_att_pTvis          = fs->make<TH1D>("h_pTvis"        , "p_{T}^{vis};p_{T}^{vis};Events"                 ,  40,  0., 200.);
   h_tau_att_Mtautau        = fs->make<TH1D>("h_Mtautau"      , "m^{#tau#tau};m^{#tau#tau};Events"               ,  40,  0., 400.);
   h_tau_att_Mtautau_svFit  = fs->make<TH1D>("h_Mtautau_svFit", "m^{#tau#tau}(SVFit);m^{#tau#tau}(SVFit);Events" ,  40,  0., 400.);
-  h_tau_att_Mtautau_svFit_125 = fs->make<TH1D>("h_Mtautau_svFit_125", "m^{#tau#tau}(SVFit_125);m^{#tau#tau}(SVFit_125);Events" ,  40,  0., 400.);
   h_tau_att_Mth_svFit      = fs->make<TH1D>("h_Mth_svFit"    , "m_{T}^{H}(SVFit);m_{T}^{H}(SVFit);Events"       ,  40,  0., 400.);
-  h_tau_att_Mth_svFit_125  = fs->make<TH1D>("h_Mth_svFit_125", "m_{T}^{H}(SVFit_125);m_{T}^{H}(SVFit_125);Events" ,  40,  0., 400.);
+  h_tau_att_pTh_svFit      = fs->make<TH1D>("h_pTh_svFit"    , "p_{T}^{H}(SVFit);p_{T}^{H}(SVFit);Events"       ,  40,  0., 400.);
   h_tau_att_genHiggs_M     = fs->make<TH1D>("h_genHiggs_M"   , "m^{gen H};m^{gen H};Events"                     ,  40,  0., 400.);
   h_tau_att_pTh            = fs->make<TH1D>("h_pTh"          , "p_{T}^{#tau#tau};p_{T}^{#tau#tau};Events"       ,  40,  0., 200.);
   h_tau_att_tau_pT         = fs->make<TH1D>("h_tau_pT"       , "p_{T}^{#tau};p_{T}^{#tau};Jets"                 ,  40,  0., 200.);
   h_tau_att_tau_mva        = fs->make<TH1D>("h_tau_mva"      , "#tau MVA ID;#tau MVA ID;Jets"                   ,  21, -1.,   1.);
   h_tau_att_tau_dm         = fs->make<TH1D>("h_tau_dm"       , "#tau Decay Mode;#tau Decay Mode;Jets"           ,  21, -10,  10.);
-  h_tau_att_mth            = fs->make<TH1D>("h_mth"          , "m_{T}^{H};m_{T}^{H};Events"                     ,  30,  0., 150.);
+  h_tau_att_mth            = fs->make<TH1D>("h_mth"          , "m_{T}^{H};m_{T}^{H};Events"                     ,  40,  0., 400.);
   h_tau_att_pfMET          = fs->make<TH1D>("h_pfMET"        , "p_{T}^{miss};p_{T}^{miss};Events"               ,  40,  0., 200.);
   h_tau_att_dphill         = fs->make<TH1D>("h_dphill"       , "#Delta#phi_{l,l};#Delta#phi_{l,l};Events"       ,  40,  0., 3.1416);
   h_tau_att_dphillmet      = fs->make<TH1D>("h_dphillmet"    , "#Delta#phi_{#tau#tau,pfMET};#Delta #phi_{#tau#tau,pfMET};Events" ,40,0.,3.1416);
@@ -126,9 +122,8 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_ditau ( TTree* tree, edm::Service<
   tree->Branch("TauMvis",          &v_att_Mvis_);
   tree->Branch("TauMtautau",       &v_att_Mtautau_);
   tree->Branch("TauMtautau_svFit", &v_att_Mtautau_svFit_);
-  tree->Branch("TauMtautau_svFit_125", &v_att_Mtautau_svFit_125_);
   tree->Branch("TauMth_svFit",     &v_att_Mth_svFit_);
-  tree->Branch("TauMth_svFit_125", &v_att_Mth_svFit_125_);
+  tree->Branch("TaupTh_svFit",     &v_att_pTh_svFit_);
   tree->Branch("GenHiggsM",        &v_att_genHiggs_M_);
   tree->Branch("TaupTvis",         &v_att_pTvis_);
   tree->Branch("TaupTh",           &v_att_pTh_);
@@ -212,9 +207,8 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   v_att_pTvis         = -1;
   v_att_Mtautau       = -1;
   v_att_Mtautau_svFit = -1;
-  v_att_Mtautau_svFit_125 = -1;
   v_att_Mth_svFit     = -1;
-  v_att_Mth_svFit_125 = -1;
+  v_att_pTh_svFit     = -1;
   v_att_pTh           = -1;
   v_att_mth           = -1;
   
@@ -273,10 +267,10 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   }
   for ( unsigned iT1(0); iT1 != taus->size(); ++iT1 ) {
     reco::PFTauRef iTau1( taus, iT1 );
-    //if ( iTau1->pt() < 20 ) continue;
+    if ( iTau1->pt() < 20 ) continue;
     if (!((*MuonRejection)[iTau1])) continue;
     if (!((*ElectronRejectionMVA6)[iTau1])) continue;
-    if ((*MVAIsolation)[iTau1] < -0.9) continue;  
+    if ((*MVAIsolation)[iTau1] < -0.8) continue;  
     if ( iTau1->pt() < 35 ) continue;
     if ( debug ) std::cout << " TAU PASSED SELECTION "<< std::endl;
     if ( IsMC ) {
@@ -301,10 +295,10 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
     for ( unsigned iT2(0); iT2 != taus->size(); ++iT2 ) {
       if ( iT2 == iT1 ) continue;
       reco::PFTauRef iTau2( taus, iT2 );
-      //if ( iTau2->pt() < 20 ) continue;
+      if ( iTau2->pt() < 20 ) continue;
       if (!((*MuonRejection)[iTau2])) continue;
       if (!((*ElectronRejectionMVA6)[iTau2])) continue;
-      if ((*MVAIsolation)[iTau2] < -0.9) continue;  
+      if ((*MVAIsolation)[iTau2] < -0.8) continue;  
       if ( iTau2->pt() < 35 ) continue;
       if ( IsMC ) {
         bool skip_tau = true;
@@ -324,6 +318,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
           continue;
         }
       }
+      // tau dR selection
       float recotaudR = reco::deltaR( iTau1->eta(),iTau1->phi(), iTau2->eta(),iTau2->phi() );
       if ( recotaudR < 0.5 ) continue;
       if ( debug ) std::cout << " RECO TAU dR = " << recotaudR << std::endl;
@@ -405,14 +400,31 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   if ( debug ) std::cout << " MET COV yx = " << covMET[1][0] << std::endl;
 
   std::vector<MeasuredTauLepton> measuredTauLeptons;
-  measuredTauLeptons.push_back(MeasuredTauLepton(MeasuredTauLepton::kTauToHadDecay,  iTau1->pt(), iTau1->eta(), iTau1->phi(), iTau1->mass()) );
-  measuredTauLeptons.push_back(MeasuredTauLepton(MeasuredTauLepton::kTauToHadDecay,  iTau2->pt(), iTau2->eta(), iTau2->phi(), iTau2->mass()) );
+  if ( iTau1->pt() > iTau2->pt() ) {
+    measuredTauLeptons.push_back( MeasuredTauLepton(MeasuredTauLepton::kTauToHadDecay,  iTau1->pt(), iTau1->eta(), iTau1->phi(), iTau1->mass()) );
+    measuredTauLeptons.push_back( MeasuredTauLepton(MeasuredTauLepton::kTauToHadDecay,  iTau2->pt(), iTau2->eta(), iTau2->phi(), iTau2->mass()) );
+  }
+  else {
+    measuredTauLeptons.push_back( MeasuredTauLepton(MeasuredTauLepton::kTauToHadDecay,  iTau2->pt(), iTau2->eta(), iTau2->phi(), iTau2->mass()) );
+    measuredTauLeptons.push_back( MeasuredTauLepton(MeasuredTauLepton::kTauToHadDecay,  iTau1->pt(), iTau1->eta(), iTau1->phi(), iTau1->mass()) );
+  }
 
-  double higgsMass_1stRun = -1;
-  double higgsMth_1stRun = -1;
-  double higgsMass_2ndRun = -1;
-  double higgsMth_2ndRun = -1;
+  //double higgsMass_1stRun = -1;
+  //double higgsMth_1stRun = -1;
+  //double higgsMass_2ndRun = -1;
+  //double higgsMth_2ndRun = -1;
 
+  FastMTT aFastMTTAlgo;
+  aFastMTTAlgo.run(measuredTauLeptons,measuredMETx,measuredMETy,covMET);
+  LorentzVector ttP4 = aFastMTTAlgo.getBestP4();
+  float svFitMass = ttP4.M(); // return value is in units of GeV
+  float svFitMt = ttP4.Mt();
+  float svFitPt = ttP4.Pt();
+  //float svFitEta = ttP4.Eta();
+  //float svFitPhi = ttP4.Phi();
+  std::cout << " Found mass = " << svFitMass << std::endl;
+
+  /*
   int verbosity_svFit = 0;
   //if ( debug ) verbosity_svFit = 1;
   ClassicSVfit svFitAlgo(verbosity_svFit);
@@ -431,17 +443,13 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   svFitAlgo.integrate(measuredTauLeptons, measuredMETx, measuredMETy, covMET);
   bool isValidSolution_1stRun = svFitAlgo.isValidSolution();
   if ( isValidSolution_1stRun ) {
-    //double higgsMass_1stRun = static_cast<DiTauSystemHistogramAdapter*>(svFitAlgo.getHistogramAdapter())->getMass();
     higgsMass_1stRun = static_cast<HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getMassErr();
-    //higgsMth_1stRun  = static_cast<HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getTransverseMass();
-    //double transverseMassErr_1stRun = static_cast<HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getTransverseMassErr();
+    higgsMth_1stRun  = static_cast<HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getTransverseMass();
     if (debug) std::cout << "found valid solution: mass = " << higgsMass_1stRun << " , transverse mass = " << higgsMth_1stRun <<std::endl;
-    //std::cout << "found valid solution: mass = " << higgsMass_1stRun << " +/- " << massErr_1stRun << " (expected value = 115.746 +/- 87.0011),"
-    //          << " transverse mass = " << transverseMass_1stRun << " +/- " << transverseMassErr_1stRun << " (expected value = 114.242 +/- 85.8296)" << std::endl;
   } else {
     std::cout << "sorry, failed to find valid solution !!" << std::endl;
   }
-  /* 
+   
   // re-run with mass constraint
   double massContraint = 125.06;
   std::cout << "Testing integration with ditau mass constraint set to " << massContraint << std::endl;
@@ -453,15 +461,12 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
     higgsMass_2ndRun = static_cast<HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getMassErr();
     higgsMth_2ndRun  = static_cast<HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getTransverseMass();
     if (debug) std::cout << "found 2nd valid solution: mass = " << higgsMass_2ndRun << " , transverse mass = " << higgsMth_2ndRun <<std::endl;
-    //std::cout << "found valid solution: mass = " << mass_2ndRun << " +/- " << massErr_2ndRun << " (expected value = 124.646 +/- 1.27575),"
-    //          << " transverse mass = " << transverseMass_2ndRun << " +/- " << transverseMassErr_2ndRun << " (expected value = 123.026 +/- 1.19297)" << std::endl;
   } else {
     higgsMass_2ndRun = ditau_M;
     higgsMth_2ndRun  = ditau_mth;
     std::cout << "sorry, failed to find valid solution !!" << std::endl;
   }
   */
-  
   //Signal Region selection
   //if ( taudR > 3.0 ) IsSignal = true;
   //if (!IsSignal) return false;
@@ -517,12 +522,11 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   v_att_Mvis          = diMvis;
   v_att_pTvis         = dipTvis;
   v_att_Mtautau       = ditau_M;
-  v_att_Mtautau_svFit = higgsMass_1stRun;
-  v_att_Mtautau_svFit_125 = higgsMass_2ndRun;
-  v_att_Mth_svFit     = higgsMth_1stRun;
-  v_att_Mth_svFit_125 = higgsMth_2ndRun;
-  v_att_pTh               = ditau_pT;
-  v_att_mth               = ditau_mth;
+  v_att_Mtautau_svFit = svFitMass;
+  v_att_pTh           = ditau_pT;
+  v_att_pTh_svFit     = svFitPt;
+  v_att_mth           = ditau_mth;
+  v_att_Mth_svFit     = svFitMt;
 
   if ( debug ) std::cout << " >> has_jet_dijet_ditau: passed" << std::endl;
   return true;
@@ -546,9 +550,8 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_ditau ( const edm::Event& iEvent, cons
   v_att_pTvis_.clear();
   v_att_Mtautau_.clear();
   v_att_Mtautau_svFit_.clear();
-  v_att_Mtautau_svFit_125_.clear();
   v_att_Mth_svFit_.clear();
-  v_att_Mth_svFit_125_.clear();
+  v_att_pTh_svFit_.clear();
   v_att_pTh_.clear();
   v_att_tau_pT_.clear();
   v_att_tau_mva_.clear();
@@ -565,9 +568,8 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_ditau ( const edm::Event& iEvent, cons
   h_tau_att_pTvis->Fill( v_att_pTvis );
   h_tau_att_Mtautau->Fill( v_att_Mtautau );
   h_tau_att_Mtautau_svFit->Fill( v_att_Mtautau_svFit );
-  h_tau_att_Mtautau_svFit_125->Fill( v_att_Mtautau_svFit_125 );
   h_tau_att_Mth_svFit->Fill( v_att_Mth_svFit );
-  h_tau_att_Mth_svFit_125->Fill( v_att_Mth_svFit_125 );
+  h_tau_att_pTh_svFit->Fill( v_att_pTh_svFit );
   h_tau_att_pTh->Fill( v_att_pTh );
   h_tau_att_mth->Fill( v_att_mth );
   h_tau_att_pfMET->Fill( v_att_pfMET );
@@ -580,9 +582,8 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_ditau ( const edm::Event& iEvent, cons
   v_att_pTvis_.push_back( v_att_pTvis );
   v_att_Mtautau_.push_back( v_att_Mtautau );
   v_att_Mtautau_svFit_.push_back( v_att_Mtautau_svFit );
-  v_att_Mtautau_svFit_125_.push_back( v_att_Mtautau_svFit_125 );
   v_att_Mth_svFit_.push_back( v_att_Mth_svFit );
-  v_att_Mth_svFit_125_.push_back( v_att_Mth_svFit_125 );
+  v_att_pTh_svFit_.push_back( v_att_pTh_svFit );
   v_att_pTh_.push_back( v_att_pTh );
   v_att_mth_.push_back( v_att_mth );
   v_att_pfMET_.push_back( v_att_pfMET );
