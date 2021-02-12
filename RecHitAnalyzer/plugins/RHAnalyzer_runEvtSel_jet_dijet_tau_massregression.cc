@@ -248,7 +248,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau_massregression( const edm::Event& i
   float a_mass = -99.;
   float a_pt   = -99.;
   float dRa    = -99.;
-  float tausdR = -99.;
+  float tausdR =  99.;
   float tau1dR = -99.;
   float tau2dR = -99.;
   float recotau1dR = -99.;
@@ -279,7 +279,6 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau_massregression( const edm::Event& i
     for (reco::GenParticleCollection::const_iterator iGen = genParticles->begin(); iGen != genParticles->end(); ++iGen) {
       if ( abs(iGen->pdgId()) != 15 ) continue;
       if (iGen->numberOfMothers() < 1) continue;
-      //if (iGen->mother()->pdgId() != 25) continue;
       ++iGenParticle;
       float dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->eta(),iGen->phi() );
       if ( debug ) std::cout << "   GEN particle " << iGenParticle << " -> status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " nMoms: " <<iGen->numberOfMothers() << " | pt: "<< iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << " | dR = "<< dR << std::endl ;
@@ -294,15 +293,6 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau_massregression( const edm::Event& i
           float wgt           = lookup_invpdf(m_gen, m_bins, pT_gen, pT_bins, invpdf);
           if (debug) std::cout << " wgt " << wgt  << " | rand_sampler " << rand_sampler << std::endl;
           if (rand_sampler > wgt) continue;
-          // 2 x 1D
-          //float rand_sampler_pT  = rand() / float(RAND_MAX);
-          //float rand_sampler_m   = rand() / float(RAND_MAX);
-          //float pT_wgt           = lookup_pt_invpdf(pT_gen, pT_bins, pT_invpdf);
-          //float m_wgt            = lookup_mass_invpdf(m_gen, m_bins, m_invpdf);
-          //if (debug) std::cout << " wgt pT " << pT_wgt  << " | rand_sampler_pT " << rand_sampler_pT << std::endl;
-          //if (debug) std::cout << " wgt m " << m_wgt  << " | rand_sampler_m "<< rand_sampler_m << std::endl;
-          //if (rand_sampler_pT > pT_wgt) continue;
-          //if (rand_sampler_m  > m_wgt) continue;
       }
       if ( iGen->numberOfMothers() != 1 ) continue;
       passedGenSel = true;
@@ -312,7 +302,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau_massregression( const edm::Event& i
         //for (int Mom = 0; Mom =! iGen->numberOfMothers(); ++Mom ) {
         if ( debug ) std::cout << "   TAU MOTHER: " << iGenParticle << " -> status: " << iGen->mother()->status() << ", id: " << iGen->mother()->pdgId() << ", nDaught: " << iGen->mother()->numberOfDaughters() << " | pt: "<< iGen->mother()->pt() << " eta: " <<iGen->mother()->eta() << " phi: " <<iGen->mother()->phi() << " mass: " <<iGen->mother()->mass() << std::endl;
         aPdgId = std::abs(iGen->mother()->pdgId());
-        if ( abs(iGen->mother()->pdgId()) == 25 && iGen->mother()->mass() < 15) {
+        if ( abs(iGen->mother()->pdgId()) == 25 && iGen->mother()->mass() < 17) {
           MatchedPseudoScalar = true;
         }
         a_mass = iGen->mother()->mass();
@@ -340,6 +330,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau_massregression( const edm::Event& i
         //}
         if (debug ) std::cout << "   >>>>>> n1 dR = " << n1dR << " , n2 dR = " << n2dR << std::endl;
       }
+      //if ( tausdR < 0.4 ) continue;
       ++nMatchedGenParticles;
     } // primary gen particles
     if (passedGenSel) { 

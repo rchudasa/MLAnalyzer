@@ -43,8 +43,8 @@ file_idx_.append( len(rhFileList) )
 print ( file_idx_ )
 
 for irun_ in range( n_iter_ ):
-    #to do run 10
-    if (irun_ < 35) : continue
+    #to do run 10,42
+    if (irun_ < 43) : continue
     #if (irun_ > 2) : continue
     files_ = rhFileList[ file_idx_[ irun_ ] : file_idx_[irun_+1] ]  
     for idx_, file_ in enumerate(files_):

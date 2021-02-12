@@ -62,7 +62,7 @@ pink_map = custom_div_cmap(50, mincol='#FFFFFF', midcol='#F699CD' ,maxcol='#FF16
 
 def plotEvent(img, mins, maxs, str_):
     plt.imshow(np.zeros_like(img[-1,6,:,:]), cmap='Greys', vmin=0., vmax=1., alpha=0.9)
-    if maxs[-1] > 0 : plt.imshow(img[-1,6,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-1], vmax=maxs[-1])
+    #if maxs[-1] > 0 : plt.imshow(img[-1,6,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-1], vmax=maxs[-1])
     if maxs[-2] > 0 : plt.imshow(img[-1,5,:,:], cmap='Purples', norm=LogNorm(), alpha=0.9, vmin=mins[-2], vmax=maxs[-2])
     if maxs[-3] > 0 : plt.imshow(img[-1,4,:,:], cmap=pink_map, norm=LogNorm(), alpha=0.9, vmin=mins[-3], vmax=maxs[-3])
     if maxs[-4] > 0 : plt.imshow(img[-1,3,:,:], cmap='Reds', norm=LogNorm(), alpha=0.9, vmin=mins[-4], vmax=maxs[-4])
@@ -82,10 +82,13 @@ def plotEvent(img, mins, maxs, str_):
     plt.ylabel(r"$\mathrm{i\eta}'$", size=28) #28, 30
     ax.yaxis.set_tick_params(direction='in', which='major', length=6.)
     #LEGEND
-    colors = {1:'tab:orange',2:'tab:blue',3:'tab:grey',4:'tab:red',5:'tab:pink',6:'tab:purple',7:'tab:green'}
-    labels = {1:'Track pT',2:'ECAL',3:'HCAL',4:'PXB1',5:'PXB2',6:'PXB3',7:'PXB4'}
+    #colors = {1:'tab:orange',2:'tab:blue',3:'tab:grey',4:'tab:green',5:'tab:blue',6:'tab:purple',7:'tab:green'}
+    colors = {1:'tab:orange',2:'tab:blue',3:'tab:grey',4:'tab:green',5:'tab:blue',6:'tab:purple'}
+    #labels = {1:'Track pT',2:'ECAL',3:'HCAL',4:'PXB1',5:'PXB2',6:'PXB3',7:'PXB4'}
+    labels = {1:'Track pT',2:'ECAL',3:'HCAL',4:'PXB1',5:'PXB2',6:'PXB3'}
     patches =[mpatches.Patch(color=colors[i],label=labels[i]) for i in colors]
-    plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0. )
+    #plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0. )
+    plt.legend(handles=patches, loc='best')
     #plt.savefig(str_, bbox_inches='tight')
     plt.savefig(str_, bbox_inches='tight', format='png')
     #plt.show()
