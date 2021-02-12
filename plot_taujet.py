@@ -18,6 +18,7 @@ from matplotlib.colors import LogNorm, ListedColormap, LinearSegmentedColormap
 import matplotlib.ticker as ticker
 from matplotlib.ticker import MultipleLocator
 import matplotlib.gridspec as gridspec
+import matplotlib.patches as mpatches
 
 from skimage.measure import block_reduce
 from numpy.lib.stride_tricks import as_strided
@@ -60,7 +61,7 @@ def custom_div_cmap(numcolors=11, name='custom_div_cmap',mincol='blue', midcol='
 pink_map = custom_div_cmap(50, mincol='#FFFFFF', midcol='#F699CD' ,maxcol='#FF1694')
 
 def plotJet(img, mins, maxs, str_):
-    plt.imshow(np.zeros_like(img[6,:,:]), cmap='Greys', vmin=0., vmax=1., alpha=0.9)
+    im = plt.imshow(np.zeros_like(img[6,:,:]), cmap='Greys', vmin=0., vmax=1., alpha=0.9)
     if maxs[-1] > 0 : plt.imshow(img[6,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-1], vmax=maxs[-1])
     if maxs[-2] > 0 : plt.imshow(img[5,:,:], cmap='Purples', norm=LogNorm(), alpha=0.9, vmin=mins[-2], vmax=maxs[-2])
     if maxs[-3] > 0 : plt.imshow(img[4,:,:], cmap=pink_map, norm=LogNorm(), alpha=0.9, vmin=mins[-3], vmax=maxs[-3])
@@ -78,6 +79,15 @@ def plotJet(img, mins, maxs, str_):
     plt.yticks(np.arange(0,150,25))
     plt.ylabel(r"$\mathrm{i\eta}'$", size=28) #28, 30
     ax.yaxis.set_tick_params(direction='in', which='major', length=6.)
+    #colors = {1:'Oranges',2:'Blues',3:'Greys',4:'Reds',5:pink_map,6:'Purples',7:'Greens'}
+    #colors = {1:[211, 84, 0, 1],2:[44, 130, 201, 1],3:[46, 49, 49, 1],4:[255, 0, 0, 1],5:[255,192,203,1],6:[165, 55, 253, 1],7:[46, 204, 113, 1]}
+    colors = {1:'tab:orange',2:'tab:blue',3:'tab:grey',4:'tab:red',5:'tab:pink',6:'tab:purple',7:'tab:green'}
+    labels = {1:'Track pT',2:'ECAL',3:'HCAL',4:'PXB1',5:'PXB2',6:'PXB3',7:'PXB4'}
+    patches =[mpatches.Patch(color=colors[i],label=labels[i]) for i in colors]
+    plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0. )
+    #plt.legend(loc='upper right', fontsize=MEDIUM_SIZE)
+    #leg = plt.legend(loc='best', ncol=2, shadow=True, fancybox=True)
+    #leg.get_frame().set_alpha(0.5)
     #plt.savefig(str_, bbox_inches='tight')
     plt.savefig(str_, bbox_inches='tight', format='png')
     plt.clf()
@@ -180,5 +190,5 @@ for i, data in enumerate(train_loader):
         maxs = [X_train[jet,0,:,:].max(), X_train[jet,1,:,:].max(), X_train[jet,2,:,:].max(), X_train[jet,3,:,:].max(), X_train[jet,4,:,:].max(), X_train[jet,5,:,:].max(), X_train[jet,6,:,:].max()]
         print "Min = ", mins, " | Max = ", maxs
         plotJet(img, mins, maxs, 'images/%s/tau_event%d_jet%d.png'%(outDir,i,jet))
-        plotJet_PBX12(img, mins, maxs, 'images/%s/tau_event%d_jet%d_PBX12.png'%(outDir,i,jet))
-        plotJet_PBX(img, mins, maxs, 'images/%s/tau_event%d_jet%d_PBX.png'%(outDir,i,jet))
+        #plotJet_PBX12(img, mins, maxs, 'images/%s/tau_event%d_jet%d_PBX12.png'%(outDir,i,jet))
+        #plotJet_PBX(img, mins, maxs, 'images/%s/tau_event%d_jet%d_PBX.png'%(outDir,i,jet))

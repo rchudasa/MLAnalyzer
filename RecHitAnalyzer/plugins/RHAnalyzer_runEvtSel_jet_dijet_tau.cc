@@ -10,14 +10,23 @@ TH1D *h_tau_jet_m0;
 TH1D *h_tau_jet_nJet;
 TH1D *h_tau_jet_isTau;
 TH1D *h_tau_jet_dR;
+TH1D *h_tau_jet_TaudR;
+TH1D *h_tau_jet_TaupT1;
+TH1D *h_tau_jet_TaupT2;
 vector<float> v_jetIsTau;
 vector<float> v_jetdR;
+vector<float> v_TaudR;
+vector<float> v_TaupT1;
+vector<float> v_TaupT2;
 
 vector<float> v_tau_jet_m0_;
 vector<float> v_tau_jet_pt_;
 vector<float> v_tau_jetPdgIds_;
 vector<float> v_tau_jetIsTau_;
 vector<float> v_tau_jetdR_;
+vector<float> v_tau_TaudR_;
+vector<float> v_tau_TaupT1_;
+vector<float> v_tau_TaupT2_;
 
 vector<float> v_tau_subJetE_[nJets];
 vector<float> v_tau_subJetPx_[nJets];
@@ -34,7 +43,10 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_tau ( TTree* tree, edm::Service<TF
   h_tau_jet_nJet       = fs->make<TH1D>("h_jet_nJet"       , "nJet;nJet;Events"                           ,  10,  0.,  10.);
   h_tau_jet_m0         = fs->make<TH1D>("h_jet_m0"         , "m_{jet};m_{jet};Jets"                       , 100,  0., 100.);
   h_tau_jet_isTau      = fs->make<TH1D>("h_jet_isTau"      , "nIsDiTau;nIsDiTau;Jets"                     ,  10,  0.,  10.);
-  h_tau_jet_dR         = fs->make<TH1D>("h_jet_dR"         , "dR_{jet,#tau};dR_{jet,#tau};Jets"         ,  50,  0.,   1.);
+  h_tau_jet_dR         = fs->make<TH1D>("h_jet_dR"         , "dR_{jet,#tau};dR_{jet,#tau};Jets"           ,  50,  0.,   1.);
+  h_tau_jet_TaudR      = fs->make<TH1D>("h_jet_TaudR"      , "dR_{#tau,#tau};dR_{#tau,#tau};Events"       ,  50,  0.,  0.5);
+  h_tau_jet_TaupT1     = fs->make<TH1D>("h_jet_TaupT1"     , "p_{T}^{#tau_{1}};p_{T}^{#tau_{1}};Events"   ,  50,  0.,  100);
+  h_tau_jet_TaupT2     = fs->make<TH1D>("h_jet_TaupT2"     , "p_{T}^{#tau_{2}};p_{T}^{#tau_{2}};Events"   ,  50,  0.,  100);
 
   tree->Branch("jetM",       &v_tau_jet_m0_);
   tree->Branch("jetPt",      &v_tau_jet_pt_);
@@ -42,6 +54,9 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_tau ( TTree* tree, edm::Service<TF
   tree->Branch("jetIsTau",   &v_tau_jetIsTau_);
   tree->Branch("jetpT",      &v_tau_jet_pt_);
   tree->Branch("jetdR",      &v_tau_jetdR_);
+  tree->Branch("TaudR",      &v_tau_TaudR_);
+  tree->Branch("TaupT1",     &v_tau_TaupT1_);
+  tree->Branch("TaupT2",     &v_tau_TaupT2_);
 
   char hname[50];
   for ( unsigned iJ = 0; iJ != nJets; iJ++ ) {
@@ -74,6 +89,9 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
   v_tau_jetPdgIds_.clear();
   v_jetIsTau.clear();
   v_jetdR.clear();
+  v_TaudR.clear();
+  v_TaupT1.clear();
+  v_TaupT2.clear();
 
   /*
   edm::Handle<reco::GenJetCollection> genJets;
@@ -84,6 +102,9 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
   unsigned int nMatchedJets = 0;
   unsigned int PdgId        = 0;
   float jetdR               = -99.;
+  float taudR               = -99.;
+  float taupT1              = -99.;
+  float taupT2              = -99.;
   bool JetIsTau             = false;
 
   if ( debug ) std::cout << " >>>>>>>>>>>>>>>>>>>> evt:" << std::endl;
@@ -100,16 +121,26 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
       float dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->eta(),iGen->phi() );
       if ( dR > 0.4 ) continue;
       
-      if ( !(  (std::abs(iGen->pdgId()) == 15 && iGen->status() == 2 && iGen->numberOfMothers() == 0 ) || iGen->status() == 23 || iGen->status() == 43 || iGen->status() == 43) ) continue;
-      if ( (std::abs(iGen->pdgId()) != 15 && abs(iGen->pt()-iJet->pt()) > 10 ) ) continue;
+      //if ( !(  (std::abs(iGen->pdgId()) == 15 && iGen->status() == 2 && iGen->numberOfMothers() == 0 ) || iGen->status() == 23 || iGen->status() == 43 || iGen->status() == 43) ) continue;
+      
+      if ( std::abs(iGen->pdgId()) != 25 ) continue;
+      if ( iGen->numberOfDaughters() != 2 ) continue;
       passedGenSel = true;
-
+      taudR = reco::deltaR( iGen->daughter(0)->eta(),iGen->daughter(0)->phi(), iGen->daughter(1)->eta(),iGen->daughter(1)->phi() );
+        
       ++iGenParticle;
 
       if ( debug ) std::cout << "   GEN particle " << iGenParticle << " -> status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " nMoms: " <<iGen->numberOfMothers() << " | pt: "<< iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << " | dR: " << dR << std::endl;
 
       PdgId = std::abs(iGen->pdgId());
       jetdR = dR;
+      if ( iGen->daughter(0)->pt() > iGen->daughter(1)->pt() ){
+        taupT1 = iGen->daughter(0)->pt(); 
+        taupT2 = iGen->daughter(1)->pt();
+      } else {
+        taupT1 = iGen->daughter(1)->pt(); 
+        taupT2 = iGen->daughter(0)->pt();
+      }
 
       if (PdgId == 15)  JetIsTau = true;
        
@@ -120,6 +151,9 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
       vJetIdxs.push_back( iJ );
       v_tau_jetPdgIds_.push_back( PdgId );
       v_jetdR.push_back( jetdR );
+      v_TaudR.push_back( taudR );
+      v_TaupT1.push_back( taupT1 );
+      v_TaupT2.push_back( taupT2 );
       v_jetIsTau.push_back( JetIsTau );
 
     }
@@ -147,6 +181,9 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
   v_tau_jet_m0_.clear();
   v_tau_jetIsTau_.clear();
   v_tau_jetdR_.clear();
+  v_tau_TaudR_.clear();
+  v_tau_TaupT1_.clear();
+  v_tau_TaupT2_.clear();
  
   for ( unsigned iJ(0); iJ != vJetIdxs.size(); ++iJ ) {
 
@@ -159,6 +196,9 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
     h_tau_jet_m0->Fill( iJet->mass() );
     h_tau_jet_isTau->Fill( v_jetIsTau[iJ] );
     h_tau_jet_dR->Fill( v_jetdR[iJ] );
+    h_tau_jet_TaudR->Fill( v_TaudR[iJ] );
+    h_tau_jet_TaupT1->Fill( v_TaupT1[iJ] );
+    h_tau_jet_TaupT2->Fill( v_TaupT2[iJ] );
 
     // Fill branches 
     v_tau_jet_pt_.push_back( iJet->pt() );

@@ -3,6 +3,8 @@ cd CMSSW_10_2_20_UL/src/
 cmsenv 
 git cms-init
 git cms-addpkg Configuration/Generator
+git clone https://github.com/svfit/ClassicSVfit TauAnalysis/ClassicSVfit
+git clone https://github.com/svfit/SVfitTF TauAnalysis/SVfitTF
 git clone https://github.com/davidedicroce/MLAnalyzer.git
 scram b
 source /cvmfs/sft.cern.ch/lcg/views/LCG_97/x86_64-centos7-gcc8-opt/setup.sh #For plotting

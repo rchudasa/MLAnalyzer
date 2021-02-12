@@ -19,6 +19,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.ticker as ticker
 from matplotlib.ticker import MultipleLocator
 import matplotlib.gridspec as gridspec
+import matplotlib.patches as mpatches
 
 from skimage.measure import block_reduce
 from numpy.lib.stride_tricks import as_strided
@@ -80,6 +81,11 @@ def plotEvent(img, mins, maxs, str_):
     plt.yticks(np.arange(0,280,56))
     plt.ylabel(r"$\mathrm{i\eta}'$", size=28) #28, 30
     ax.yaxis.set_tick_params(direction='in', which='major', length=6.)
+    #LEGEND
+    colors = {1:'tab:orange',2:'tab:blue',3:'tab:grey',4:'tab:red',5:'tab:pink',6:'tab:purple',7:'tab:green'}
+    labels = {1:'Track pT',2:'ECAL',3:'HCAL',4:'PXB1',5:'PXB2',6:'PXB3',7:'PXB4'}
+    patches =[mpatches.Patch(color=colors[i],label=labels[i]) for i in colors]
+    plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0. )
     #plt.savefig(str_, bbox_inches='tight')
     plt.savefig(str_, bbox_inches='tight', format='png')
     #plt.show()
