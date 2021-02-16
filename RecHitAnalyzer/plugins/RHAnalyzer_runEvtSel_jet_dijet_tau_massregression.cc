@@ -16,6 +16,8 @@ TH1D *h_tau_mr_jet_dR;
 TH1D *h_tau_mr_jet_TaudR;
 TH1D *h_tau_mr_jet_Tau1dR;
 TH1D *h_tau_mr_jet_Tau2dR;
+TH1D *h_tau_mr_jet_Tau1pT;
+TH1D *h_tau_mr_jet_Tau2pT;
 TH1D *h_tau_mr_jet_NrecoTaus;
 TH1D *h_tau_mr_jet_NGenTaus;
 TH1D *h_tau_mr_jet_recoTau1dR;
@@ -29,6 +31,8 @@ vector<float> v_mr_pta;
 vector<float> v_mr_jetTaudR;
 vector<float> v_mr_jetTau1dR;
 vector<float> v_mr_jetTau2dR;
+vector<float> v_mr_jetTau1pT;
+vector<float> v_mr_jetTau2pT;
 vector<float> v_mr_jetNGenTaus;
 vector<float> v_mr_jetNrecoTaus;
 vector<float> v_mr_jetrecoTau1dR;
@@ -46,6 +50,8 @@ vector<float> v_mr_tau_jetadR_;
 vector<float> v_mr_tau_jetTaudR_;
 vector<float> v_mr_tau_jetTau1dR_;
 vector<float> v_mr_tau_jetTau2dR_;
+vector<float> v_mr_tau_jetTau1pT_;
+vector<float> v_mr_tau_jetTau2pT_;
 vector<float> v_mr_tau_jetNGenTaus_;
 vector<float> v_mr_tau_jetNrecoTaus_;
 vector<float> v_mr_tau_jetrecoTau1dR_;
@@ -167,6 +173,8 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_tau_massregression ( TTree* tree, 
   h_tau_mr_jet_TaudR      = fs->make<TH1D>("h_jet_TaudR"      , "dR_{#tau,#tau};dR_{#tau,#tau};Jets"         ,  50,  0.,   1.);
   h_tau_mr_jet_Tau1dR     = fs->make<TH1D>("h_jet_Tau1dR"     , "dR_{#tau_{1},j};dR_{#tau_{1},j};Jets"       ,  50,  0.,  0.5);
   h_tau_mr_jet_Tau2dR     = fs->make<TH1D>("h_jet_Tau2dR"     , "dR_{#tau_{2},j};dR_{#tau_{2},j};Jets"       ,  50,  0.,  0.5);
+  h_tau_mr_jet_Tau1pT     = fs->make<TH1D>("h_jet_Tau1pT"     , "p_{T}^{#tau_{1}};p_{T}^{#tau_{1}};Jets"     ,  50,  0.,  100);
+  h_tau_mr_jet_Tau2pT     = fs->make<TH1D>("h_jet_Tau2pT"     , "p_{T}^{#tau_{2}};p_{T}^{#tau_{2}};Jets"     ,  50,  0.,  100);
   h_tau_mr_jet_NGenTaus  = fs->make<TH1D>("h_jet_NGenTaus"    , "N#tau^{RECO};N#tau^{RECO};Jets"             ,   5,  0.,   5.);
   h_tau_mr_jet_NrecoTaus  = fs->make<TH1D>("h_jet_NrecoTaus"  , "N#tau^{RECO};N#tau^{RECO};Jets"             ,   5,  0.,   5.);
   h_tau_mr_jet_recoTau1dR = fs->make<TH1D>("h_jet_recoTau1dR" , "dR_{#tau_{1}^{RECO},j};dR_{#tau_{1}^{RECO},j};Jets" ,  50,  0.,  0.5);
@@ -185,6 +193,8 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_tau_massregression ( TTree* tree, 
   tree->Branch("TaudR",      &v_mr_tau_jetTaudR_);
   tree->Branch("Tau1dR",     &v_mr_tau_jetTau1dR_);
   tree->Branch("Tau2dR",     &v_mr_tau_jetTau2dR_);
+  tree->Branch("Tau1pT",     &v_mr_tau_jetTau1pT_);
+  tree->Branch("Tau2pT",     &v_mr_tau_jetTau2pT_);
   tree->Branch("NGenTaus",   &v_mr_tau_jetNGenTaus_);
   tree->Branch("NrecoTaus",  &v_mr_tau_jetNrecoTaus_);
   tree->Branch("recoTau1dR", &v_mr_tau_jetrecoTau1dR_);
@@ -228,6 +238,8 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau_massregression( const edm::Event& i
   v_mr_jetTaudR.clear();
   v_mr_jetTau1dR.clear();
   v_mr_jetTau2dR.clear();
+  v_mr_jetTau1pT.clear();
+  v_mr_jetTau2pT.clear();
   v_mr_jetNGenTaus.clear();
   v_mr_jetNrecoTaus.clear();
   v_mr_jetrecoTau1dR.clear();
@@ -251,6 +263,8 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau_massregression( const edm::Event& i
   float tausdR =  99.;
   float tau1dR = -99.;
   float tau2dR = -99.;
+  float tau1pT = -99.;
+  float tau2pT = -99.;
   float recotau1dR = -99.;
   float recotau2dR = -99.;
   float n1dR   = -99.;
@@ -295,7 +309,6 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau_massregression( const edm::Event& i
           if (rand_sampler > wgt) continue;
       }
       if ( iGen->numberOfMothers() != 1 ) continue;
-      passedGenSel = true;
 
       if (debug ) std::cout << "  >>>>>> Jet [" << iJ << "] matched particle [" << iGenParticle << "] -> pdgId: " << std::abs(iGen->pdgId()) << " | dR: " << dR << "| Pt: " << iJet->pt() << ", Eta: " << iJet->eta() << ", Phi: " << iJet->phi() << std::endl;
       if (nMatchedGenParticles == 0) {
@@ -311,28 +324,52 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau_massregression( const edm::Event& i
         if ( iGen->mother()->numberOfDaughters() == 2 ){ 
           if (abs(iGen->mother()->daughter(0)->pdgId()) == 15 && abs(iGen->mother()->daughter(1)->pdgId()) == 15){ 
             tausdR = reco::deltaR( iGen->mother()->daughter(0)->eta(),iGen->mother()->daughter(0)->phi(), iGen->mother()->daughter(1)->eta(),iGen->mother()->daughter(1)->phi() );
-            tau1dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->mother()->daughter(0)->eta(),iGen->mother()->daughter(0)->phi() );
-            tau2dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->mother()->daughter(1)->eta(),iGen->mother()->daughter(1)->phi() );
-            if ( debug ) std::cout << "   >>>>>> Taus dR = " << tausdR << " , tau1 dR = " << tau1dR << " , tau2 dR = " << tau2dR << std::endl;
-            NTau1Daughters = iGen->mother()->daughter(0)->numberOfDaughters();
-            NTau2Daughters = iGen->mother()->daughter(1)->numberOfDaughters();
-            if ( debug ) std::cout << "    >>>>>> # Tau 1 daughters = " << NTau1Daughters << ",  # Tau 2 daughters = "<< NTau2Daughters << std::endl;
-            for (unsigned int iDaughter = 0; iDaughter != NTau1Daughters; ++iDaughter){
-              if ( debug ) std::cout << "   >>>>>> Tau 1 Decay = " << iGen->mother()->daughter(0)->daughter(iDaughter)->pdgId() << std::endl;
-              if ( abs(iGen->mother()->daughter(0)->daughter(iDaughter)->pdgId()) == 16 ) n1dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->mother()->daughter(0)->daughter(iDaughter)->eta(), iGen->mother()->daughter(0)->daughter(iDaughter)->phi() );
-            }
-            for (unsigned int iDaughter = 0; iDaughter != NTau2Daughters; ++iDaughter){
-              if ( debug ) std::cout << "   >>>>>> Tau 2 Decay = " << iGen->mother()->daughter(1)->daughter(iDaughter)->pdgId() << std::endl;
-              if ( abs(iGen->mother()->daughter(1)->daughter(iDaughter)->pdgId()) == 16 ) n2dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->mother()->daughter(1)->daughter(iDaughter)->eta(), iGen->mother()->daughter(1)->daughter(iDaughter)->phi() );
-            }
+            if ( iGen->mother()->daughter(0)->pt() > iGen->mother()->daughter(1)->pt() ) {
+              tau1pT = iGen->mother()->daughter(0)->pt();
+              tau2pT = iGen->mother()->daughter(1)->pt();
+              tau1dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->mother()->daughter(0)->eta(),iGen->mother()->daughter(0)->phi() );
+              tau2dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->mother()->daughter(1)->eta(),iGen->mother()->daughter(1)->phi() );
+              
+              if ( debug ) std::cout << "   >>>>>> Taus dR = " << tausdR << " , tau1 dR = " << tau1dR << " , tau2 dR = " << tau2dR << std::endl;
+              NTau1Daughters = iGen->mother()->daughter(0)->numberOfDaughters();
+              NTau2Daughters = iGen->mother()->daughter(1)->numberOfDaughters();
+              if ( debug ) std::cout << "    >>>>>> # Tau 1 daughters = " << NTau1Daughters << ",  # Tau 2 daughters = "<< NTau2Daughters << std::endl;
+              for (unsigned int iDaughter = 0; iDaughter != NTau1Daughters; ++iDaughter){
+                if ( debug ) std::cout << "   >>>>>> Tau 1 Decay = " << iGen->mother()->daughter(0)->daughter(iDaughter)->pdgId() << std::endl;
+                if ( abs(iGen->mother()->daughter(0)->daughter(iDaughter)->pdgId()) == 16 ) n1dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->mother()->daughter(0)->daughter(iDaughter)->eta(), iGen->mother()->daughter(0)->daughter(iDaughter)->phi() );
+              }
+              for (unsigned int iDaughter = 0; iDaughter != NTau2Daughters; ++iDaughter){
+                if ( debug ) std::cout << "   >>>>>> Tau 2 Decay = " << iGen->mother()->daughter(1)->daughter(iDaughter)->pdgId() << std::endl;
+                if ( abs(iGen->mother()->daughter(1)->daughter(iDaughter)->pdgId()) == 16 ) n2dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->mother()->daughter(1)->daughter(iDaughter)->eta(), iGen->mother()->daughter(1)->daughter(iDaughter)->phi() );
+              }
+            } else {
+              tau1pT = iGen->mother()->daughter(1)->pt();
+              tau2pT = iGen->mother()->daughter(0)->pt();
+              tau1dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->mother()->daughter(1)->eta(),iGen->mother()->daughter(1)->phi() );
+              tau2dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->mother()->daughter(0)->eta(),iGen->mother()->daughter(0)->phi() );
+
+              if ( debug ) std::cout << "   >>>>>> Taus dR = " << tausdR << " , tau1 dR = " << tau1dR << " , tau2 dR = " << tau2dR << std::endl;
+              NTau1Daughters = iGen->mother()->daughter(1)->numberOfDaughters();
+              NTau2Daughters = iGen->mother()->daughter(0)->numberOfDaughters();
+              if ( debug ) std::cout << "    >>>>>> # Tau 1 daughters = " << NTau1Daughters << ",  # Tau 2 daughters = "<< NTau2Daughters << std::endl;
+              for (unsigned int iDaughter = 0; iDaughter != NTau1Daughters; ++iDaughter){
+                if ( debug ) std::cout << "   >>>>>> Tau 1 Decay = " << iGen->mother()->daughter(1)->daughter(iDaughter)->pdgId() << std::endl;
+                if ( abs(iGen->mother()->daughter(1)->daughter(iDaughter)->pdgId()) == 16 ) n1dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->mother()->daughter(1)->daughter(iDaughter)->eta(), iGen->mother()->daughter(1)->daughter(iDaughter)->phi() );
+              }
+              for (unsigned int iDaughter = 0; iDaughter != NTau2Daughters; ++iDaughter){
+                if ( debug ) std::cout << "   >>>>>> Tau 2 Decay = " << iGen->mother()->daughter(0)->daughter(iDaughter)->pdgId() << std::endl;
+                if ( abs(iGen->mother()->daughter(0)->daughter(iDaughter)->pdgId()) == 16 ) n2dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->mother()->daughter(0)->daughter(iDaughter)->eta(), iGen->mother()->daughter(0)->daughter(iDaughter)->phi() );
+              }
+            } // end else pt2 > pt1
           }
         }
         //}
         if (debug ) std::cout << "   >>>>>> n1 dR = " << n1dR << " , n2 dR = " << n2dR << std::endl;
       }
-      //if ( tausdR < 0.4 ) continue;
+      if ( tausdR > 0.4 ) continue;
       ++nMatchedGenParticles;
     } // primary gen particles
+    if ( nMatchedGenParticles > 0 ) passedGenSel = true;
     if (passedGenSel) { 
       ++nMatchedJets;
 
@@ -374,6 +411,8 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau_massregression( const edm::Event& i
       v_mr_pta.push_back( a_pt );
       v_mr_jetTau1dR.push_back( tau1dR );
       v_mr_jetTau2dR.push_back( tau2dR );
+      v_mr_jetTau1pT.push_back( tau1pT );
+      v_mr_jetTau2pT.push_back( tau2pT );
       v_mr_jetn1dR.push_back( n1dR );
       v_mr_jetn2dR.push_back( n2dR );
       v_mr_jetNGenTaus.push_back( nMatchedGenParticles );
@@ -412,6 +451,8 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau_massregression ( const edm::Event&
   v_mr_tau_jetTaudR_.clear();
   v_mr_tau_jetTau1dR_.clear();
   v_mr_tau_jetTau2dR_.clear();
+  v_mr_tau_jetTau1pT_.clear();
+  v_mr_tau_jetTau2pT_.clear();
   v_mr_tau_jetNGenTaus_.clear();
   v_mr_tau_jetNrecoTaus_.clear();
   v_mr_tau_jetrecoTau1dR_.clear();
@@ -436,6 +477,8 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau_massregression ( const edm::Event&
     h_tau_mr_jet_TaudR->Fill( v_mr_jetTaudR[iJ] );
     h_tau_mr_jet_Tau1dR->Fill( v_mr_jetTau1dR[iJ] );
     h_tau_mr_jet_Tau2dR->Fill( v_mr_jetTau2dR[iJ] );
+    h_tau_mr_jet_Tau1pT->Fill( v_mr_jetTau1pT[iJ] );
+    h_tau_mr_jet_Tau2pT->Fill( v_mr_jetTau2pT[iJ] );
     h_tau_mr_jet_NGenTaus->Fill( v_mr_jetNGenTaus[iJ] );
     h_tau_mr_jet_NrecoTaus->Fill( v_mr_jetNrecoTaus[iJ] );
     h_tau_mr_jet_recoTau1dR->Fill( v_mr_jetrecoTau1dR[iJ] );
@@ -453,6 +496,8 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau_massregression ( const edm::Event&
     v_mr_tau_jetTaudR_.push_back( v_mr_jetTaudR[iJ] );
     v_mr_tau_jetTau1dR_.push_back( v_mr_jetTau1dR[iJ] );
     v_mr_tau_jetTau2dR_.push_back( v_mr_jetTau2dR[iJ] );
+    v_mr_tau_jetTau1pT_.push_back( v_mr_jetTau1pT[iJ] );
+    v_mr_tau_jetTau2pT_.push_back( v_mr_jetTau2pT[iJ] );
     v_mr_tau_jetNGenTaus_.push_back( v_mr_jetNGenTaus[iJ] );
     v_mr_tau_jetNrecoTaus_.push_back( v_mr_jetNrecoTaus[iJ] );
     v_mr_tau_jetrecoTau1dR_.push_back( v_mr_jetrecoTau1dR[iJ] );
