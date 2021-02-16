@@ -40,6 +40,7 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     , tauElectronRejectionMVA6VLoose = cms.InputTag("hpsPFTauDiscriminationByMVA6VLooseElectronRejection")
     #, tauDecayMode                   = cms.InputTag("hpsPFTauDiscriminationByDecayModeFinding")
     , tauDecayMode                   = cms.InputTag("hpsPFTauDiscriminationByDecayModeFindingOldDMs")
+    , triggerResultsTag              = cms.InputTag("TriggerResults", "", "HLT")
     , ipTagInfoCollection            = cms.InputTag("pfImpactParameterTagInfos")
     , mode                           = cms.string("JetLevel")
     , rhoLabel                       = cms.InputTag('fixedGridRhoAll')

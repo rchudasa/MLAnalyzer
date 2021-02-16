@@ -1,9 +1,12 @@
 #include "MLAnalyzer/RecHitAnalyzer/interface/RecHitAnalyzer.h"
 
 using std::vector;
+using namespace trigger;
 
 const unsigned nJets      = 50; //TODO: use cfg level nJets_
 TH1D *h_tau_att_genHiggs_M;
+TH1D *h_tau_att_genTau1_pT;
+TH1D *h_tau_att_genTau2_pT;
 TH1D *h_tau_att_jet_pT;
 TH1D *h_tau_att_jet_E;
 TH1D *h_tau_att_jet_eta;
@@ -18,6 +21,7 @@ TH1D *h_tau_att_Mtautau_svFit;
 TH1D *h_tau_att_Mth_svFit;
 TH1D *h_tau_att_pTh_svFit;
 TH1D *h_tau_att_mth;
+TH1D *h_tau_att_mcoll;
 TH1D *h_tau_att_pTvis;
 TH1D *h_tau_att_pTh;
 TH1D *h_tau_att_tau_pT;
@@ -28,6 +32,10 @@ TH1D *h_tau_att_dphillmet;
 TH1D *h_tau_att_dphill;
 
 float v_att_genHiggs_M;
+float v_att_genTau1_pT;
+float v_att_genTau2_pT;
+float v_att_genTau3_pT;
+float v_att_genTau4_pT;
 float v_att_dRtautau;
 float v_att_pfMET;
 float v_att_dphillmet;
@@ -35,6 +43,7 @@ float v_att_dphill;
 float v_att_Mvis;
 float v_att_pTvis;
 float v_att_mth;
+float v_att_mcoll;
 float v_att_Mtautau;
 float v_att_Mtautau_svFit;
 float v_att_Mth_svFit;
@@ -50,6 +59,8 @@ vector<float> v_att_jetIsSignal;
 vector<float> v_att_jetdR;
 
 vector<float> v_att_genHiggs_M_;
+vector<float> v_att_genTau1_pT_;
+vector<float> v_att_genTau2_pT_;
 vector<float> v_att_Mvis_;
 vector<float> v_att_pTvis_;
 vector<float> v_att_Mtautau_;
@@ -61,6 +72,7 @@ vector<float> v_att_tau_pT_;
 vector<float> v_att_tau_mva_;
 vector<float> v_att_tau_dm_;
 vector<float> v_att_mth_;
+vector<float> v_att_mcoll_;
 vector<float> v_att_dRtautau_;
 vector<float> v_att_pfMET_;
 vector<float> v_att_dphillmet_;
@@ -90,6 +102,9 @@ TLorentzVector SetMET(Float_t met, Float_t metphi){
 // Initialize branches _____________________________________________________//
 void RecHitAnalyzer::branchesEvtSel_jet_dijet_ditau ( TTree* tree, edm::Service<TFileService> &fs ) {
 
+  h_tau_att_genHiggs_M     = fs->make<TH1D>("h_genHiggs_M"   , "m^{gen H};m^{gen H};Events"                     ,  10,  120, 130);
+  h_tau_att_genTau1_pT     = fs->make<TH1D>("h_genTau1_pT"   , "p_{T}^{gen #tau_{1}};p_{T}^{gen #tau_{1}};Events" ,  50,  0., 150.);
+  h_tau_att_genTau2_pT     = fs->make<TH1D>("h_genTau2_pT"   , "p_{T}^{gen #tau_{2}};p_{T}^{gen #tau_{2}};Events" ,  50,  0., 150.);
   h_tau_att_jet_E          = fs->make<TH1D>("h_jet_E"        , "E;E;Jets"                                       ,  50,  0., 500.);
   h_tau_att_jet_pT         = fs->make<TH1D>("h_jet_pT"       , "p_{T};p_{T};Jets"                               ,  30,  0., 300.);
   h_tau_att_jet_eta        = fs->make<TH1D>("h_jet_eta"      , "#eta;#eta;Jets"                                 ,  30, -3.,   3.);
@@ -104,16 +119,19 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_ditau ( TTree* tree, edm::Service<
   h_tau_att_Mtautau_svFit  = fs->make<TH1D>("h_Mtautau_svFit", "m^{#tau#tau}(SVFit);m^{#tau#tau}(SVFit);Events" ,  40,  0., 400.);
   h_tau_att_Mth_svFit      = fs->make<TH1D>("h_Mth_svFit"    , "m_{T}^{H}(SVFit);m_{T}^{H}(SVFit);Events"       ,  40,  0., 400.);
   h_tau_att_pTh_svFit      = fs->make<TH1D>("h_pTh_svFit"    , "p_{T}^{H}(SVFit);p_{T}^{H}(SVFit);Events"       ,  40,  0., 400.);
-  h_tau_att_genHiggs_M     = fs->make<TH1D>("h_genHiggs_M"   , "m^{gen H};m^{gen H};Events"                     ,  40,  0., 400.);
   h_tau_att_pTh            = fs->make<TH1D>("h_pTh"          , "p_{T}^{#tau#tau};p_{T}^{#tau#tau};Events"       ,  40,  0., 200.);
   h_tau_att_tau_pT         = fs->make<TH1D>("h_tau_pT"       , "p_{T}^{#tau};p_{T}^{#tau};Jets"                 ,  40,  0., 200.);
   h_tau_att_tau_mva        = fs->make<TH1D>("h_tau_mva"      , "#tau MVA ID;#tau MVA ID;Jets"                   ,  21, -1.,   1.);
   h_tau_att_tau_dm         = fs->make<TH1D>("h_tau_dm"       , "#tau Decay Mode;#tau Decay Mode;Jets"           ,  21, -10,  10.);
   h_tau_att_mth            = fs->make<TH1D>("h_mth"          , "m_{T}^{H};m_{T}^{H};Events"                     ,  40,  0., 400.);
+  h_tau_att_mcoll          = fs->make<TH1D>("h_mcoll"        , "m_{coll}^{H};m_{coll}^{H};Events"               ,  40,  0., 400.);
   h_tau_att_pfMET          = fs->make<TH1D>("h_pfMET"        , "p_{T}^{miss};p_{T}^{miss};Events"               ,  40,  0., 200.);
   h_tau_att_dphill         = fs->make<TH1D>("h_dphill"       , "#Delta#phi_{l,l};#Delta#phi_{l,l};Events"       ,  40,  0., 3.1416);
   h_tau_att_dphillmet      = fs->make<TH1D>("h_dphillmet"    , "#Delta#phi_{#tau#tau,pfMET};#Delta #phi_{#tau#tau,pfMET};Events" ,40,0.,3.1416);
 
+  tree->Branch("GenHiggsM",        &v_att_genHiggs_M_);
+  tree->Branch("GenTau1pT",        &v_att_genTau1_pT_);
+  tree->Branch("GenTau2pT",        &v_att_genTau2_pT_);
   tree->Branch("jetM",             &v_att_tau_jet_m0_);
   tree->Branch("jetIsSignal",      &v_att_tau_jetIsSignal_);
   tree->Branch("jetpT",            &v_att_tau_jet_pt_);
@@ -124,13 +142,13 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_ditau ( TTree* tree, edm::Service<
   tree->Branch("TauMtautau_svFit", &v_att_Mtautau_svFit_);
   tree->Branch("TauMth_svFit",     &v_att_Mth_svFit_);
   tree->Branch("TaupTh_svFit",     &v_att_pTh_svFit_);
-  tree->Branch("GenHiggsM",        &v_att_genHiggs_M_);
   tree->Branch("TaupTvis",         &v_att_pTvis_);
   tree->Branch("TaupTh",           &v_att_pTh_);
   tree->Branch("TaupT",            &v_att_tau_pT_);
   tree->Branch("TauMVA",           &v_att_tau_mva_);
   tree->Branch("TauDM",            &v_att_tau_dm_);
   tree->Branch("Taumth",           &v_att_mth_);
+  tree->Branch("Taumcoll",         &v_att_mcoll_);
   tree->Branch("pfMET",            &v_att_pfMET_);
   tree->Branch("dphillmet",        &v_att_dphillmet_);
   tree->Branch("dphill",           &v_att_dphill_);
@@ -199,6 +217,10 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   
   vJetIdxs.clear();
   v_att_genHiggs_M    = -1;
+  v_att_genTau1_pT    = -1;
+  v_att_genTau2_pT    = -1;
+  v_att_genTau3_pT    = -1;
+  v_att_genTau4_pT    = -1;
   v_att_dRtautau      = -1;
   v_att_pfMET         = -1;
   v_att_dphillmet     = -1;
@@ -211,6 +233,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   v_att_pTh_svFit     = -1;
   v_att_pTh           = -1;
   v_att_mth           = -1;
+  v_att_mcoll         = -1;
   
   v_att_gentau_Idxs.clear();
   v_att_tau_Idxs.clear();
@@ -227,8 +250,12 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   std::vector<float> v_att_tau_jetFakePhoIdxs;
   */
 
-  bool IsSignal             = false;
-  bool IsMC                 = false;
+  bool IsSignal             = true;
+  bool IsMC                 = true;
+  if (iEvent.isRealData()) IsMC = false;
+  //TAU SELECTION
+  float tau_sel_mvaID       = -2;
+  float tau_sel_pT          = 20;
 
   if ( debug ) std::cout << " >>>>>>>>>>>>>>>>>>>> evt:" << std::endl;
 
@@ -245,6 +272,10 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   float best_tau_mva_1 = -1;
   float best_tau_mva_2 = -1;
   float genHiggs_mass = -1;
+  float genTau1_pT = -1;
+  float genTau2_pT = -1;
+  float genTau3_pT = -1;
+  float genTau4_pT = -1;
   if ( IsMC ) {
     for (reco::GenParticleCollection::const_iterator iGen = genParticles->begin(); iGen != genParticles->end(); ++iGen) {
       if ( IsSignal ) {
@@ -256,22 +287,42 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
         TLorentzVector GenTau4  = SetTau(iGen->daughter(1)->daughter(1)->pt(), iGen->daughter(1)->daughter(1)->eta(), iGen->daughter(1)->daughter(1)->phi(), iGen->daughter(1)->daughter(1)->mass());
         TLorentzVector GenHiggs = GenTau1 + GenTau2 + GenTau3 + GenTau4;
         genHiggs_mass = GenHiggs.M();
+        if (GenTau1.Pt() > GenTau2.Pt() ) {
+          genTau1_pT = GenTau1.Pt();
+          genTau2_pT = GenTau2.Pt();
+        }else {
+          genTau1_pT = GenTau2.Pt();
+          genTau2_pT = GenTau1.Pt();
+        }
+        if (GenTau3.Pt() > GenTau4.Pt() ) {
+          genTau3_pT = GenTau3.Pt();
+          genTau4_pT = GenTau4.Pt();
+        } else {
+          genTau3_pT = GenTau4.Pt();
+          genTau4_pT = GenTau3.Pt();
+        }
       } else {
         if ( abs(iGen->pdgId()) != 25 || iGen->numberOfDaughters() != 2 || iGen->daughter(0)->pdgId() != 15 || iGen->daughter(1)->pdgId() != 15 ) continue;
         TLorentzVector GenTau1  = SetTau(iGen->daughter(0)->pt(), iGen->daughter(0)->eta(), iGen->daughter(0)->phi(), iGen->daughter(0)->mass());
         TLorentzVector GenTau2  = SetTau(iGen->daughter(1)->pt(), iGen->daughter(1)->eta(), iGen->daughter(1)->phi(), iGen->daughter(1)->mass());
         TLorentzVector GenHiggs = GenTau1 + GenTau2;
         genHiggs_mass = GenHiggs.M();
+        if (GenTau1.Pt() > GenTau2.Pt() ) {
+          genTau1_pT = GenTau1.Pt();
+          genTau2_pT = GenTau1.Pt();
+        } else {
+          genTau1_pT = GenTau2.Pt();
+          genTau2_pT = GenTau1.Pt();
+        }
       }
     }
   }
   for ( unsigned iT1(0); iT1 != taus->size(); ++iT1 ) {
     reco::PFTauRef iTau1( taus, iT1 );
-    if ( iTau1->pt() < 20 ) continue;
-    if (!((*MuonRejection)[iTau1])) continue;
-    if (!((*ElectronRejectionMVA6)[iTau1])) continue;
-    if ((*MVAIsolation)[iTau1] < -0.8) continue;  
-    if ( iTau1->pt() < 35 ) continue;
+    if ( iTau1->pt() < tau_sel_pT ) continue;
+    //if (!((*MuonRejection)[iTau1])) continue;
+    //if (!((*ElectronRejectionMVA6)[iTau1])) continue;
+    if ( (*MVAIsolation)[iTau1] < tau_sel_mvaID ) continue;  
     if ( debug ) std::cout << " TAU PASSED SELECTION "<< std::endl;
     if ( IsMC ) {
       bool skip_tau = true;
@@ -280,7 +331,9 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
       for (reco::GenParticleCollection::const_iterator iGen = genParticles->begin(); iGen != genParticles->end(); ++iGen) {
         if ( abs(iGen->pdgId()) != 15 ) continue;
         float gentaudR = reco::deltaR( iTau1->eta(),iTau1->phi(), iGen->eta(), iGen->phi() );
-        if ( gentaudR < 0.4 ){
+        if ( iGen->mother()->pdgId() != 25 || iGen->mother()->numberOfDaughters() != 2 || abs(iGen->mother()->daughter(0)->pdgId()) != 15 || abs(iGen->mother()->daughter(1)->pdgId()) != 15 ) continue;
+        float gendRtautau = reco::deltaR( iGen->mother()->daughter(0)->eta(), iGen->mother()->daughter(0)->phi(), iGen->mother()->daughter(1)->eta(), iGen->mother()->daughter(1)->phi() );
+        if ( gentaudR < 0.4 && gendRtautau < 0.4 ){
           skip_tau = false;
           break;
         }
@@ -295,11 +348,10 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
     for ( unsigned iT2(0); iT2 != taus->size(); ++iT2 ) {
       if ( iT2 == iT1 ) continue;
       reco::PFTauRef iTau2( taus, iT2 );
-      if ( iTau2->pt() < 20 ) continue;
-      if (!((*MuonRejection)[iTau2])) continue;
-      if (!((*ElectronRejectionMVA6)[iTau2])) continue;
-      if ((*MVAIsolation)[iTau2] < -0.8) continue;  
-      if ( iTau2->pt() < 35 ) continue;
+      if ( iTau2->pt() < tau_sel_pT ) continue;
+      //if (!((*MuonRejection)[iTau2])) continue;
+      //if (!((*ElectronRejectionMVA6)[iTau2])) continue;
+      if ( (*MVAIsolation)[iTau2] < tau_sel_mvaID ) continue;  
       if ( IsMC ) {
         bool skip_tau = true;
         edm::Handle<reco::GenParticleCollection> genParticles;
@@ -308,7 +360,9 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
           //if ( abs(iGen->pdgId()) != 15 ) continue;
           if ( abs(iGen->pdgId()) != 15 || iGen->numberOfMothers() < 1 || iGen->mother()->pdgId() != 25) continue;
           float gentaudR = reco::deltaR( iTau2->eta(),iTau2->phi(), iGen->eta(), iGen->phi() );
-          if ( gentaudR < 0.4 ){
+          if ( iGen->mother()->pdgId() != 25 || iGen->mother()->numberOfDaughters() != 2 || abs(iGen->mother()->daughter(0)->pdgId()) != 15 || abs(iGen->mother()->daughter(1)->pdgId()) != 15 ) continue;
+          float gendRtautau = reco::deltaR( iGen->mother()->daughter(0)->eta(), iGen->mother()->daughter(0)->phi(), iGen->mother()->daughter(1)->eta(), iGen->mother()->daughter(1)->phi() );
+          if ( gentaudR < 0.4 && gendRtautau < 0.4 ){
             skip_tau = false;
             break;
           }
@@ -323,7 +377,10 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
       if ( recotaudR < 0.5 ) continue;
       if ( debug ) std::cout << " RECO TAU dR = " << recotaudR << std::endl;
       ++tau_combinations;
-     /* if ( ( iT2 != best_tau_1 && iT1 != best_tau_2 ) && ( best_tau_pt_1 < iTau1->pt() || best_tau_pt_2 < iTau2->pt() ) ) {
+    
+     /* 
+     // PAIR SELECTION BASED ON pT
+     if ( ( iT2 != best_tau_1 && iT1 != best_tau_2 ) && ( best_tau_pt_1 < iTau1->pt() || best_tau_pt_2 < iTau2->pt() ) ) {
         if ( iTau1->pt() > iTau2->pt() ) {
           best_tau_2    = iT2;
           best_tau_pt_2 = iTau2->pt();
@@ -336,6 +393,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
           best_tau_pt_1 = iTau2->pt();
         }
       }*/
+      // PAIR SELECTION BASED ON MVA ID
       if ( (iT2 != best_tau_1 && iT1 != best_tau_2) && ( best_tau_mva_1 < (*MVAIsolation)[iTau1] || best_tau_mva_2 < (*MVAIsolation)[iTau2] ) ) {
         if ( (*MVAIsolation)[iTau1] > (*MVAIsolation)[iTau2] ) {
           best_tau_2     = iT2;
@@ -374,18 +432,22 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   float pfMETphi = (pfmet->front()).phi();
   TLorentzVector MET = SetMET(pfMET,pfMETphi);
   if ( debug ) std::cout << " PF MET = " << pfMET << std::endl;
-  float dphillmet = abs(DiTau.DeltaPhi(MET));  
-  float ditau_mth = sqrt( 2. * dipTvis * pfMET * ( 1. - cos (dphillmet) ));
-
-  TLorentzVector Higgs = Tau1+Tau2+MET;
-
-  float ditau_M   = Higgs.M();
-  float ditau_pT  = Higgs.Pt();
-
   // define MET for SVFit
   double measuredMETx = (pfmet->front()).px();
   double measuredMETy = (pfmet->front()).py();
   if ( debug ) std::cout << " PF MET X = " << measuredMETx << " | PF MET Y = " << measuredMETy << std::endl;
+  float dphillmet = abs(DiTau.DeltaPhi(MET));  
+  float ditau_mth = sqrt( 2. * dipTvis * pfMET * ( 1. - cos (dphillmet) ));
+
+  TLorentzVector Higgs = Tau1+Tau2+MET;
+  float ditau_M   = Higgs.M();
+  float ditau_pT  = Higgs.Pt();
+
+  float the1    = 2.*atan(exp(-iTau1->eta()));
+  float the2    = 2.*atan(exp(-iTau2->eta()));
+  float pTmiss1 = ( (sin(iTau1->phi())*measuredMETx) - (cos(iTau1->phi())*measuredMETy) ) / (sin(the2)*( (sin(iTau1->phi())*cos(iTau2->phi())) - (cos(iTau1->phi())*sin(iTau2->phi())) ) );
+  float pTmiss2 = ( (sin(iTau2->phi())*measuredMETx) - (cos(iTau2->phi())*measuredMETy) ) / (sin(the1)*( (sin(iTau2->phi())*cos(iTau1->phi())) - (cos(iTau2->phi())*sin(iTau1->phi())) ) );
+  float mcoll = ditau_M / sqrt( (pTmiss1/(pTmiss1+iTau1->pt())) + (pTmiss2/(pTmiss2+iTau2->pt())) );
 
   // define MET covariance
   const reco::METCovMatrix cov = metSigAlgo_->getCovariance( *Jets, leptons, pfCandidates, *rho, resPtObj, resPhiObj, resSFObj, iEvent.isRealData() );
@@ -409,11 +471,6 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
     measuredTauLeptons.push_back( MeasuredTauLepton(MeasuredTauLepton::kTauToHadDecay,  iTau1->pt(), iTau1->eta(), iTau1->phi(), iTau1->mass()) );
   }
 
-  //double higgsMass_1stRun = -1;
-  //double higgsMth_1stRun = -1;
-  //double higgsMass_2ndRun = -1;
-  //double higgsMth_2ndRun = -1;
-
   FastMTT aFastMTTAlgo;
   aFastMTTAlgo.run(measuredTauLeptons,measuredMETx,measuredMETy,covMET);
   LorentzVector ttP4 = aFastMTTAlgo.getBestP4();
@@ -425,6 +482,11 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   std::cout << " Found mass = " << svFitMass << std::endl;
 
   /*
+  double higgsMass_1stRun = -1;
+  double higgsMth_1stRun = -1;
+  double higgsMass_2ndRun = -1;
+  double higgsMth_2ndRun = -1;
+ 
   int verbosity_svFit = 0;
   //if ( debug ) verbosity_svFit = 1;
   ClassicSVfit svFitAlgo(verbosity_svFit);
@@ -467,9 +529,27 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
     std::cout << "sorry, failed to find valid solution !!" << std::endl;
   }
   */
+  
   //Signal Region selection
-  //if ( taudR > 3.0 ) IsSignal = true;
+  if ( svFitMass > 50 && svFitMass < 130 && ditau_mth < 50 ) IsSignal = true;
   //if (!IsSignal) return false;
+  
+  // Study of trigger bit
+  //hltConfig_.init(iEvent,iSetup)
+  edm::Handle<edm::TriggerResults> hltresults;
+  iEvent.getByToken(triggerResultsToken_,hltresults);
+  if (!hltresults.isValid()) {
+    std::cout << "!!! Error in getting TriggerResults product from Event !!!" << std::endl;
+    return false;
+  }
+  int ntrigs = hltresults->size();
+  edm::TriggerNames const& triggerNames = iEvent.triggerNames(*hltresults);
+  for (int itrig = 0; itrig != ntrigs; ++itrig) {
+    TString trigName = triggerNames.triggerName(itrig);
+    bool accept = hltresults->accept(itrig);
+    if (!(accept)) continue;
+    std::cout << " Accept " << trigName << std::endl;
+  }
 
   float tau_pT  = -99;
   float tau_mva = -99;
@@ -515,6 +595,10 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   if ( nMatchedJets < 1 ) return false;
 
   v_att_genHiggs_M    = genHiggs_mass;
+  v_att_genTau1_pT    = genTau1_pT;
+  v_att_genTau2_pT    = genTau2_pT;
+  v_att_genTau3_pT    = genTau3_pT;
+  v_att_genTau4_pT    = genTau4_pT;
   v_att_dRtautau      = taudR;
   v_att_pfMET         = pfMET;
   v_att_dphillmet     = dphillmet;
@@ -526,6 +610,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   v_att_pTh           = ditau_pT;
   v_att_pTh_svFit     = svFitPt;
   v_att_mth           = ditau_mth;
+  v_att_mcoll         = mcoll;
   v_att_Mth_svFit     = svFitMt;
 
   if ( debug ) std::cout << " >> has_jet_dijet_ditau: passed" << std::endl;
@@ -557,12 +642,19 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_ditau ( const edm::Event& iEvent, cons
   v_att_tau_mva_.clear();
   v_att_tau_dm_.clear();
   v_att_mth_.clear();
+  v_att_mcoll_.clear();
   v_att_pfMET_.clear();
   v_att_dphillmet_.clear();
   v_att_dphill_.clear();
   v_att_genHiggs_M_.clear();
+  v_att_genTau1_pT_.clear();
+  v_att_genTau2_pT_.clear();
   
   h_tau_att_genHiggs_M->Fill( v_att_genHiggs_M );
+  h_tau_att_genTau1_pT->Fill( v_att_genTau1_pT );
+  h_tau_att_genTau2_pT->Fill( v_att_genTau2_pT );
+  h_tau_att_genTau1_pT->Fill( v_att_genTau3_pT );
+  h_tau_att_genTau2_pT->Fill( v_att_genTau4_pT );
   h_tau_att_dRtautau->Fill( v_att_dRtautau );
   h_tau_att_Mvis->Fill( v_att_Mvis );
   h_tau_att_pTvis->Fill( v_att_pTvis );
@@ -572,11 +664,16 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_ditau ( const edm::Event& iEvent, cons
   h_tau_att_pTh_svFit->Fill( v_att_pTh_svFit );
   h_tau_att_pTh->Fill( v_att_pTh );
   h_tau_att_mth->Fill( v_att_mth );
+  h_tau_att_mcoll->Fill( v_att_mcoll );
   h_tau_att_pfMET->Fill( v_att_pfMET );
   h_tau_att_dphillmet->Fill( v_att_dphillmet );
   h_tau_att_dphill->Fill( v_att_dphill );
 
   v_att_genHiggs_M_.push_back( v_att_genHiggs_M );
+  v_att_genTau1_pT_.push_back( v_att_genTau1_pT );
+  v_att_genTau2_pT_.push_back( v_att_genTau2_pT );
+  v_att_genTau1_pT_.push_back( v_att_genTau3_pT );
+  v_att_genTau2_pT_.push_back( v_att_genTau4_pT );
   v_att_dRtautau_.push_back( v_att_dRtautau );
   v_att_Mvis_.push_back( v_att_Mvis );
   v_att_pTvis_.push_back( v_att_pTvis );
@@ -586,6 +683,7 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_ditau ( const edm::Event& iEvent, cons
   v_att_pTh_svFit_.push_back( v_att_pTh_svFit );
   v_att_pTh_.push_back( v_att_pTh );
   v_att_mth_.push_back( v_att_mth );
+  v_att_mcoll_.push_back( v_att_mcoll );
   v_att_pfMET_.push_back( v_att_pfMET );
   v_att_dphillmet_.push_back( v_att_dphillmet );
   v_att_dphill_.push_back( v_att_dphill );

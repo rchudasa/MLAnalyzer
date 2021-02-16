@@ -117,6 +117,13 @@
 #include "DataFormats/TrackerRecHit2D/interface/SiStripMatchedRecHit2DCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
 
+#include "FWCore/Common/interface/TriggerNames.h"
+#include "FWCore/Common/interface/TriggerResultsByName.h"
+#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+#include "DataFormats/HLTReco/interface/TriggerObject.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/Common/interface/ValueMap.h"
+
 #include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h"
 #include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
 #include "TauAnalysis/ClassicSVfit/interface/svFitHistogramAdapter.h"
@@ -176,6 +183,10 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<reco::PFTauDiscriminator> tauMVAIsolation_;
     edm::EDGetTokenT<reco::PFTauDiscriminator> tauMuonRejection_;
     edm::EDGetTokenT<reco::PFTauDiscriminator> tauElectronRejectionMVA6_;
+
+    std::string   processName_;
+    edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
+    HLTConfigProvider hltConfig_;
 
     edm::EDGetTokenT<double> rhoLabel_;
     std::string jetSFType_;      //to set

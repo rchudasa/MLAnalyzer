@@ -3,6 +3,8 @@
 <use name="FWCore/ParameterSet"/>
 <use name="FWCore/Common"/>
 <flags EDM_PLUGIN="1"/>
+ <use name="DataFormats/HLTReco"/>
+ <use name="HLTrigger/HLTcore"/>
  <use name="DataFormats/TrackReco"/>
  <use name="DataFormats/TrackingRecHit"/>
  <use name="DataFormats/EcalRecHit"/>
