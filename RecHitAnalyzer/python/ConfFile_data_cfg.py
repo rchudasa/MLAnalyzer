@@ -25,8 +25,8 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi");
 #process.load("Geometry.CaloEventSetup.CaloGeometry_cfi");
 #process.load("Geometry.CaloEventSetup.CaloTopology_cfi");
-process.GlobalTag.globaltag = cms.string('102X_dataRun2_v13')
-#process.GlobalTag.globaltag = cms.string('80X_dataRun2_HLT_v12')
+#process.GlobalTag.globaltag = cms.string('102X_dataRun2_v13')
+process.GlobalTag.globaltag = cms.string('106X_dataRun2_v32')
 process.es_prefer_GlobalTag = cms.ESPrefer('PoolDBESSource','GlobalTag')
 
 #process.load('PhysicsTools.PatAlgos.patSequences_cff')

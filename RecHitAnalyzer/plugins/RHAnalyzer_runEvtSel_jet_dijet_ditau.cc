@@ -450,7 +450,8 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   float mcoll = ditau_M / sqrt( (pTmiss1/(pTmiss1+iTau1->pt())) + (pTmiss2/(pTmiss2+iTau2->pt())) );
 
   // define MET covariance
-  const reco::METCovMatrix cov = metSigAlgo_->getCovariance( *Jets, leptons, pfCandidates, *rho, resPtObj, resPhiObj, resSFObj, iEvent.isRealData() );
+  double sumPtUnclestered = 0;
+  const reco::METCovMatrix cov = metSigAlgo_->getCovariance( *Jets, leptons, pfCandidates, *rho, resPtObj, resPhiObj, resSFObj, iEvent.isRealData(), sumPtUnclestered);
   TMatrixD covMET(2, 2);
   covMET[0][0] = cov[0][0]; 
   covMET[1][1] = cov[1][1]; 
