@@ -14,6 +14,7 @@
 // system include files
 #include <memory>
 #include <vector>
+#include <string>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -72,6 +73,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "TH1.h"
+#include "TH1F.h"
 #include "TH2.h"
 #include "TH3.h"
 #include "TProfile2D.h"
@@ -80,17 +82,31 @@
 #include "TStyle.h"
 #include "TMath.h"
 #include "TVector3.h"
+#include "TLorentzVector.h"
+
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Common/interface/View.h"
+#include "DataFormats/Common/interface/Handle.h"
 
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/EgammaCandidates/interface/PhotonFwd.h" // reco::PhotonCollection defined here
 #include "DataFormats/JetReco/interface/PFJet.h"
-#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
+
+#include "DataFormats/METReco/interface/MET.h"
+#include "DataFormats/METReco/interface/METFwd.h"
+#include "DataFormats/METReco/interface/PFMET.h"
+#include "DataFormats/METReco/interface/PFMETFwd.h"
+#include "DataFormats/METReco/interface/CommonMETData.h"
+#include "RecoMET/METProducers/interface/METSignificanceProducer.h"
+#include "RecoMET/METAlgorithms/interface/METSignificance.h"
+
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/TauReco/interface/PFTauFwd.h"
+#include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "DataFormats/BTauReco/interface/JetTag.h"
@@ -100,6 +116,20 @@
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHitCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripMatchedRecHit2DCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
+
+#include "FWCore/Common/interface/TriggerNames.h"
+#include "FWCore/Common/interface/TriggerResultsByName.h"
+#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+#include "DataFormats/HLTReco/interface/TriggerObject.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/Common/interface/ValueMap.h"
+
+#include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h"
+#include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
+#include "TauAnalysis/ClassicSVfit/interface/svFitHistogramAdapter.h"
+#include "TauAnalysis/ClassicSVfit/interface/FastMTT.h"
+
+using namespace classic_svFit;
 
 //
 // class declaration
@@ -138,16 +168,39 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<reco::GenParticleCollection> genParticleCollectionT_;
     edm::EDGetTokenT<reco::PhotonCollection> photonCollectionT_;
     edm::EDGetTokenT<reco::PFJetCollection> jetCollectionT_;
+    edm::EDGetTokenT<edm::View<reco::Jet> > pfjetsToken_;
     edm::EDGetTokenT<reco::GenJetCollection> genJetCollectionT_;
     edm::EDGetTokenT<reco::TrackCollection> trackCollectionT_;
     edm::EDGetTokenT<reco::VertexCollection> vertexCollectionT_;
     edm::EDGetTokenT<edm::View<reco::Jet> > recoJetsT_;
     edm::EDGetTokenT<reco::JetTagCollection> jetTagCollectionT_;
     edm::EDGetTokenT<std::vector<reco::CandIPTagInfo> >    ipTagInfoCollectionT_;
+    edm::EDGetTokenT<reco::PFMETCollection> metCollectionT_;
     edm::EDGetTokenT<reco::PFTauCollection> tauCollectionT_;
+
+    edm::EDGetTokenT<reco::PFTauDiscriminator> tauDiscriminatorT_;
+    edm::EDGetTokenT<reco::PFTauDiscriminator> tauDecayMode_;
+    edm::EDGetTokenT<reco::PFTauDiscriminator> tauMVAIsolation_;
+    edm::EDGetTokenT<reco::PFTauDiscriminator> tauMuonRejection_;
+    edm::EDGetTokenT<reco::PFTauDiscriminator> tauElectronRejectionMVA6_;
+
+    std::string   processName_;
+    edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
+    HLTConfigProvider hltConfig_;
+
+    edm::EDGetTokenT<double> rhoLabel_;
+    std::string jetSFType_;      //to set
+    std::string jetResPtType_;   //to set
+    std::string jetResPhiType_;  //to set
+ 
+    std::vector<edm::EDGetTokenT<edm::View<reco::Candidate> > > lepTokens_;
  
     typedef std::vector<reco::PFCandidate>  PFCollection;
     edm::EDGetTokenT<PFCollection> pfCollectionT_;
+
+    edm::EDGetTokenT<edm::View<reco::Candidate> > pfCandidatesToken_;
+    
+    metsig::METSignificance* metSigAlgo_;
 
     //edm::InputTag siPixelRecHitCollectionT_;
     edm::EDGetTokenT<SiPixelRecHitCollection> siPixelRecHitCollectionT_;
@@ -224,25 +277,31 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     std::vector<int> vJetIdxs;
     void branchesEvtSel_jet_dijet      ( TTree*, edm::Service<TFileService>& );
     void branchesEvtSel_jet_dijet_tau( TTree*, edm::Service<TFileService>& );
+    void branchesEvtSel_jet_dijet_ditau( TTree*, edm::Service<TFileService>& );
+    void branchesEvtSel_jet_dijet_tau_massregression( TTree*, edm::Service<TFileService>& );
     void branchesEvtSel_jet_dijet_gg_qq( TTree*, edm::Service<TFileService>& );
     bool runEvtSel_jet_dijet      ( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet_dijet_tau( const edm::Event&, const edm::EventSetup& );
+    bool runEvtSel_jet_dijet_ditau( const edm::Event&, const edm::EventSetup& );
+    bool runEvtSel_jet_dijet_tau_massregression( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet_dijet_gg_qq( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet      ( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet_tau( const edm::Event&, const edm::EventSetup& );
+    void fillEvtSel_jet_dijet_ditau( const edm::Event&, const edm::EventSetup& );
+    void fillEvtSel_jet_dijet_tau_massregression( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet_gg_qq( const edm::Event&, const edm::EventSetup& );
 
     int nTotal, nPassed;
 
     std::map<uint32_t,SiPixelRecHitModule*> thePixelStructure;
-
+    
 }; // class RecHitAnalyzer
 
 //
 // constants, enums and typedefs
 //
-//static const bool debug = true;
-static const bool debug = false;
+static const bool debug = true;
+//static const bool debug = false;
 
 static const int nEE = 2;
 static const int nTOB = 6;

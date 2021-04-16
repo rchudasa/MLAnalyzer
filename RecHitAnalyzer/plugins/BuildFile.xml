@@ -3,6 +3,8 @@
 <use name="FWCore/ParameterSet"/>
 <use name="FWCore/Common"/>
 <flags EDM_PLUGIN="1"/>
+ <use name="DataFormats/HLTReco"/>
+ <use name="HLTrigger/HLTcore"/>
  <use name="DataFormats/TrackReco"/>
  <use name="DataFormats/TrackingRecHit"/>
  <use name="DataFormats/EcalRecHit"/>
@@ -11,9 +13,15 @@
  <use name="DataFormats/ParticleFlowCandidate"/>
  <use name="DataFormats/PatCandidates"/>
  <use name="DataFormats/Common"/>
+ <use name="DataFormats/METReco"/>
  <use name="SimDataFormats/GeneratorProducts"/>
  <use name="DQM/HcalCommon"/>
  <use name="Geometry/CaloGeometry"/>
  <use name="Geometry/Records"/>
  <use name="CommonTools/UtilAlgos"/>
  <use name="Calibration/IsolatedParticles"/>
+ <use name="TauAnalysis/ClassicSVfit"/>
+ <use name="TauAnalysis/SVfitTF"/>
+ <use name="RecoMET/METAlgorithms"/>
+ <use name="RecoMET/METProducers"/>
+ <use name="JetMETCorrections/Modules"/>

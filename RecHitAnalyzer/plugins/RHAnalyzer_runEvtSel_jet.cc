@@ -19,7 +19,9 @@ vector<int>   vFailedJetIdx_;
 
 
 //const std::string jetSelection = "dijet_gg_qq"; // TODO: put switch at cfg level
-const std::string jetSelection = "dijet_tau";
+//const std::string jetSelection = "jet_tau";
+//const std::string jetSelection = "dijet_ditau";
+const std::string jetSelection = "dijet_tau_massregression";
 
 
 // Initialize branches _____________________________________________________//
@@ -32,8 +34,12 @@ void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService
   tree->Branch("jetSeed_ieta",   &vJetSeed_ieta_);
 
   // Fill branches in explicit jet selection
-  if ( jetSelection == "dijet_tau" ) {
+  if ( jetSelection == "jet_tau" ) {
     branchesEvtSel_jet_dijet_tau( tree, fs );
+  } else if ( jetSelection == "dijet_ditau" ) {
+    branchesEvtSel_jet_dijet_ditau( tree, fs );
+  } else if ( jetSelection == "dijet_tau_massregression" ) {
+    branchesEvtSel_jet_dijet_tau_massregression( tree, fs );
   } else {
     branchesEvtSel_jet_dijet( tree, fs );
   }
@@ -47,9 +53,15 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
 
   // Run explicit jet selection
   bool hasPassed;
-  if ( jetSelection == "dijet_tau" ) {
+  if ( jetSelection == "jet_tau" ) {
     hasPassed = runEvtSel_jet_dijet_tau( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET SELECTION HAS PASSED! " << std::endl; 
+  } else if ( jetSelection == "dijet_ditau" ) {
+    hasPassed = runEvtSel_jet_dijet_ditau( iEvent, iSetup );
+    if ( debug && hasPassed ) std::cout << "!!!!!!   JET SELECTION HAS PASSED! " << std::endl;
+  } else if ( jetSelection == "dijet_tau_massregression" ) {
+    hasPassed = runEvtSel_jet_dijet_tau_massregression( iEvent, iSetup );
+    if ( debug && hasPassed ) std::cout << "!!!!!!   JET SELECTION HAS PASSED! " << std::endl;
   } else {
     hasPassed = runEvtSel_jet_dijet( iEvent, iSetup );
   }
@@ -181,8 +193,12 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   jet_runId_ = iEvent.id().run();
   jet_lumiId_ = iEvent.id().luminosityBlock();
 
-  if ( jetSelection == "dijet_tau" ) {
+  if ( jetSelection == "jet_tau" ) {
     fillEvtSel_jet_dijet_tau( iEvent, iSetup );
+  } else if ( jetSelection == "dijet_ditau" ) {
+    fillEvtSel_jet_dijet_ditau( iEvent, iSetup );
+  } else if ( jetSelection == "dijet_tau_massregression" ) {
+    fillEvtSel_jet_dijet_tau_massregression( iEvent, iSetup );
   } else {
     fillEvtSel_jet_dijet( iEvent, iSetup );
   }

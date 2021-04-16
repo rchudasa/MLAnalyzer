@@ -18,6 +18,7 @@ from matplotlib.colors import LogNorm, ListedColormap, LinearSegmentedColormap
 import matplotlib.ticker as ticker
 from matplotlib.ticker import MultipleLocator
 import matplotlib.gridspec as gridspec
+import matplotlib.patches as mpatches
 
 from skimage.measure import block_reduce
 from numpy.lib.stride_tricks import as_strided
@@ -60,28 +61,49 @@ def custom_div_cmap(numcolors=11, name='custom_div_cmap',mincol='blue', midcol='
 pink_map = custom_div_cmap(50, mincol='#FFFFFF', midcol='#F699CD' ,maxcol='#FF1694')
 
 def plotJet(img, mins, maxs, str_):
-    plt.imshow(np.zeros_like(img[6,:,:]), cmap='Greys', vmin=0., vmax=1., alpha=0.9)
-    if maxs[-1] > 0 : plt.imshow(img[6,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-1], vmax=maxs[-1])
+    im = plt.imshow(np.zeros_like(img[6,:,:]), cmap='Greys', vmin=0., vmax=1., alpha=0.9)
+    #if maxs[-1] > 0 : plt.imshow(img[6,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-1], vmax=maxs[-1])
     if maxs[-2] > 0 : plt.imshow(img[5,:,:], cmap='Purples', norm=LogNorm(), alpha=0.9, vmin=mins[-2], vmax=maxs[-2])
-    if maxs[-3] > 0 : plt.imshow(img[4,:,:], cmap=pink_map, norm=LogNorm(), alpha=0.9, vmin=mins[-3], vmax=maxs[-3])
-    if maxs[-4] > 0 : plt.imshow(img[3,:,:], cmap='Reds', norm=LogNorm(), alpha=0.9, vmin=mins[-4], vmax=maxs[-4])
+    if maxs[-3] > 0 : plt.imshow(img[4,:,:], cmap='Blues', norm=LogNorm(), alpha=0.9, vmin=mins[-3], vmax=maxs[-3])
+    if maxs[-4] > 0 : plt.imshow(img[3,:,:], cmap='Greens', norm=LogNorm(), alpha=0.9, vmin=mins[-4], vmax=maxs[-4])
     if maxs[-5] > 0 : plt.imshow(img[2,:,:], cmap='Greys',  norm=LogNorm(), alpha=0.9, vmin=mins[-5], vmax=maxs[-5])
     if maxs[-6] > 0 : plt.imshow(img[1,:,:], cmap='Blues',  norm=LogNorm(), alpha=0.9, vmin=mins[-6], vmax=maxs[-6])
     if maxs[-7] > 0 : plt.imshow(img[0,:,:], cmap='Oranges',norm=LogNorm(), alpha=0.9, vmin=mins[-7], vmax=maxs[-7])
     #plt.colorbar(fraction=0.046, pad=0.04)
+
+    #X AXIS
     ax = plt.axes()
     plt.xlim([0., 125.+0.])
     plt.xticks(np.arange(0,150,25))
+    ax_range_x = np.arange(0,125+25,25)
+    ax.set_xticks(ax_range_x)
+    ax.set_xticklabels(ax_range_x)
     plt.xlabel(r"$\mathrm{i\varphi}'$", size=28) #28, 30
     ax.xaxis.set_tick_params(direction='in', which='major', length=6.)
-    plt.ylim([0., 125.+0.])
-    plt.yticks(np.arange(0,150,25))
+    ax.xaxis.set_tick_params(direction='in', which='minor', length=3.)
+
+    #Y AXIS
+    plt.ylim([125.+0.,0.])
+    plt.yticks(np.arange(150,0,25))
     plt.ylabel(r"$\mathrm{i\eta}'$", size=28) #28, 30
+    ax_range_y = np.arange(0,125+25,25)
+    ax.set_yticks(ax_range_y)
+    ax.set_yticklabels(ax_range_y)
     ax.yaxis.set_tick_params(direction='in', which='major', length=6.)
+    ax.yaxis.set_tick_params(direction='in', which='minor', length=3.)
+
+    #LEGEND
+    #colors = {1:'tab:orange',2:'tab:blue',3:'tab:grey',4:'tab:green',5:'tab:blue',6:'tab:purple',7:'tab:green'}
+    colors = {1:'orange',2:'lightblue',3:'grey',4:'green',5:'blue',6:'purple'}
+    #labels = {1:'Track pT',2:'ECAL',3:'HCAL',4:'PXB1',5:'PXB2',6:'PXB3',7:'PXB4'}
+    labels = {1:'Track pT',2:'ECAL',3:'HCAL',4:'BPix L1',5:'BPix L2',6:'BPix L3'}
+    patches =[mpatches.Patch(color=colors[i],label=labels[i]) for i in colors]
+    #plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0. )
+    plt.legend(handles=patches, loc='best')
     #plt.savefig(str_, bbox_inches='tight')
     plt.savefig(str_, bbox_inches='tight', format='png')
-    plt.clf()
     #plt.show()
+    plt.clf()
 
 def plotJet_PBX12(img, mins, maxs, str_):
     plt.imshow(np.zeros_like(img[4,:,:]), cmap='Greys', vmin=0., vmax=1., alpha=0.9)
@@ -180,5 +202,5 @@ for i, data in enumerate(train_loader):
         maxs = [X_train[jet,0,:,:].max(), X_train[jet,1,:,:].max(), X_train[jet,2,:,:].max(), X_train[jet,3,:,:].max(), X_train[jet,4,:,:].max(), X_train[jet,5,:,:].max(), X_train[jet,6,:,:].max()]
         print "Min = ", mins, " | Max = ", maxs
         plotJet(img, mins, maxs, 'images/%s/tau_event%d_jet%d.png'%(outDir,i,jet))
-        plotJet_PBX12(img, mins, maxs, 'images/%s/tau_event%d_jet%d_PBX12.png'%(outDir,i,jet))
-        plotJet_PBX(img, mins, maxs, 'images/%s/tau_event%d_jet%d_PBX.png'%(outDir,i,jet))
+        #plotJet_PBX12(img, mins, maxs, 'images/%s/tau_event%d_jet%d_PBX12.png'%(outDir,i,jet))
+        #plotJet_PBX(img, mins, maxs, 'images/%s/tau_event%d_jet%d_PBX.png'%(outDir,i,jet))
