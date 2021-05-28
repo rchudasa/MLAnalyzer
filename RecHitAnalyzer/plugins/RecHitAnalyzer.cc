@@ -52,6 +52,8 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   tauMuonRejection_         = consumes<reco::PFTauDiscriminator>(iConfig.getParameter<edm::InputTag>("tauMuonRejectionLoose"));
   tauElectronRejectionMVA6_ = consumes<reco::PFTauDiscriminator>(iConfig.getParameter<edm::InputTag>("tauElectronRejectionMVA6VLoose"));
 
+  eleCollectionT_           = consumes<reco::GsfElectronCollection>(iConfig.getParameter<edm::InputTag>("eleCollection"));
+
   processName_              = iConfig.getUntrackedParameter<std::string>("processName","HLT");
   //triggerResultsToken_      = consumes<edm::TriggerResults> (iConfig.getUntrackedParameter<edm::InputTag>("triggerResultsTag", edm::InputTag("TriggerResults", "", "HLT")));
   triggerResultsToken_      = consumes<edm::TriggerResults> (iConfig.getParameter<edm::InputTag>("triggerResultsTag"));

@@ -29,6 +29,7 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     , jetTagCollection               = cms.InputTag("pfCombinedInclusiveSecondaryVertexV2BJetTags")
     , srcPfJets                      = cms.InputTag("ak4PFJets")
     , metCollection                  = cms.InputTag("pfMet")
+    , eleCollection                  = cms.InputTag("gedGsfElectrons")
     , tauCollection                  = cms.InputTag("hpsPFTauProducer")
     #, tauMVAIsolationLoose           = cms.InputTag("hpsPFTauDiscriminationByLooseIsolationMVArun2v1DBoldDMwLT")
     , tauMVAIsolationLoose           = cms.InputTag("hpsPFTauDiscriminationByVLooseIsolationMVArun2v1DBnewDMwLT")
