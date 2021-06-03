@@ -182,8 +182,10 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ele_massregression( const edm::Event& i
 
       if ( debug ) std::cout << "       MOTHER => status: " << iGen->mother()->status() << ", id: " << iGen->mother()->pdgId() << ", nDaught: " << iGen->mother()->numberOfDaughters() << " | pt: "<< iGen->mother()->pt() << " eta: " <<iGen->mother()->eta() << " phi: " <<iGen->mother()->phi() << " mass: " <<iGen->mother()->mass() << std::endl;
       if (nMatchedGenParticles == 0) {
+        if ( debug ) std::cout << "       nMatchedGenParticles: " << nMatchedGenParticles << std::endl;
         aPdgId = std::abs(iGen->mother()->pdgId());
         if ( abs(iGen->mother()->pdgId()) == 25 && iGen->mother()->numberOfDaughters() == 2 ) {
+          if ( debug ) std::cout << "       FOUND FIRST GEN CANDIDATE" << std::endl;
           MatchedPseudoScalar = true;
         }
         if (!MatchedPseudoScalar) {
@@ -193,7 +195,9 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ele_massregression( const edm::Event& i
         a_mass = iGen->mother()->mass();
         a_pt   = iGen->mother()->pt();
         dRa = reco::deltaR( iJet->eta(),iJet->phi(), iGen->mother()->eta(),iGen->mother()->phi() );
-        if (abs(iGen->mother()->daughter(0)->pdgId()) == 11 && abs(iGen->mother()->daughter(1)->pdgId()) == 11){ 
+        if ( debug ) std::cout << "        BEFORE CHECKING DAUGHTERS" << std::endl;
+        if (abs(iGen->mother()->daughter(0)->pdgId()) == 11 && abs(iGen->mother()->daughter(1)->pdgId()) == 11) { //TODO 
+        if ( debug ) std::cout << "        PASSED 2 ELE SELECTION" << std::endl;
           eledR = reco::deltaR( iGen->mother()->daughter(0)->eta(),iGen->mother()->daughter(0)->phi(), iGen->mother()->daughter(1)->eta(),iGen->mother()->daughter(1)->phi() );
           if ( iGen->mother()->daughter(0)->pt() > iGen->mother()->daughter(1)->pt() ) {
             ele1pT = iGen->mother()->daughter(0)->pt();
@@ -208,6 +212,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ele_massregression( const edm::Event& i
           } // end else pt2 > pt1
         }
       }
+      if ( debug ) std::cout << "        FILLED 2 ELE CANDIDATES" << std::endl;
       if ( eledR > 0.4 ) {
         if ( debug ) std::cout << " !! Electrons are not merged: gen dR_ee = " << eledR << " !! " << std::endl;
         continue;
