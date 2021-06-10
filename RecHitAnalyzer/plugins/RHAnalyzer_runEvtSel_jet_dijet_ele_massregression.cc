@@ -68,8 +68,8 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_ele_massregression ( TTree* tree, 
   h_ele_aee_mr_jet_eta        = fs->make<TH1D>("h_jet_eta"        , "#eta;#eta;Jets"                                , 100, -5.,   5.);
   h_ele_aee_mr_jet_nJet       = fs->make<TH1D>("h_jet_nJet"       , "nJet;nJet;Events"                              ,  10,  0.,  10.);
   h_ele_aee_mr_jet_m0         = fs->make<TH1D>("h_jet_m0"         , "m_{jet};m_{jet};Jets"                          , 100,  0., 100.);
-  h_ele_aee_mr_jet_a_m_pt     = fs->make<TH2D>("h_a_m_pT"         , "m^{a} vs p_{T}^{a};m^{a} vs p_{T}^{a};Jets"    ,  16, 3.6,  12., 20, 20., 120.);
-  h_ele_aee_mr_jet_ma         = fs->make<TH1D>("h_jet_ma"         , "m^{a};m^{a};Jets"                              ,  16, 3.6,  12.);
+  h_ele_aee_mr_jet_a_m_pt     = fs->make<TH2D>("h_a_m_pT"         , "m^{a} vs p_{T}^{a};m^{a} vs p_{T}^{a};Jets"    ,  20, 0.1,  6., 20, 20., 120.);
+  h_ele_aee_mr_jet_ma         = fs->make<TH1D>("h_jet_ma"         , "m^{a};m^{a};Jets"                              ,  20, 0.1,  6.);
   h_ele_aee_mr_jet_pta        = fs->make<TH1D>("h_jet_pta"        , "p_{T}^{a};p_{T}^{a};Jets"                      ,  20, 20., 120.);
   h_ele_aee_mr_jet_isDiEle    = fs->make<TH1D>("h_jet_isDiEle"    , "nIsDiEle;nIsDiEle;Jets"                        ,  10,  0.,  10.);
   h_ele_aee_mr_jet_dR         = fs->make<TH1D>("h_jet_dR"         , "dR_{a,j};dR_{a,j};Jets"                        ,  50,  0.,  0.5);
@@ -170,8 +170,6 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ele_massregression( const edm::Event& i
     unsigned int nMatchedGenParticles = 0;
     bool passedGenSel = false;
     unsigned int iGenParticle = 0; 
-    unsigned int NEle1Daughters = 0;
-    unsigned int NEle2Daughters = 0;
     for (reco::GenParticleCollection::const_iterator iGen = genParticles->begin(); iGen != genParticles->end(); ++iGen) {
       if ( abs(iGen->pdgId()) != 11 && iGen->status() != 23 ) continue;
       if ( iGen->numberOfMothers() != 1 ) continue;
@@ -185,8 +183,9 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ele_massregression( const edm::Event& i
         if ( debug ) std::cout << "       nMatchedGenParticles: " << nMatchedGenParticles << std::endl;
         aPdgId = std::abs(iGen->mother()->pdgId());
         if ( abs(iGen->mother()->pdgId()) == 25 && iGen->mother()->numberOfDaughters() == 2 ) {
-          if ( debug ) std::cout << "       FOUND FIRST GEN CANDIDATE" << std::endl;
           MatchedPseudoScalar = true;
+        } else {
+          MatchedPseudoScalar = false;
         }
         if (!MatchedPseudoScalar) {
           if ( debug ) std::cout << " MOTHER is not the pseudoscalar a"  << std::endl;
@@ -195,9 +194,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ele_massregression( const edm::Event& i
         a_mass = iGen->mother()->mass();
         a_pt   = iGen->mother()->pt();
         dRa = reco::deltaR( iJet->eta(),iJet->phi(), iGen->mother()->eta(),iGen->mother()->phi() );
-        if ( debug ) std::cout << "        BEFORE CHECKING DAUGHTERS" << std::endl;
         if (abs(iGen->mother()->daughter(0)->pdgId()) == 11 && abs(iGen->mother()->daughter(1)->pdgId()) == 11) { //TODO 
-        if ( debug ) std::cout << "        PASSED 2 ELE SELECTION" << std::endl;
           eledR = reco::deltaR( iGen->mother()->daughter(0)->eta(),iGen->mother()->daughter(0)->phi(), iGen->mother()->daughter(1)->eta(),iGen->mother()->daughter(1)->phi() );
           if ( iGen->mother()->daughter(0)->pt() > iGen->mother()->daughter(1)->pt() ) {
             ele1pT = iGen->mother()->daughter(0)->pt();
@@ -212,11 +209,11 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ele_massregression( const edm::Event& i
           } // end else pt2 > pt1
         }
       }
-      if ( debug ) std::cout << "        FILLED 2 ELE CANDIDATES" << std::endl;
       if ( eledR > 0.4 ) {
         if ( debug ) std::cout << " !! Electrons are not merged: gen dR_ee = " << eledR << " !! " << std::endl;
         continue;
-      }
+      } 
+      if ( !MatchedPseudoScalar ) continue;
       ++nMatchedGenParticles;
     } // primary gen particles
     if ( nMatchedGenParticles > 0 ) passedGenSel = true;
