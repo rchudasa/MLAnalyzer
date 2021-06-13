@@ -30,6 +30,7 @@
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
 
 #include "DataFormats/TrackerCommon/interface/TrackerTopology.h"
+#include "Geometry/CommonTopologies/interface/StripTopology.h"
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
@@ -38,6 +39,7 @@
 //#include "DataFormats/SiStripDetId/interface/TIBDetId.h"
 //#include "DataFormats/SiStripDetId/interface/TIDDetId.h"
 
+#include "DataFormats/SiStripDetId/interface/SiStripDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
 #include "DataFormats/SiStripDetId/interface/StripSubdetector.h"
 
@@ -113,9 +115,11 @@
 #include "DataFormats/BTauReco/interface/CandIPTagInfo.h"
 
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2D.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHitCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripMatchedRecHit2DCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
+#include "RecoTracker/TransientTrackingRecHit/interface/TSiStripRecHit2DLocalPos.h"
 
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "FWCore/Common/interface/TriggerResultsByName.h"
@@ -128,6 +132,8 @@
 #include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
 #include "TauAnalysis/ClassicSVfit/interface/svFitHistogramAdapter.h"
 #include "TauAnalysis/ClassicSVfit/interface/FastMTT.h"
+
+#include "SimTracker/TrackerHitAssociation/interface/TrackerHitAssociator.h" 
 
 using namespace classic_svFit;
 
@@ -203,9 +209,10 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     
     metsig::METSignificance* metSigAlgo_;
 
-    //edm::InputTag siPixelRecHitCollectionT_;
     edm::EDGetTokenT<SiPixelRecHitCollection> siPixelRecHitCollectionT_;
-    std::vector<edm::InputTag> siStripRecHitCollectionT_;
+    edm::EDGetTokenT<SiStripMatchedRecHit2DCollection> siStripRecHitCollectionT_;
+
+    //std::vector<edm::InputTag> siStripRecHitCollectionT_;
     //edm::InputTag trackTags_; //used to select what tracks to read from configuration file
 
     // Diagnostic histograms
@@ -312,8 +319,8 @@ static const int nTOB = 6;
 static const int nTEC = 9;
 static const int nTIB = 4;
 static const int nTID = 3;
-static const int nBPIX = 5;
-static const int nFPIX = 16;
+static const int nBPIX = 4;
+static const int nFPIX = 6;
 
 static const int EB_IPHI_MIN = EBDetId::MIN_IPHI;//1;
 static const int EB_IPHI_MAX = EBDetId::MAX_IPHI;//360;
