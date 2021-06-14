@@ -30,6 +30,7 @@
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
 
 #include "DataFormats/TrackerCommon/interface/TrackerTopology.h"
+#include "Geometry/CommonTopologies/interface/StripTopology.h"
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
@@ -38,6 +39,7 @@
 //#include "DataFormats/SiStripDetId/interface/TIBDetId.h"
 //#include "DataFormats/SiStripDetId/interface/TIDDetId.h"
 
+#include "DataFormats/SiStripDetId/interface/SiStripDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
 #include "DataFormats/SiStripDetId/interface/StripSubdetector.h"
 
@@ -113,9 +115,11 @@
 #include "DataFormats/BTauReco/interface/CandIPTagInfo.h"
 
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2D.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHitCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripMatchedRecHit2DCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
+#include "RecoTracker/TransientTrackingRecHit/interface/TSiStripRecHit2DLocalPos.h"
 
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "FWCore/Common/interface/TriggerResultsByName.h"
@@ -128,6 +132,8 @@
 #include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
 #include "TauAnalysis/ClassicSVfit/interface/svFitHistogramAdapter.h"
 #include "TauAnalysis/ClassicSVfit/interface/FastMTT.h"
+
+#include "SimTracker/TrackerHitAssociation/interface/TrackerHitAssociator.h" 
 
 using namespace classic_svFit;
 
@@ -176,8 +182,9 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<reco::JetTagCollection> jetTagCollectionT_;
     edm::EDGetTokenT<std::vector<reco::CandIPTagInfo> >    ipTagInfoCollectionT_;
     edm::EDGetTokenT<reco::PFMETCollection> metCollectionT_;
-    edm::EDGetTokenT<reco::PFTauCollection> tauCollectionT_;
+    edm::EDGetTokenT<reco::GsfElectronCollection> eleCollectionT_;
 
+    edm::EDGetTokenT<reco::PFTauCollection> tauCollectionT_;
     edm::EDGetTokenT<reco::PFTauDiscriminator> tauDiscriminatorT_;
     edm::EDGetTokenT<reco::PFTauDiscriminator> tauDecayMode_;
     edm::EDGetTokenT<reco::PFTauDiscriminator> tauMVAIsolation_;
@@ -202,9 +209,10 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     
     metsig::METSignificance* metSigAlgo_;
 
-    //edm::InputTag siPixelRecHitCollectionT_;
     edm::EDGetTokenT<SiPixelRecHitCollection> siPixelRecHitCollectionT_;
-    std::vector<edm::InputTag> siStripRecHitCollectionT_;
+    edm::EDGetTokenT<SiStripMatchedRecHit2DCollection> siStripRecHitCollectionT_;
+
+    //std::vector<edm::InputTag> siStripRecHitCollectionT_;
     //edm::InputTag trackTags_; //used to select what tracks to read from configuration file
 
     // Diagnostic histograms
@@ -279,16 +287,19 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void branchesEvtSel_jet_dijet_tau( TTree*, edm::Service<TFileService>& );
     void branchesEvtSel_jet_dijet_ditau( TTree*, edm::Service<TFileService>& );
     void branchesEvtSel_jet_dijet_tau_massregression( TTree*, edm::Service<TFileService>& );
+    void branchesEvtSel_jet_dijet_ele_massregression( TTree*, edm::Service<TFileService>& );
     void branchesEvtSel_jet_dijet_gg_qq( TTree*, edm::Service<TFileService>& );
     bool runEvtSel_jet_dijet      ( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet_dijet_tau( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet_dijet_ditau( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet_dijet_tau_massregression( const edm::Event&, const edm::EventSetup& );
+    bool runEvtSel_jet_dijet_ele_massregression( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet_dijet_gg_qq( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet      ( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet_tau( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet_ditau( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet_tau_massregression( const edm::Event&, const edm::EventSetup& );
+    void fillEvtSel_jet_dijet_ele_massregression( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet_gg_qq( const edm::Event&, const edm::EventSetup& );
 
     int nTotal, nPassed;
@@ -308,8 +319,8 @@ static const int nTOB = 6;
 static const int nTEC = 9;
 static const int nTIB = 4;
 static const int nTID = 3;
-static const int nBPIX = 5;
-static const int nFPIX = 16;
+static const int nBPIX = 4;
+static const int nFPIX = 6;
 
 static const int EB_IPHI_MIN = EBDetId::MIN_IPHI;//1;
 static const int EB_IPHI_MAX = EBDetId::MAX_IPHI;//360;
