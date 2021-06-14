@@ -2,7 +2,7 @@
 
 using std::vector;
 
-const unsigned nJets = 4; //TODO: use cfg level nJets_
+const unsigned nJets = 50; //TODO: use cfg level nJets_
 TH1D *h_tau_mr_jet_pT;
 TH1D *h_tau_mr_jet_E;
 TH1D *h_tau_mr_jet_eta;
@@ -165,9 +165,9 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_tau_massregression ( TTree* tree, 
   h_tau_mr_jet_eta        = fs->make<TH1D>("h_jet_eta"        , "#eta;#eta;Jets"                             , 100, -5.,   5.);
   h_tau_mr_jet_nJet       = fs->make<TH1D>("h_jet_nJet"       , "nJet;nJet;Events"                           ,  10,  0.,  10.);
   h_tau_mr_jet_m0         = fs->make<TH1D>("h_jet_m0"         , "m_{jet};m_{jet};Jets"                       , 100,  0., 100.);
-  h_tau_mr_jet_a_m_pt     = fs->make<TH2D>("h_a_m_pT"         , "m^{a} vs p_{T}^{a};m^{a} vs p_{T}^{a};Jets" ,  16, 3.6,  12., 20, 20., 120.);
-  h_tau_mr_jet_ma         = fs->make<TH1D>("h_jet_ma"         , "m^{a};m^{a};Jets"                           ,  16, 3.6,  12.);
-  h_tau_mr_jet_pta        = fs->make<TH1D>("h_jet_pta"        , "p_{T}^{a};p_{T}^{a};Jets"                   ,  20, 20., 120.);
+  h_tau_mr_jet_a_m_pt     = fs->make<TH2D>("h_a_m_pT"         , "m^{a} vs p_{T}^{a};m^{a} vs p_{T}^{a};Jets" ,  26, 3.6,  14, 18, 30., 120.);
+  h_tau_mr_jet_ma         = fs->make<TH1D>("h_jet_ma"         , "m^{a};m^{a};Jets"                           ,  26, 3.6,  14);
+  h_tau_mr_jet_pta        = fs->make<TH1D>("h_jet_pta"        , "p_{T}^{a};p_{T}^{a};Jets"                   ,  18, 30., 120.);
   h_tau_mr_jet_isDiTau    = fs->make<TH1D>("h_jet_isDiTau"    , "nIsDiTau;nIsDiTau;Jets"                     ,  10,  0.,  10.);
   h_tau_mr_jet_dR         = fs->make<TH1D>("h_jet_dR"         , "dR_{a,j};dR_{a,j};Jets"                     ,  50,  0.,  0.5);
   h_tau_mr_jet_TaudR      = fs->make<TH1D>("h_jet_TaudR"      , "dR_{#tau,#tau};dR_{#tau,#tau};Jets"         ,  50,  0.,   1.);
