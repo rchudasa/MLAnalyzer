@@ -106,7 +106,7 @@ print(binmax)
 histos['mVSpT_ratio'] = histos['mVSpT'].Clone('mVSpT_ratio')
 for iBinX in range(histos['mVSpT_ratio'].GetNbinsX()):
   for iBinY in range(histos['mVSpT_ratio'].GetNbinsY()):
-    if (histos['mVSpT'].GetBinContent(iBinX+1,iBinY+1) == 0): continue
+    if (histos['mVSpT'].GetBinContent(iBinX+1,iBinY+1) == 0): continue   #Avoids division by 0, in the case that the bin content was 0
     histos['mVSpT_ratio'].SetBinContent(iBinX+1, iBinY+1, ((1/binmax)*(histos['mVSpT'].GetBinContent(iBinX+1,iBinY+1))) )
     histos['mVSpT_inverted'].SetBinContent(iBinX+1, iBinY+1, (1/binmax)*(binint/histos['mVSpT'].GetBinContent(iBinX+1,iBinY+1)))
 
