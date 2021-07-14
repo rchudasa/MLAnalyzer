@@ -62,8 +62,8 @@ eosDir='root://cmsxrootd.fnal.gov//store/user/ddicroce/test'
 
 files_ = []
 firstfile = True
-#filelist = '/uscms/home/ddicroce/nobackup/TauClassifier/CMSSW_10_2_20_UL/src/MLAnalyzer/list_HTauTau_biased.txt'
-filelist= 'testlist_sim_Jul14.txt'
+filelist = '/uscms/home/ddicroce/nobackup/TauClassifier/CMSSW_10_2_20_UL/src/MLAnalyzer/list_HTauTau_biased.txt'
+#filelist= 'testlist_sim_Jul14.txt'
 with open(filelist) as list_:
     content = list_.readlines()
 paths = [x.strip() for x in content] 
