@@ -62,8 +62,8 @@ eosDir='root://cmsxrootd.fnal.gov//store/user/ddicroce/test'
 
 files_ = []
 firstfile = True
-#filelist = '/uscms/home/ddicroce/nobackup/TauClassifier/CMSSW_10_2_20_UL/src/MLAnalyzer/list_HTauTau_biased.txt'
-filelist= 'testlist_sim_Jul14.txt'
+filelist = '/uscms/home/ddicroce/nobackup/TauClassifier/CMSSW_10_2_20_UL/src/MLAnalyzer/list_HTauTau_biased.txt'
+#filelist= 'testlist_sim_Jul14.txt'
 with open(filelist) as list_:
     content = list_.readlines()
 paths = [x.strip() for x in content] 
@@ -106,7 +106,7 @@ print(binmax)
 histos['mVSpT_ratio'] = histos['mVSpT'].Clone('mVSpT_ratio')
 for iBinX in range(histos['mVSpT_ratio'].GetNbinsX()):
   for iBinY in range(histos['mVSpT_ratio'].GetNbinsY()):
-    if (histos['mVSpT'].GetBinContent(iBinX+1,iBinY+1) == 0): continue
+    if (histos['mVSpT'].GetBinContent(iBinX+1,iBinY+1) == 0): continue   #Avoids division by 0, in the case that the bin content was 0
     histos['mVSpT_ratio'].SetBinContent(iBinX+1, iBinY+1, ((1/binmax)*(histos['mVSpT'].GetBinContent(iBinX+1,iBinY+1))) )
     histos['mVSpT_inverted'].SetBinContent(iBinX+1, iBinY+1, (1/binmax)*(binint/histos['mVSpT'].GetBinContent(iBinX+1,iBinY+1)))
 
