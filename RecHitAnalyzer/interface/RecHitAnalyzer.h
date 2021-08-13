@@ -135,6 +135,14 @@
 
 #include "SimTracker/TrackerHitAssociation/interface/TrackerHitAssociator.h" 
 
+#include "TrackingTools/Records/interface/TrackingComponentsRecord.h"
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
+#include "Calibration/IsolatedParticles/interface/CaloPropagateTrack.h"
+
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+
 using namespace classic_svFit;
 
 //
@@ -210,7 +218,9 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     metsig::METSignificance* metSigAlgo_;
 
     edm::EDGetTokenT<SiPixelRecHitCollection> siPixelRecHitCollectionT_;
-    edm::EDGetTokenT<SiStripMatchedRecHit2DCollection> siStripRecHitCollectionT_;
+    edm::EDGetTokenT<SiStripMatchedRecHit2DCollection> siStripMatchedRecHitCollectionT_;
+    edm::EDGetTokenT<SiStripRecHit2DCollection> siStripRPhiRecHitCollectionT_;
+    edm::EDGetTokenT<SiStripRecHit2DCollection> siStripStereoRecHitCollectionT_;
 
     //std::vector<edm::InputTag> siStripRecHitCollectionT_;
     //edm::InputTag trackTags_; //used to select what tracks to read from configuration file
@@ -257,7 +267,8 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void fillECALstitched   ( const edm::Event&, const edm::EventSetup& );
     void fillHCALatEBEE     ( const edm::Event&, const edm::EventSetup& );
     void fillTracksAtEBEE   ( const edm::Event&, const edm::EventSetup& );
-    void fillTracksAtECALstitched   ( const edm::Event&, const edm::EventSetup& );
+    void fillTracksAtECALstitched   ( const edm::Event&, const edm::EventSetup&, unsigned int proj );
+    //void fillTracksAtECALstitched   ( const edm::Event&, const edm::EventSetup& );
     void fillPFCandsAtEBEE   ( const edm::Event&, const edm::EventSetup& );
     void fillPFCandsAtECALstitched   ( const edm::Event&, const edm::EventSetup& );
     void fillTRKlayersAtEBEE( const edm::Event&, const edm::EventSetup& );
@@ -305,6 +316,19 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     int nTotal, nPassed;
 
     std::map<uint32_t,SiPixelRecHitModule*> thePixelStructure;
+
+    std::vector<int> findSubcrystal(const CaloGeometry* caloGeom, const float& eta, const float& phi, const int& granularityMultiEta, const int& granularityMultiPhi);
+    void fillByBinNumber(TH2F * histo, const std::vector<int>& phi_eta, const float& value);
+    void fillTRKlayerHelper (int layer_, unsigned int proj, TH2F *hSUBDET_ECAL[][Nadjproj], TH2F *hEvt_Adj_SUBDET[][Nadjproj], const CaloGeometry* caloGeom, const float& eta, const float& phi);
+    unsigned int getLayer(const DetId& detid);
+    
+    unsigned int granularityMultiPhi[Nadjproj];
+    unsigned int granularityMultiEta[Nadjproj];
+    
+    int totalEtaBins[Nadjproj];// = totalMultiEta*(eta_nbins_HBHE);
+    int totalPhiBins[Nadjproj];// = granularityMultiPhi * granularityMultiECAL*HBHE_IPHI_NUM;
+    std::vector<double> adjEtaBins[Nadjproj];
+    //std::vector<double> adjPhiBins[Nadjproj];
     
 }; // class RecHitAnalyzer
 
