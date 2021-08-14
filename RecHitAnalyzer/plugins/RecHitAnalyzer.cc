@@ -31,6 +31,7 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   pfjetsToken_            = consumes<edm::View<reco::Jet> >(iConfig.getParameter<edm::InputTag>("srcPfJets"));
   genJetCollectionT_      = consumes<reco::GenJetCollection>(iConfig.getParameter<edm::InputTag>("genJetCollection"));
   trackCollectionT_       = consumes<reco::TrackCollection>(iConfig.getParameter<edm::InputTag>("trackCollection"));
+  transientTrackBuilderT_ = iConfig.getParameter<edm::ESInputTag>("transTrackBuilder");
   pfCollectionT_          = consumes<PFCollection>(iConfig.getParameter<edm::InputTag>("pfCollection"));
 
   pfCandidatesToken_      = consumes<edm::View<reco::Candidate> >(iConfig.getParameter<edm::InputTag>("srcPFCandidates"));

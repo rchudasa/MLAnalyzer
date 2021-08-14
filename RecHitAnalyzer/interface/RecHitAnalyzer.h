@@ -136,6 +136,10 @@
 #include "SimTracker/TrackerHitAssociation/interface/TrackerHitAssociator.h" 
 
 #include "TrackingTools/Records/interface/TrackingComponentsRecord.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/TrajectoryState/interface/TrajectoryStateClosestToPoint.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 #include "Calibration/IsolatedParticles/interface/CaloPropagateTrack.h"
@@ -186,6 +190,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<reco::GenJetCollection> genJetCollectionT_;
     edm::EDGetTokenT<reco::TrackCollection> trackCollectionT_;
     edm::EDGetTokenT<reco::VertexCollection> vertexCollectionT_;
+    edm::ESInputTag transientTrackBuilderT_;
     edm::EDGetTokenT<edm::View<reco::Jet> > recoJetsT_;
     edm::EDGetTokenT<reco::JetTagCollection> jetTagCollectionT_;
     edm::EDGetTokenT<std::vector<reco::CandIPTagInfo> >    ipTagInfoCollectionT_;
@@ -412,7 +417,9 @@ static const int runTotal[3] = {14907, 22323, 20195}; //57425
 
 
 static const std::string projections[Nproj] = {"", "_atECAL", "_atHCAL","_atECALfixIP","_atECALfixIPfromPV"}; //57425
+//static const std::string projections[Nproj] = {"_atECALfixIP"}; //57425
 static const std::string hit_projections[Nhitproj] = {"", "_atPV"};
+//static const std::string hit_projections[Nhitproj] = {"_atPV"};
 static const std::string adj_projections[Nadjproj] = {"_5x5", "_3x3"};
 static const int eta_nbins_HBHE = 2*(HBHE_IETA_MAX_HE-1);
 static const int granularityMultiECAL=5;
