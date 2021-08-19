@@ -413,13 +413,13 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
         eta=0.;
         switch (proj)
         {
-          case 0:
+          case 1:
           {
             phi = GP.phi();
             eta = GP.eta();
             break;
           }
-          case 1:
+          case 0:
           {
             TVector3 GP_v(GP.x(),GP.y(),GP.z());
             GP_v=GP_v-pv_v;

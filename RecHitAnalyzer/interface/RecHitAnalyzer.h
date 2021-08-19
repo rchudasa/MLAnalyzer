@@ -159,8 +159,10 @@ using namespace classic_svFit;
 // constructor "usesResource("TFileService");"
 // This will improve performance in multithreaded jobs.
 
-static const unsigned int Nproj = 5;
-static const unsigned int Nhitproj = 2;
+//static const unsigned int Nproj = 5;
+static const unsigned int Nproj = 1;
+static const unsigned int Nhitproj = 1;
+//static const unsigned int Nhitproj = 2;
 static const unsigned int Nadjproj = 2;
 
 class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
@@ -416,10 +418,10 @@ static const int runTotal[3] = {14907, 22323, 20195}; //57425
 //static const int runTotal[3] = {35141, 47885, 52576}; //135602
 
 
-static const std::string projections[Nproj] = {"", "_atECAL", "_atHCAL","_atECALfixIP","_atECALfixIPfromPV"}; //57425
-//static const std::string projections[Nproj] = {"_atECALfixIP"}; //57425
-static const std::string hit_projections[Nhitproj] = {"", "_atPV"};
-//static const std::string hit_projections[Nhitproj] = {"_atPV"};
+//static const std::string projections[Nproj] = {"_atECALfixIP", "", "_atECAL", "_atHCAL","_atECALfixIPfromPV", "_atECALtransientTrack"}; //57425
+static const std::string projections[Nproj] = {"_atECALfixIP"}; //57425
+//static const std::string hit_projections[Nhitproj] = {"_atPV", ""};
+static const std::string hit_projections[Nhitproj] = {"_atPV"};
 static const std::string adj_projections[Nadjproj] = {"_5x5", "_3x3"};
 static const int eta_nbins_HBHE = 2*(HBHE_IETA_MAX_HE-1);
 static const int granularityMultiECAL=5;
