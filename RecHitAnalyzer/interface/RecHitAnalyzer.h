@@ -135,6 +135,18 @@
 
 #include "SimTracker/TrackerHitAssociation/interface/TrackerHitAssociator.h" 
 
+#include "TrackingTools/Records/interface/TrackingComponentsRecord.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/TrajectoryState/interface/TrajectoryStateClosestToPoint.h"
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
+#include "Calibration/IsolatedParticles/interface/CaloPropagateTrack.h"
+
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+
 using namespace classic_svFit;
 
 //
@@ -147,8 +159,10 @@ using namespace classic_svFit;
 // constructor "usesResource("TFileService");"
 // This will improve performance in multithreaded jobs.
 
-static const unsigned int Nproj = 5;
-static const unsigned int Nhitproj = 2;
+//static const unsigned int Nproj = 5;
+static const unsigned int Nproj = 1;
+static const unsigned int Nhitproj = 1;
+//static const unsigned int Nhitproj = 2;
 static const unsigned int Nadjproj = 2;
 
 class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
@@ -178,6 +192,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<reco::GenJetCollection> genJetCollectionT_;
     edm::EDGetTokenT<reco::TrackCollection> trackCollectionT_;
     edm::EDGetTokenT<reco::VertexCollection> vertexCollectionT_;
+    edm::ESInputTag transientTrackBuilderT_;
     edm::EDGetTokenT<edm::View<reco::Jet> > recoJetsT_;
     edm::EDGetTokenT<reco::JetTagCollection> jetTagCollectionT_;
     edm::EDGetTokenT<std::vector<reco::CandIPTagInfo> >    ipTagInfoCollectionT_;
@@ -210,7 +225,9 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     metsig::METSignificance* metSigAlgo_;
 
     edm::EDGetTokenT<SiPixelRecHitCollection> siPixelRecHitCollectionT_;
-    edm::EDGetTokenT<SiStripMatchedRecHit2DCollection> siStripRecHitCollectionT_;
+    edm::EDGetTokenT<SiStripMatchedRecHit2DCollection> siStripMatchedRecHitCollectionT_;
+    edm::EDGetTokenT<SiStripRecHit2DCollection> siStripRPhiRecHitCollectionT_;
+    edm::EDGetTokenT<SiStripRecHit2DCollection> siStripStereoRecHitCollectionT_;
 
     //std::vector<edm::InputTag> siStripRecHitCollectionT_;
     //edm::InputTag trackTags_; //used to select what tracks to read from configuration file
@@ -257,7 +274,8 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void fillECALstitched   ( const edm::Event&, const edm::EventSetup& );
     void fillHCALatEBEE     ( const edm::Event&, const edm::EventSetup& );
     void fillTracksAtEBEE   ( const edm::Event&, const edm::EventSetup& );
-    void fillTracksAtECALstitched   ( const edm::Event&, const edm::EventSetup& );
+    void fillTracksAtECALstitched   ( const edm::Event&, const edm::EventSetup&, unsigned int proj );
+    //void fillTracksAtECALstitched   ( const edm::Event&, const edm::EventSetup& );
     void fillPFCandsAtEBEE   ( const edm::Event&, const edm::EventSetup& );
     void fillPFCandsAtECALstitched   ( const edm::Event&, const edm::EventSetup& );
     void fillTRKlayersAtEBEE( const edm::Event&, const edm::EventSetup& );
@@ -305,6 +323,19 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     int nTotal, nPassed;
 
     std::map<uint32_t,SiPixelRecHitModule*> thePixelStructure;
+
+    std::vector<int> findSubcrystal(const CaloGeometry* caloGeom, const float& eta, const float& phi, const int& granularityMultiEta, const int& granularityMultiPhi);
+    void fillByBinNumber(TH2F * histo, const std::vector<int>& phi_eta, const float& value);
+    void fillTRKlayerHelper (int layer_, unsigned int proj, TH2F *hSUBDET_ECAL[][Nadjproj], TH2F *hEvt_Adj_SUBDET[][Nadjproj], const CaloGeometry* caloGeom, const float& eta, const float& phi);
+    unsigned int getLayer(const DetId& detid);
+    
+    unsigned int granularityMultiPhi[Nadjproj];
+    unsigned int granularityMultiEta[Nadjproj];
+    
+    int totalEtaBins[Nadjproj];// = totalMultiEta*(eta_nbins_HBHE);
+    int totalPhiBins[Nadjproj];// = granularityMultiPhi * granularityMultiECAL*HBHE_IPHI_NUM;
+    std::vector<double> adjEtaBins[Nadjproj];
+    //std::vector<double> adjPhiBins[Nadjproj];
     
 }; // class RecHitAnalyzer
 
@@ -387,8 +418,10 @@ static const int runTotal[3] = {14907, 22323, 20195}; //57425
 //static const int runTotal[3] = {35141, 47885, 52576}; //135602
 
 
-static const std::string projections[Nproj] = {"", "_atECAL", "_atHCAL","_atECALfixIP","_atECALfixIPfromPV"}; //57425
-static const std::string hit_projections[Nhitproj] = {"", "_atPV"};
+//static const std::string projections[Nproj] = {"_atECALfixIP", "", "_atECAL", "_atHCAL","_atECALfixIPfromPV", "_atECALtransientTrack"}; //57425
+static const std::string projections[Nproj] = {"_atECALfixIP"}; //57425
+//static const std::string hit_projections[Nhitproj] = {"_atPV", ""};
+static const std::string hit_projections[Nhitproj] = {"_atPV"};
 static const std::string adj_projections[Nadjproj] = {"_5x5", "_3x3"};
 static const int eta_nbins_HBHE = 2*(HBHE_IETA_MAX_HE-1);
 static const int granularityMultiECAL=5;

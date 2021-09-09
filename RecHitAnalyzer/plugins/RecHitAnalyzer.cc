@@ -31,6 +31,7 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   pfjetsToken_            = consumes<edm::View<reco::Jet> >(iConfig.getParameter<edm::InputTag>("srcPfJets"));
   genJetCollectionT_      = consumes<reco::GenJetCollection>(iConfig.getParameter<edm::InputTag>("genJetCollection"));
   trackCollectionT_       = consumes<reco::TrackCollection>(iConfig.getParameter<edm::InputTag>("trackCollection"));
+  transientTrackBuilderT_ = iConfig.getParameter<edm::ESInputTag>("transTrackBuilder");
   pfCollectionT_          = consumes<PFCollection>(iConfig.getParameter<edm::InputTag>("pfCollection"));
 
   pfCandidatesToken_      = consumes<edm::View<reco::Candidate> >(iConfig.getParameter<edm::InputTag>("srcPFCandidates"));
@@ -42,8 +43,11 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   ipTagInfoCollectionT_   = consumes<std::vector<reco::CandIPTagInfo> > (iConfig.getParameter<edm::InputTag>("ipTagInfoCollection"));
 
   siPixelRecHitCollectionT_ = consumes<SiPixelRecHitCollection>(iConfig.getParameter<edm::InputTag>("siPixelRecHitCollection"));
-  siStripRecHitCollectionT_ = consumes<SiStripMatchedRecHit2DCollection>(iConfig.getParameter<edm::InputTag>("siStripMatchedRecHitCollection"));
+
   //siStripRecHitCollectionT_ = iConfig.getParameter<std::vector<edm::InputTag> >("siStripRecHitCollection");
+  siStripMatchedRecHitCollectionT_ = consumes<SiStripMatchedRecHit2DCollection>(iConfig.getParameter<edm::InputTag>("siStripMatchedRecHitCollection"));
+  siStripRPhiRecHitCollectionT_    = consumes<SiStripRecHit2DCollection>(iConfig.getParameter<edm::InputTag>("siStripRphiRecHits"));
+  siStripStereoRecHitCollectionT_  = consumes<SiStripRecHit2DCollection>(iConfig.getParameter<edm::InputTag>("siStripStereoRecHits"));
  
   metCollectionT_           = consumes<reco::PFMETCollection>(iConfig.getParameter<edm::InputTag>("metCollection"));
 
@@ -97,6 +101,34 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   usesResource("TFileService");
   edm::Service<TFileService> fs;
   h_sel = fs->make<TH1F>("h_sel", "isSelected;isSelected;Events", 2, 0., 2.);
+
+  ///////////adjustable granularity stuff
+
+  granularityMultiPhi[0]  = iConfig.getParameter<int>("granularityMultiPhi");
+  granularityMultiEta[0]  = iConfig.getParameter<int>("granularityMultiEta");
+
+  granularityMultiPhi[1] = 3;
+  granularityMultiEta[1] = 3;
+
+  for (unsigned int proj=0; proj<Nadjproj; proj++)
+  {
+
+    int totalMultiEta = granularityMultiEta[proj] * granularityMultiECAL;
+
+    for (int i=0; i<eta_nbins_HBHE; i++)
+    {
+      double step=(eta_bins_HBHE[i+1]-eta_bins_HBHE[i])/totalMultiEta;
+      for (int j=0; j<totalMultiEta; j++)
+      {
+        adjEtaBins[proj].push_back(eta_bins_HBHE[i]+step*j);
+      }
+    }
+    adjEtaBins[proj].push_back(eta_bins_HBHE[eta_nbins_HBHE]);
+
+    totalEtaBins[proj] = totalMultiEta*(eta_nbins_HBHE);
+    totalPhiBins[proj] = granularityMultiPhi[proj] * granularityMultiECAL*HBHE_IPHI_NUM;
+
+  }
 
   //////////// TTree //////////
 
@@ -169,7 +201,10 @@ RecHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   fillECALstitched( iEvent, iSetup );
   fillHCALatEBEE( iEvent, iSetup );
   fillTracksAtEBEE( iEvent, iSetup );
-  fillTracksAtECALstitched( iEvent, iSetup );
+  for (unsigned int i=0;i<Nproj;i++)
+  {
+    fillTracksAtECALstitched( iEvent, iSetup, i );
+  }
   fillPFCandsAtEBEE( iEvent, iSetup );
   fillPFCandsAtECALstitched( iEvent, iSetup );
   //fillTRKlayersAtEBEE( iEvent, iSetup );
@@ -288,19 +323,6 @@ int RecHitAnalyzer::getTruthLabel(const reco::PFJetRef& recJet, edm::Handle<reco
        iGen != genParticles->end();
        ++iGen) {
 
-    // From: (page 7/ Table 1.5.2)
-    //https://indico.desy.de/indico/event/7142/session/9/contribution/31/material/slides/6.pdf
-    //code range explanation:
-    // 11 - 19 beam particles
-    // 21 - 29 particles of the hardest subprocess
-    // 31 - 39 particles of subsequent subprocesses in multiparton interactions
-    // 41 - 49 particles produced by initial-state-showers
-    // 51 - 59 particles produced by final-state-showers
-    // 61 - 69 particles produced by beam-remnant treatment
-    // 71 - 79 partons in preparation of hadronization process
-    // 81 - 89 primary hadrons produced by hadronization process
-    // 91 - 99 particles produced in decay process, or by Bose-Einstein effects
-
     // Do not want to match to the final particles in the shower
     if ( iGen->status() > 99 ) continue;
     
@@ -317,10 +339,6 @@ int RecHitAnalyzer::getTruthLabel(const reco::PFJetRef& recJet, edm::Handle<reco
     return iGen->pdgId();
 
   } // gen particles 
-
-
-
-
 
   return -99;
 }
@@ -361,31 +379,6 @@ float RecHitAnalyzer::getBTaggingValue(const reco::PFJetRef& recJet, edm::Handle
 
   return -99;
 }
-
-
-
-/*
-//____ Fill FC diphoton variables _____//
-void RecHitAnalyzer::fillFC ( const edm::Event& iEvent, const edm::EventSetup& iSetup ) {
-
-  edm::Handle<reco::PhotonCollection> photons;
-  iEvent.getByToken(photonCollectionT_, photons);
-
-  vFC_inputs_.clear();
-
-  int ptOrder[2] = {0, 1};
-  if ( vPho_[1].Pt() > vPho_[0].Pt() ) {
-      ptOrder[0] = 1;
-      ptOrder[1] = 0;
-  }
-  for ( int i = 0; i < 2; i++ ) {
-    vFC_inputs_.push_back( vPho_[ptOrder[i]].Pt()/m0_ );
-    vFC_inputs_.push_back( vPho_[ptOrder[i]].Eta() );
-  }
-  vFC_inputs_.push_back( TMath::Cos(vPho_[0].Phi()-vPho_[1].Phi()) );
-
-} // fillFC() 
-*/
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(RecHitAnalyzer);

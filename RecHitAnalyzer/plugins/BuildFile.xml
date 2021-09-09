@@ -32,3 +32,8 @@
  <use name="RecoMET/METProducers"/>
  <use name="JetMETCorrections/Modules"/>
  <use name="RecoLocalTracker/Phase2TrackerRecHits"/>
+ <use name="MagneticField/Engine"/>
+ <use name="MagneticField/Records"/>
+ <use name="TrackingTools/Records"/>
+ <use name="TrackingTools/TransientTrack"/>
+ <use name="TrackingTools/TrajectoryState"/>

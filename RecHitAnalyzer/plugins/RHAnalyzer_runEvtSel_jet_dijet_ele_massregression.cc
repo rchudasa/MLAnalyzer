@@ -68,9 +68,9 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_ele_massregression ( TTree* tree, 
   h_ele_aee_mr_jet_eta        = fs->make<TH1D>("h_jet_eta"        , "#eta;#eta;Jets"                                , 100, -5.,   5.);
   h_ele_aee_mr_jet_nJet       = fs->make<TH1D>("h_jet_nJet"       , "nJet;nJet;Events"                              ,  10,  0.,  10.);
   h_ele_aee_mr_jet_m0         = fs->make<TH1D>("h_jet_m0"         , "m_{jet};m_{jet};Jets"                          , 100,  0., 100.);
-  h_ele_aee_mr_jet_a_m_pt     = fs->make<TH2D>("h_a_m_pT"         , "m^{a} vs p_{T}^{a};m^{a} vs p_{T}^{a};Jets"    ,  20, 0.1,  6., 20, 20., 120.);
-  h_ele_aee_mr_jet_ma         = fs->make<TH1D>("h_jet_ma"         , "m^{a};m^{a};Jets"                              ,  20, 0.1,  6.);
-  h_ele_aee_mr_jet_pta        = fs->make<TH1D>("h_jet_pta"        , "p_{T}^{a};p_{T}^{a};Jets"                      ,  20, 20., 120.);
+  h_ele_aee_mr_jet_a_m_pt     = fs->make<TH2D>("h_a_m_pT"         , "m^{a} vs p_{T}^{a};m^{a} vs p_{T}^{a};Jets"    ,  59, 0.1,  6., 26, 20., 150.);
+  h_ele_aee_mr_jet_ma         = fs->make<TH1D>("h_jet_ma"         , "m^{a};m^{a};Jets"                              ,  59, 0.1,  6.);
+  h_ele_aee_mr_jet_pta        = fs->make<TH1D>("h_jet_pta"        , "p_{T}^{a};p_{T}^{a};Jets"                      ,  26, 20., 150.);
   h_ele_aee_mr_jet_isDiEle    = fs->make<TH1D>("h_jet_isDiEle"    , "nIsDiEle;nIsDiEle;Jets"                        ,  10,  0.,  10.);
   h_ele_aee_mr_jet_dR         = fs->make<TH1D>("h_jet_dR"         , "dR_{a,j};dR_{a,j};Jets"                        ,  50,  0.,  0.5);
   h_ele_aee_mr_jet_EledR      = fs->make<TH1D>("h_jet_EledR"      , "dR_{e,e};dR_{e,e};Jets"                        ,  50,  0.,   1.);

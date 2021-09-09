@@ -362,8 +362,14 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
   edm::Handle<SiPixelRecHitCollection>  recHitColl;
   iEvent.getByToken(siPixelRecHitCollectionT_, recHitColl);
 
-  edm::Handle<SiStripMatchedRecHit2DCollection>  stripRecHitColl;
-  iEvent.getByToken(siStripRecHitCollectionT_, stripRecHitColl);
+  edm::Handle<SiStripMatchedRecHit2DCollection>  stripMatchedRecHitColl;
+  iEvent.getByToken(siStripMatchedRecHitCollectionT_, stripMatchedRecHitColl);
+
+  edm::Handle<SiStripRecHit2DCollection>  stripRPhiRecHitColl;
+  iEvent.getByToken(siStripRPhiRecHitCollectionT_, stripRPhiRecHitColl);
+
+  edm::Handle<SiStripRecHit2DCollection>  stripStereoRecHitColl;
+  iEvent.getByToken(siStripStereoRecHitCollectionT_, stripStereoRecHitColl);
 
   edm::ESHandle<TrackerGeometry> geom;
   iSetup.get<TrackerDigiGeometryRecord>().get( geom );
@@ -407,13 +413,13 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
         eta=0.;
         switch (proj)
         {
-          case 0:
+          case 1:
           {
             phi = GP.phi();
             eta = GP.eta();
             break;
           }
-          case 1:
+          case 0:
           {
             TVector3 GP_v(GP.x(),GP.y(),GP.z());
             GP_v=GP_v-pv_v;
@@ -451,9 +457,12 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
     } //std::cout << "End of PixelRecHit " << iPixelHit << std::endl;
   }
 
+
+
   // --  siSTRIP --
-  
-  for ( SiStripMatchedRecHit2DCollection::const_iterator detunit_iterator = stripRecHitColl->begin(), detunit_end = stripRecHitColl->end(); detunit_iterator != detunit_end; ++detunit_iterator) {
+
+  // MATCHED REC HIT COLLECTION
+  for ( SiStripMatchedRecHit2DCollection::const_iterator detunit_iterator = stripMatchedRecHitColl->begin(), detunit_end = stripMatchedRecHitColl->end(); detunit_iterator != detunit_end; ++detunit_iterator) {
     SiStripMatchedRecHit2DCollection::DetSet rechitRange = *detunit_iterator;
     DetId detId = DetId(detunit_iterator->detId());
     unsigned int id = detunit_iterator->detId();
@@ -537,9 +546,192 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
             fillHelperAtEE ( phi, eta, layer, hEvt_EE_TID);
           }
         }
-      } else std::cout << "!!!!!!!!!!!!!! NO STRIP HITS ARE VALID !!!!!!!!!!!!!!" << std::endl;
+      } else std::cout << "!!!!!!!!!!!!!! NO MATCHED STRIP HITS ARE VALID !!!!!!!!!!!!!!" << std::endl;
     } //std::cout << "End of StripReCHit " << iRecHit << std::endl;
   } // end loop over detectors 
+
+
+  // RPHI REC HIT COLLECTION
+  for ( SiStripRecHit2DCollection::const_iterator detunit_iterator = stripRPhiRecHitColl->begin(), detunit_end = stripRPhiRecHitColl->end(); detunit_iterator != detunit_end; ++detunit_iterator) {
+    SiStripRecHit2DCollection::DetSet rechitRange = *detunit_iterator;
+    DetId detId = DetId(detunit_iterator->detId());
+    unsigned int id = detunit_iterator->detId();
+    unsigned int subid=detId.subdetId();
+    unsigned int layer = getLayer(id, tTopo);
+    //std::cout << "Strip Id = " << id << " - subId ( 3->TIB | 4->TID | 5->TOB | 6->TEC ) = " << subid << " - Layer = " << layer <<  std::endl;
+    const StripGeomDetUnit* stripDet = (const StripGeomDetUnit*)theTracker.idToDet(detId);
+    if(stripDet==0) {
+      std::cout << "SiStripRecHitConverter: Detid=" << id << " not found, trying next one" << std::endl;
+      continue;
+    }
+    const StripTopology * stripTopol = (StripTopology*)(&stripDet->topology()); ;
+    SiStripRecHit2DCollection::DetSet::const_iterator rechitRangeIteratorBegin = rechitRange.begin();
+    SiStripRecHit2DCollection::DetSet::const_iterator rechitRangeIteratorEnd   = rechitRange.end();
+    SiStripRecHit2DCollection::DetSet::const_iterator stripiter=rechitRangeIteratorBegin;
+    unsigned int iRecHit = 0;
+    for(stripiter=rechitRangeIteratorBegin;stripiter!=rechitRangeIteratorEnd;++stripiter){//loop on the rechit
+      if (stripiter->isValid()){
+        iRecHit++;
+        SiStripRecHit2D const rechit=*stripiter;
+        const GeomDet* stripdet=rechit.det();
+        //DetId stripid=rechit.geographicalId();
+        //std::vector<const SiStripCluster*> clust=rechit.cluster();
+        LocalPoint lp = rechit.localPosition();
+        GlobalPoint GP = stripDet->surface().toGlobal(Local3DPoint(lp));
+        //std::cout << " " << iRecHit << " | global position: x = " << GP.x() << " , y = "<< GP.y() << " , z = " << GP.z() <<std::endl;
+        switch (proj)
+        {
+          case 0:
+          {
+            phi = GP.phi();
+            eta = GP.eta();
+            break;
+          }
+          case 1:
+          {
+            TVector3 GP_v(GP.x(),GP.y(),GP.z());
+            GP_v=GP_v-pv_v;
+            phi=GP_v.Phi();
+            eta=GP_v.Eta();
+            break;
+          }
+          default:
+          {
+            phi=0.;
+            eta=0.;
+            break;
+          }
+        }
+        //if ( std::abs(eta) > 3. ) continue;
+        DetId ecalId( spr::findDetIdECAL( caloGeom, eta, phi, false ) );
+        if ( subid == StripSubdetector::TOB ) {
+          if ( ecalId.subdetId() == EcalBarrel ){
+            fillTRKLayerAtEB ( ecalId, layer, proj, hTOB_ECAL, vTOB_ECAL_ );
+          }
+          else if ( ecalId.subdetId() == EcalEndcap ){
+            fillHelperAtEE ( phi, eta, layer, hEvt_EE_TOB);
+          }
+        }
+        else if ( subid == StripSubdetector::TIB ) {
+          if ( ecalId.subdetId() == EcalBarrel ){
+            fillTRKLayerAtEB ( ecalId, layer, proj, hTIB_ECAL, vTIB_ECAL_ );
+          }
+          else if ( ecalId.subdetId() == EcalEndcap ){
+            fillHelperAtEE ( phi, eta, layer, hEvt_EE_TIB);
+          }
+        }
+        else if ( subid == StripSubdetector::TEC ) {
+          if ( ecalId.subdetId() == EcalBarrel ){
+            fillTRKLayerAtEB ( ecalId, layer, proj, hTEC_ECAL, vTEC_ECAL_ );
+          }
+          else if ( ecalId.subdetId() == EcalEndcap ){
+            fillHelperAtEE ( phi, eta, layer, hEvt_EE_TEC);
+          }
+        }
+        else if ( subid == StripSubdetector::TID ) {
+          if ( ecalId.subdetId() == EcalBarrel ){
+            fillTRKLayerAtEB ( ecalId, layer, proj, hTID_ECAL, vTID_ECAL_ );
+          }
+          else if ( ecalId.subdetId() == EcalEndcap ){
+            fillHelperAtEE ( phi, eta, layer, hEvt_EE_TID);
+          }
+        }
+      } else std::cout << "!!!!!!!!!!!!!! NO RPHI STRIP HITS ARE VALID !!!!!!!!!!!!!!" << std::endl;
+    } //std::cout << "End of StripReCHit " << iRecHit << std::endl;
+  } // end loop over detectors 
+
+  // STEREO REC HIT COLLECTION
+
+  for ( SiStripRecHit2DCollection::const_iterator detunit_iterator = stripStereoRecHitColl->begin(), detunit_end = stripStereoRecHitColl->end(); detunit_iterator != detunit_end; ++detunit_iterator) {
+    SiStripRecHit2DCollection::DetSet rechitRange = *detunit_iterator;
+    DetId detId = DetId(detunit_iterator->detId());
+    unsigned int id = detunit_iterator->detId();
+    unsigned int subid=detId.subdetId();
+    unsigned int layer = getLayer(id, tTopo);
+    //std::cout << "Strip Id = " << id << " - subId ( 3->TIB | 4->TID | 5->TOB | 6->TEC ) = " << subid << " - Layer = " << layer <<  std::endl;
+    const StripGeomDetUnit* stripDet = (const StripGeomDetUnit*)theTracker.idToDet(detId);
+    if(stripDet==0) {
+      std::cout << "SiStripRecHitConverter: Detid=" << id << " not found, trying next one" << std::endl;
+      continue;
+    }
+    const StripTopology * stripTopol = (StripTopology*)(&stripDet->topology()); ;
+    SiStripRecHit2DCollection::DetSet::const_iterator rechitRangeIteratorBegin = rechitRange.begin();
+    SiStripRecHit2DCollection::DetSet::const_iterator rechitRangeIteratorEnd   = rechitRange.end();
+    SiStripRecHit2DCollection::DetSet::const_iterator stripiter=rechitRangeIteratorBegin;
+    unsigned int iRecHit = 0;
+    for(stripiter=rechitRangeIteratorBegin;stripiter!=rechitRangeIteratorEnd;++stripiter){//loop on the rechit
+      if (stripiter->isValid()){
+        iRecHit++;
+        SiStripRecHit2D const rechit=*stripiter;
+        const GeomDet* stripdet=rechit.det();
+        //DetId stripid=rechit.geographicalId();
+        //std::vector<const SiStripCluster*> clust=rechit.cluster();
+        LocalPoint lp = rechit.localPosition();
+        GlobalPoint GP = stripDet->surface().toGlobal(Local3DPoint(lp));
+        //std::cout << " " << iRecHit << " | global position: x = " << GP.x() << " , y = "<< GP.y() << " , z = " << GP.z() <<std::endl;
+        switch (proj)
+        {
+          case 0:
+          {
+            phi = GP.phi();
+            eta = GP.eta();
+            break;
+          }
+          case 1:
+          {
+            TVector3 GP_v(GP.x(),GP.y(),GP.z());
+            GP_v=GP_v-pv_v;
+            phi=GP_v.Phi();
+            eta=GP_v.Eta();
+            break;
+          }
+          default:
+          {
+            phi=0.;
+            eta=0.;
+            break;
+          }
+        }
+        //if ( std::abs(eta) > 3. ) continue;
+        DetId ecalId( spr::findDetIdECAL( caloGeom, eta, phi, false ) );
+        if ( subid == StripSubdetector::TOB ) {
+          if ( ecalId.subdetId() == EcalBarrel ){
+            fillTRKLayerAtEB ( ecalId, layer, proj, hTOB_ECAL, vTOB_ECAL_ );
+          }
+          else if ( ecalId.subdetId() == EcalEndcap ){
+            fillHelperAtEE ( phi, eta, layer, hEvt_EE_TOB);
+          }
+        }
+        else if ( subid == StripSubdetector::TIB ) {
+          if ( ecalId.subdetId() == EcalBarrel ){
+            fillTRKLayerAtEB ( ecalId, layer, proj, hTIB_ECAL, vTIB_ECAL_ );
+          }
+          else if ( ecalId.subdetId() == EcalEndcap ){
+            fillHelperAtEE ( phi, eta, layer, hEvt_EE_TIB);
+          }
+        }
+        else if ( subid == StripSubdetector::TEC ) {
+          if ( ecalId.subdetId() == EcalBarrel ){
+            fillTRKLayerAtEB ( ecalId, layer, proj, hTEC_ECAL, vTEC_ECAL_ );
+          }
+          else if ( ecalId.subdetId() == EcalEndcap ){
+            fillHelperAtEE ( phi, eta, layer, hEvt_EE_TEC);
+          }
+        }
+        else if ( subid == StripSubdetector::TID ) {
+          if ( ecalId.subdetId() == EcalBarrel ){
+            fillTRKLayerAtEB ( ecalId, layer, proj, hTID_ECAL, vTID_ECAL_ );
+          }
+          else if ( ecalId.subdetId() == EcalEndcap ){
+            fillHelperAtEE ( phi, eta, layer, hEvt_EE_TID);
+          }
+        }
+      } else std::cout << "!!!!!!!!!!!!!! NO STEREO STRIP HITS ARE VALID !!!!!!!!!!!!!!" << std::endl;
+    } //std::cout << "End of StripReCHit " << iRecHit << std::endl;
+  } // end loop over detectors 
+
+
+
   fillTRKLayerAtECAL_with_EEproj( hEvt_EE_BPIX, vBPIX_ECAL_, hBPIX_ECAL, nBPIX, proj);
   fillTRKLayerAtECAL_with_EEproj( hEvt_EE_FPIX, vFPIX_ECAL_, hFPIX_ECAL, nFPIX, proj);
   fillTRKLayerAtECAL_with_EEproj( hEvt_EE_TOB, vTOB_ECAL_, hTOB_ECAL, nTOB, proj);
