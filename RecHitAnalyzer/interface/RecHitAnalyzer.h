@@ -234,6 +234,11 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
     // Jet level functions
     std::string mode_;  // EventLevel / JetLevel
+    std::string task_;  
+    bool debug;  
+    bool isData_;  
+    bool isSignal_;  
+    bool isW_;  
     bool doJets_;
     int  nJets_;
     double minJetPt_;
@@ -266,8 +271,6 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //
 // constants, enums and typedefs
 //
-//static const bool debug = true;
-static const bool debug = false;
 
 static const int nEE = 2;
 static const int nTOB = 6;

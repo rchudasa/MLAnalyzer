@@ -19,6 +19,7 @@ TH1D *h_tau_mediumdeeptau;
 TH1D *h_tau_tightdeeptau;
 vector<float> v_jetIsTau;
 vector<float> v_jetdR;
+vector<float> v_jetPdgIds;
 vector<float> v_goodvertices;
 vector<float> v_loosedeeptau;
 vector<float> v_mediumdeeptau;
@@ -109,7 +110,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
 
 
   vJetIdxs.clear();
-  v_tau_jetPdgIds_.clear();
+  v_jetPdgIds.clear();
   v_jetIsTau.clear();
   v_jetdR.clear();
   v_goodvertices.clear();
@@ -151,83 +152,90 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
     if ( std::abs(iJet.pt())  < minJetPt_ ) continue;
     if ( std::abs(iJet.eta()) > maxJetEta_ ) continue;
     if (debug ) std::cout << "  >>>>>> Jet [" << iJ << "] ->  Pt: " << iJet.pt() << ", Eta: " << iJet.eta() << ", Phi: " << iJet.phi() << std::endl;
-    bool passedGenSel = false;
-    unsigned int iGenParticle = 0;
-    for (reco::GenParticleCollection::const_iterator iGen = genParticles->begin(); iGen != genParticles->end(); ++iGen) {
-      float dR = reco::deltaR( iJet.eta(),iJet.phi(), iGen->eta(),iGen->phi() );
-      if ( dR > 0.4 ) continue;
-      if ( !(  (std::abs(iGen->pdgId()) == 15 && iGen->status() == 2 ) || iGen->status() == 23 || iGen->status() == 43 ) ) continue;
+    if (!isData_) {
+      bool passedGenSel = false;
+      unsigned int iGenParticle = 0;
+      for (reco::GenParticleCollection::const_iterator iGen = genParticles->begin(); iGen != genParticles->end(); ++iGen) {
+        float dR = reco::deltaR( iJet.eta(),iJet.phi(), iGen->eta(),iGen->phi() );
+        if ( dR > 0.4 ) continue;
 
-      if ( iGen->pdgId() == 12 || iGen->pdgId() == 14 || iGen->pdgId() == 16 ) continue;
+        if ( iGen->pt() > 20 && (std::abs(iGen->pdgId()) == 11 || std::abs(iGen->pdgId()) == 13) ) break; //only clean jets (lepton veto) 
+        if ( std::abs(iGen->pdgId()) == 12 || std::abs(iGen->pdgId()) == 14 || std::abs(iGen->pdgId()) == 16 ) continue;
 
-      if ( debug ) std::cout << "   GEN particle " << iGenParticle << " -> status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " nMoms: " <<iGen->numberOfMothers() << " | pt: "<< iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << " | dR: " << dR << std::endl;
-      
-      if ( !( std::abs(iGen->pdgId()) == 15 && iGen->status() == 2 ) ) continue; //only for tau signal
-      bool isHadronic = true;
-      if ( std::abs(iGen->pdgId()) == 15 ) {
-        for (unsigned int iDaughter = 0; iDaughter != iGen->numberOfDaughters(); ++iDaughter ){
-          if ( abs(iGen->daughter(iDaughter)->pdgId()) == 11 || abs(iGen->daughter(iDaughter)->pdgId()) == 13 ) isHadronic = false;
+        if (  isSignal_ && !( std::abs(iGen->pdgId()) == 15 && iGen->status() == 2 ) ) continue;  //only for tau signal
+        if ( !isSignal_ && !isW_ && !( iGen->status() == 23 ) ) continue;                         //for QCD background
+        if ( !isSignal_ &&  isW_ && !( iGen->status() == 71 ) ) continue;                         //only for W + jet background
+
+        if ( debug ) std::cout << "   GEN particle " << iGenParticle << " -> status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " nMoms: " <<iGen->numberOfMothers() << " | pt: "<< iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << " | dR: " << dR << std::endl;
+
+        bool isHadronic = true;
+        if ( std::abs(iGen->pdgId()) == 15 ) {
+          for (unsigned int iDaughter = 0; iDaughter != iGen->numberOfDaughters(); ++iDaughter ){
+           if ( abs(iGen->daughter(iDaughter)->pdgId()) == 11 || abs(iGen->daughter(iDaughter)->pdgId()) == 13 ) isHadronic = false;
+          }
+          if (isSignal_ && !isHadronic) continue;
+          JetIsTau = true;
+
+          PdgId = std::abs(iGen->pdgId());
+          jetdR = dR;
+          taupT = iGen->pt();
+          tauDaughters = 0;
+          taupi0 = 0;
+          for (unsigned int iDaughter = 0; iDaughter != iGen->numberOfDaughters(); ++iDaughter ){
+            if ( debug ) std::cout << "    Tau daughter [" << iDaughter << "] : "<<  std::abs(iGen->daughter(iDaughter)->pdgId()) << std::endl;
+            if ( abs(iGen->daughter(iDaughter)->pdgId()) == 111 ) taupi0++;
+            if ( iGen->daughter(iDaughter)->charge() == 0 ) continue;
+            tauDaughters++;
+          }
+          if ( debug ) std::cout << "    Tau prongs = " << tauDaughters << " + Tau pi0 = " << taupi0 << std::endl;
+
+          float recoTaudR = 0.4;
+          for (const pat::Tau &tau : *taus) {
+            //if(tau.pt() < 18.0) continue;
+            //if(fabs(tau.eta()) > 2.3) continue;
+            float TaudR = reco::deltaR( tau.eta(),tau.phi(), iGen->eta(),iGen->phi() );
+            if ( TaudR > recoTaudR ) continue;
+            recoTaudR = TaudR;
+            LooseDeepTau  = tau.tauID("byLooseDeepTau2017v2p1VSjet");
+            MediumDeepTau = tau.tauID("byMediumDeepTau2017v2p1VSjet");
+            TightDeepTau  = tau.tauID("byTightDeepTau2017v2p1VSjet");
+          }
+          if ( debug ) std::cout << "   DeepTau loose  = " << LooseDeepTau << std::endl;
+          if ( debug ) std::cout << "   DeepTau medium = " << MediumDeepTau << std::endl;
+          if ( debug ) std::cout << "   DeepTau tight  = " << TightDeepTau << std::endl;
+
+          if (!isSignal_){
+            passedGenSel = false;  //only for background
+            break;                 //only for background
+          }
+
+        } else if ( taupT < iGen->pt() ){
+          PdgId = std::abs(iGen->pdgId());
+          jetdR = dR;
+          taupT = iGen->pt();
         }
-        if (!isHadronic) continue;
-        JetIsTau = true;
 
-        PdgId = std::abs(iGen->pdgId());
-        jetdR = dR;
-        taupT = iGen->pt();
-        tauDaughters = 0;
-        taupi0 = 0;
-        for (unsigned int iDaughter = 0; iDaughter != iGen->numberOfDaughters(); ++iDaughter ){
-          if ( debug ) std::cout << "    Tau daughter [" << iDaughter << "] : "<<  std::abs(iGen->daughter(iDaughter)->pdgId()) << std::endl;
-          if ( abs(iGen->daughter(iDaughter)->pdgId()) == 111 ) taupi0++;
-          if ( iGen->daughter(iDaughter)->charge() == 0 ) continue;
-          tauDaughters++;
-        }
-        if ( debug ) std::cout << "    Tau prongs = " << tauDaughters << " + Tau pi0 = " << taupi0 << std::endl;
+        passedGenSel = true;
+        ++iGenParticle;
 
-        float recoTaudR = 0.4;
-        for (const pat::Tau &tau : *taus) {
-          //if(tau.pt() < 18.0) continue;
-          //if(fabs(tau.eta()) > 2.3) continue;
-          float TaudR = reco::deltaR( tau.eta(),tau.phi(), iGen->eta(),iGen->phi() );
-          if ( TaudR > recoTaudR ) continue;
-          recoTaudR = TaudR;
-          LooseDeepTau  = tau.tauID("byLooseDeepTau2017v2p1VSjet");
-          MediumDeepTau = tau.tauID("byMediumDeepTau2017v2p1VSjet");
-          TightDeepTau  = tau.tauID("byTightDeepTau2017v2p1VSjet");
-        }
-        if ( debug ) std::cout << "   DeepTau loose  = " << LooseDeepTau << std::endl;
-        if ( debug ) std::cout << "   DeepTau medium = " << MediumDeepTau << std::endl;
-        if ( debug ) std::cout << "   DeepTau tight  = " << TightDeepTau << std::endl;
+      } // primary gen particles
 
-        //passedGenSel = false;  //only for background
-        //break;                 //only for background
+      if (passedGenSel) { 
+        ++nMatchedJets;
+        vJetIdxs.push_back( iJ );
+        v_jetPdgIds.push_back( PdgId );
+        v_taupT.push_back( taupT );
+        v_tauDaughters.push_back( tauDaughters );
+        v_taupi0.push_back( taupi0 );
+        v_jetdR.push_back( jetdR );
+        v_goodvertices.push_back( goodVertices );
+        v_loosedeeptau.push_back( LooseDeepTau );
+        v_mediumdeeptau.push_back( MediumDeepTau );
+        v_tightdeeptau.push_back( TightDeepTau );
+        v_jetIsTau.push_back( JetIsTau );
 
-      } else if ( taupT < iGen->pt() ){
-        PdgId = std::abs(iGen->pdgId());
-        jetdR = dR;
-        taupT = iGen->pt();
       }
-
-      passedGenSel = true;
-      ++iGenParticle;
-
-    } // primary gen particles
-
-    if (passedGenSel) { 
-      ++nMatchedJets;
-      vJetIdxs.push_back( iJ );
-      v_tau_jetPdgIds_.push_back( PdgId );
-      v_taupT.push_back( taupT );
-      v_tauDaughters.push_back( tauDaughters );
-      v_taupi0.push_back( taupi0 );
-      v_jetdR.push_back( jetdR );
-      v_goodvertices.push_back( goodVertices );
-      v_loosedeeptau.push_back( LooseDeepTau );
-      v_mediumdeeptau.push_back( MediumDeepTau );
-      v_tightdeeptau.push_back( TightDeepTau );
-      v_jetIsTau.push_back( JetIsTau );
-
-    }
+    } // End MC selection
 
   } // reco jets
   if ( debug ) std::cout << " Matched jets " << nMatchedJets << std::endl;
@@ -254,6 +262,7 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
   v_tau_gen_pi0_.clear();
   v_tau_jet_m0_.clear();
   v_tau_jetIsTau_.clear();
+  v_tau_jetPdgIds_.clear();
   v_tau_jetdR_.clear();
   v_tau_goodvertices_.clear();
   v_tau_loosedeeptau_.clear();
@@ -283,6 +292,7 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
     v_tau_jet_pt_.push_back( iJet.pt() );
     v_tau_jet_m0_.push_back( iJet.mass() );
     v_tau_jetIsTau_.push_back( v_jetIsTau[iJ] );
+    v_tau_jetPdgIds_.push_back( v_jetPdgIds[iJ] );
     v_tau_jetdR_.push_back( v_jetdR[iJ] );
     v_tau_goodvertices_.push_back( v_goodvertices[iJ] );
     v_tau_loosedeeptau_.push_back( v_loosedeeptau[iJ] );

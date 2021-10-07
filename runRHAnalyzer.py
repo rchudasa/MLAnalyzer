@@ -7,7 +7,11 @@ inputFiles_='file:../HTauTau_Hadronic_Tune4C_13TeV_LHE_pythia8_Tauola_PU2018-Run
 
 maxEvents_=-1
 skipEvents_=0#
+processTask_='tau_classification'
+processIsDebug_=True
+processIsData_=False
+processIsSignal_=True
 
-cmd="cmsRun %s inputFiles=%s maxEvents=%d skipEvents=%d"%(cfg,inputFiles_,maxEvents_,skipEvents_)
+cmd="cmsRun %s inputFiles=%s maxEvents=%d skipEvents=%d processTask=%s processIsData=%s processIsSignal=%s processIsDebug=%s"%(cfg,inputFiles_,maxEvents_,skipEvents_,processTask_,processIsData_,processIsSignal_,processIsDebug_)
 print '%s'%cmd
 os.system(cmd)

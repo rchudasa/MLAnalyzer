@@ -17,9 +17,6 @@ vector<float> vJetSeed_iphi_;
 vector<float> vJetSeed_ieta_;
 vector<int>   vFailedJetIdx_;
 
-
-const std::string jetSelection = "class_tau";
-
 // Initialize branches _____________________________________________________//
 void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService> &fs ) {
 
@@ -30,7 +27,7 @@ void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService
   tree->Branch("jetSeed_ieta",   &vJetSeed_ieta_);
 
   // Fill branches in explicit jet selection
-  if ( jetSelection == "class_tau" ) {
+  if ( task_ == "tau_classification" ) {
     branchesEvtSel_jet_dijet_tau( tree, fs );
   } 
 
@@ -42,8 +39,8 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   // Each jet selection must fill vJetIdxs with good jet indices
 
   // Run explicit jet selection
-  bool hasPassed;
-  if ( jetSelection == "class_tau" ) {
+  bool hasPassed = false;
+  if ( task_ == "tau_classification" ) {
     hasPassed = runEvtSel_jet_dijet_tau( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET SELECTION HAS PASSED! " << std::endl; 
   } 
@@ -175,7 +172,7 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   jet_runId_ = iEvent.id().run();
   jet_lumiId_ = iEvent.id().luminosityBlock();
 
-  if ( jetSelection == "class_tau" ) {
+  if ( task_ == "tau_classification" ) {
     fillEvtSel_jet_dijet_tau( iEvent, iSetup );
   } 
 
