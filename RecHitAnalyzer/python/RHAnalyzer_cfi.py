@@ -28,6 +28,7 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     , isDebug                        = cms.bool(False)
     , isData                         = cms.bool(False)
     , isSignal                       = cms.bool(True)
+    , isTrain                        = cms.bool(False)
     , isW                            = cms.bool(False)
     , mode                           = cms.string("JetLevel")
     , task                           = cms.string("tau_classification")

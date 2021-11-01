@@ -38,6 +38,11 @@ options.register('processIsW',
     mult=VarParsing.VarParsing.multiplicity.singleton,
     mytype=VarParsing.VarParsing.varType.bool,
     info = "Is W plus jet: True or False")
+options.register('processIsTrain',
+    default=True,
+    mult=VarParsing.VarParsing.multiplicity.singleton,
+    mytype=VarParsing.VarParsing.varType.bool,
+    info = "Is train sample: True or False")
 options.parseArguments()
 
 process = cms.Process("FEVTAnalyzer")
@@ -74,6 +79,8 @@ process.fevt.isSignal = cms.bool(options.processIsSignal)
 print " >> Is Signal:",(process.fevt.isSignal)
 process.fevt.isW = cms.bool(options.processIsW)
 print " >> Is W+jet:",(process.fevt.isW)
+process.fevt.isTrain = cms.bool(options.processIsTrain)
+print " >> Is Train:",(process.fevt.isTrain)
 
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string(options.outputFile)

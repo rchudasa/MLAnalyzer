@@ -14,6 +14,7 @@ TH1D *h_tau_jet_nJet;
 TH1D *h_tau_jet_isTau;
 TH1D *h_tau_jet_dR;
 TH1D *h_tau_goodvertices;
+TH1D *h_tau_deeptau;
 TH1D *h_tau_loosedeeptau;
 TH1D *h_tau_mediumdeeptau;
 TH1D *h_tau_tightdeeptau;
@@ -21,6 +22,7 @@ vector<float> v_jetIsTau;
 vector<float> v_jetdR;
 vector<float> v_jetPdgIds;
 vector<float> v_goodvertices;
+vector<float> v_deeptau;
 vector<float> v_loosedeeptau;
 vector<float> v_mediumdeeptau;
 vector<float> v_tightdeeptau;
@@ -37,6 +39,7 @@ vector<float> v_tau_jetPdgIds_;
 vector<float> v_tau_jetIsTau_;
 vector<float> v_tau_jetdR_;
 vector<float> v_tau_goodvertices_;
+vector<float> v_tau_deeptau_;
 vector<float> v_tau_loosedeeptau_;
 vector<float> v_tau_mediumdeeptau_;
 vector<float> v_tau_tightdeeptau_;
@@ -61,6 +64,7 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_tau ( TTree* tree, edm::Service<TF
   h_tau_gen_pT         = fs->make<TH1D>("h_gen_pT"           , "p_{T};p_{T}; Gen part"                      ,  30,  0., 300.);
   h_tau_gen_prongs     = fs->make<TH1D>("h_gen_prongs"       , "prongs; prongs; Gen part"                   ,  10,  0.,  10.);
   h_tau_gen_pi0        = fs->make<TH1D>("h_gen_pi0"          , "pi0; pi0; Gen part"                         ,  10,  0.,  10.);
+  h_tau_deeptau        = fs->make<TH1D>("h_tau_DeepTau"      , "DeepTau; DeepTau; Gen part"                 ,  20,  0., 1.01);
   h_tau_loosedeeptau   = fs->make<TH1D>("h_tau_LooseDeepTau" , "LooseDeepTau; LooseDeepTau; Gen part"       ,   2,  0., 1.01);
   h_tau_mediumdeeptau  = fs->make<TH1D>("h_tau_MediumDeepTau", "MediumDeepTau; MediumDeepTau; Gen part"     ,   2,  0., 1.01);
   h_tau_tightdeeptau   = fs->make<TH1D>("h_tau_TightDeepTau" , "TightDeepTau; TightDeepTau; Gen part"       ,   2,  0., 1.01);
@@ -74,6 +78,7 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_tau ( TTree* tree, edm::Service<TF
   tree->Branch("gen_pi0",       &v_tau_gen_pi0_);
   tree->Branch("jet_dR",        &v_tau_jetdR_);
   tree->Branch("goodvertices",  &v_tau_goodvertices_);
+  tree->Branch("DeepTau",       &v_tau_deeptau_);
   tree->Branch("LooseDeepTau",  &v_tau_loosedeeptau_);
   tree->Branch("MediumDeepTau", &v_tau_mediumdeeptau_);
   tree->Branch("TightDeepTau",  &v_tau_tightdeeptau_);
@@ -114,6 +119,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
   v_jetIsTau.clear();
   v_jetdR.clear();
   v_goodvertices.clear();
+  v_deeptau.clear();
   v_loosedeeptau.clear();
   v_mediumdeeptau.clear();
   v_tightdeeptau.clear();
@@ -144,9 +150,10 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
     int tauDaughters          = -1;
     int taupi0                = -1;
     bool JetIsTau             = false;
-    float LooseDeepTau        = 0;
-    float MediumDeepTau       = 0;
-    float TightDeepTau        = 0;
+    float DeepTau             = -1;
+    float LooseDeepTau        = -1;
+    float MediumDeepTau       = -1;
+    float TightDeepTau        = -1;
 
     pat::Jet iJet = (*jets)[iJ];
     if ( std::abs(iJet.pt())  < minJetPt_ ) continue;
@@ -189,27 +196,12 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
           }
           if ( debug ) std::cout << "    Tau prongs = " << tauDaughters << " + Tau pi0 = " << taupi0 << std::endl;
 
-          float recoTaudR = 0.4;
-          for (const pat::Tau &tau : *taus) {
-            //if(tau.pt() < 18.0) continue;
-            //if(fabs(tau.eta()) > 2.3) continue;
-            float TaudR = reco::deltaR( tau.eta(),tau.phi(), iGen->eta(),iGen->phi() );
-            if ( TaudR > recoTaudR ) continue;
-            recoTaudR = TaudR;
-            LooseDeepTau  = tau.tauID("byLooseDeepTau2017v2p1VSjet");
-            MediumDeepTau = tau.tauID("byMediumDeepTau2017v2p1VSjet");
-            TightDeepTau  = tau.tauID("byTightDeepTau2017v2p1VSjet");
-          }
-          if ( debug ) std::cout << "   DeepTau loose  = " << LooseDeepTau << std::endl;
-          if ( debug ) std::cout << "   DeepTau medium = " << MediumDeepTau << std::endl;
-          if ( debug ) std::cout << "   DeepTau tight  = " << TightDeepTau << std::endl;
-
           if (!isSignal_){
             passedGenSel = false;  //only for background
             break;                 //only for background
           }
 
-        } else if ( taupT < iGen->pt() ){
+        } else if ( taupT < iGen->pt() ) {
           PdgId = std::abs(iGen->pdgId());
           jetdR = dR;
           taupT = iGen->pt();
@@ -220,6 +212,23 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
 
       } // primary gen particles
 
+      if ( !isTrain_ || isSignal_ ){
+        float recoTaudR = 0.4;
+        for (const pat::Tau &tau : *taus) {
+          if(tau.pt() < 18.0) continue;
+          //if(fabs(tau.eta()) > 2.3) continue;
+          float TaudR = reco::deltaR( tau.eta(),tau.phi(), iJet.eta(), iJet.phi() );
+          if ( TaudR > recoTaudR ) continue;
+          recoTaudR = TaudR;
+          DeepTau       = tau.tauID("byDeepTau2017v2p1VSjetraw");
+          LooseDeepTau  = tau.tauID("byLooseDeepTau2017v2p1VSjet");
+          MediumDeepTau = tau.tauID("byMediumDeepTau2017v2p1VSjet");
+          TightDeepTau  = tau.tauID("byTightDeepTau2017v2p1VSjet");
+        }
+        if ( debug ) std::cout << "   DeepTau  = " << DeepTau << std::endl;
+        if (recoTaudR >= 0.4) passedGenSel = false; 
+      }
+
       if (passedGenSel) { 
         ++nMatchedJets;
         vJetIdxs.push_back( iJ );
@@ -229,6 +238,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
         v_taupi0.push_back( taupi0 );
         v_jetdR.push_back( jetdR );
         v_goodvertices.push_back( goodVertices );
+        v_deeptau.push_back( DeepTau );
         v_loosedeeptau.push_back( LooseDeepTau );
         v_mediumdeeptau.push_back( MediumDeepTau );
         v_tightdeeptau.push_back( TightDeepTau );
@@ -265,6 +275,7 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
   v_tau_jetPdgIds_.clear();
   v_tau_jetdR_.clear();
   v_tau_goodvertices_.clear();
+  v_tau_deeptau_.clear();
   v_tau_loosedeeptau_.clear();
   v_tau_mediumdeeptau_.clear();
   v_tau_tightdeeptau_.clear();
@@ -281,6 +292,7 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
     h_tau_jet_isTau->Fill( v_jetIsTau[iJ] );
     h_tau_jet_dR->Fill( v_jetdR[iJ] );
     h_tau_goodvertices->Fill( v_goodvertices[iJ] );
+    h_tau_deeptau->Fill( v_deeptau[iJ] );
     h_tau_loosedeeptau->Fill( v_loosedeeptau[iJ] );
     h_tau_mediumdeeptau->Fill( v_mediumdeeptau[iJ] );
     h_tau_tightdeeptau->Fill( v_tightdeeptau[iJ] );
@@ -295,6 +307,7 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
     v_tau_jetPdgIds_.push_back( v_jetPdgIds[iJ] );
     v_tau_jetdR_.push_back( v_jetdR[iJ] );
     v_tau_goodvertices_.push_back( v_goodvertices[iJ] );
+    v_tau_deeptau_.push_back( v_deeptau[iJ] );
     v_tau_loosedeeptau_.push_back( v_loosedeeptau[iJ] );
     v_tau_mediumdeeptau_.push_back( v_mediumdeeptau[iJ] );
     v_tau_tightdeeptau_.push_back( v_tightdeeptau[iJ] );

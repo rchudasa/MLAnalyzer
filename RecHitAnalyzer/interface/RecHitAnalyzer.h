@@ -238,6 +238,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     bool debug;  
     bool isData_;  
     bool isSignal_;  
+    bool isTrain_;  
     bool isW_;  
     bool doJets_;
     int  nJets_;

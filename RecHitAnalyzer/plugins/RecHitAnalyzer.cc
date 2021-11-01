@@ -53,7 +53,8 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   debug      = iConfig.getParameter<bool>("isDebug");
   isData_    = iConfig.getParameter<bool>("isData");
   isSignal_  = iConfig.getParameter<bool>("isSignal");
-  isW_     = iConfig.getParameter<bool>("isW");
+  isTrain_   = iConfig.getParameter<bool>("isTrain");
+  isW_       = iConfig.getParameter<bool>("isW");
   mode_      = iConfig.getParameter<std::string>("mode");
   task_      = iConfig.getParameter<std::string>("task");
   minJetPt_  = iConfig.getParameter<double>("minJetPt");
