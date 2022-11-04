@@ -1,9 +1,15 @@
 *.root
+*/*.root
 *.npz
 *.log
 *.txt
 *.pyc
+*/*.pyc
 *.hdf5
 *.parquet*
 .*.*
 __init__.py
+*/crab_MC
+*/crab_MC/*
+*/crab_projects
+*/crab_projects/*

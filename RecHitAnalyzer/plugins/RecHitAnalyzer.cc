@@ -212,10 +212,10 @@ RecHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //fillTRKvolumeAtEBEE( iEvent, iSetup );
   //fillTRKvolumeAtECAL( iEvent, iSetup );
   fillJetInfoAtECALstitched( iEvent, iSetup );
-  for (unsigned int i=0;i<Nhitproj;i++)
+  /*for (unsigned int i=0;i<Nhitproj;i++)
   {
     fillTRKlayersAtECALstitched( iEvent, iSetup, i );
-  }
+  }*/
 
 
   ////////////// 4-Momenta //////////
