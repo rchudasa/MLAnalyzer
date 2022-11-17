@@ -345,8 +345,8 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //
 // constants, enums and typedefs
 //
-static const bool debug = true;
-//static const bool debug = false;
+//static const bool debug = true;
+static const bool debug = false;
 
 static const int nEE = 2;
 static const int nTOB = 6;

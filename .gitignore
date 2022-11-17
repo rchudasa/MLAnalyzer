@@ -9,7 +9,11 @@
 *.parquet*
 .*.*
 __init__.py
+crab_MC
+crab_MC/*
 */crab_MC
 */crab_MC/*
+crab_projects
+crab_projects/*
 */crab_projects
 */crab_projects/*

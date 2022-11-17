@@ -147,7 +147,7 @@ bool RecHitAnalyzer::runEvtSel_jet_DY_ele_classification( const edm::Event& iEve
   unsigned int nMatchedJets = 0;
   unsigned int nMatchedRecoEle = 0;
   unsigned int aPdgId           = 0;
-  bool MatchedPseudoScalar = false;
+  bool MatchedBoson = false;
   float a_mass = -99.;
   float a_pt   = -99.;
   float dRa    = -99.;
@@ -165,7 +165,7 @@ bool RecHitAnalyzer::runEvtSel_jet_DY_ele_classification( const edm::Event& iEve
     // Loop over jets
   for ( unsigned iJ(0); iJ != jets->size(); ++iJ ) {
     reco::PFJetRef iJet( jets, iJ );
-    if (debug ) std::cout << "  >>>>>> Jet [" << iJ << "] => Pt: " << iJet->pt() << ", Eta: " << iJet->eta() << ", Phi: " << iJet->phi() << std::endl;
+    if (debug ) std::cout <<"Jet [" << iJ << "] => Pt: " << iJet->pt() << ", Eta: " << iJet->eta() << ", Phi: " << iJet->phi() << std::endl;
     if ( std::abs(iJet->pt())  < minJetPt_ ) continue;
     if ( std::abs(iJet->eta()) > maxJetEta_ ) continue;
     unsigned int nMatchedGenParticles = 0;
@@ -179,20 +179,20 @@ bool RecHitAnalyzer::runEvtSel_jet_DY_ele_classification( const edm::Event& iEve
     if ( iGen->mother()->pdgId() != 23)continue;
     ++iGenParticle;
     float dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->eta(),iGen->phi() );
-    if ( debug ) std::cout << "   GEN particle " << iGenParticle << " -> status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " nMoms: " <<iGen->numberOfMothers() << " | pt: "<< iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << " | dR = "<< dR << std::endl ;
+    if ( debug ) std::cout << "\t" <<"GEN particle " << iGenParticle << " -> status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " nMoms: " <<iGen->numberOfMothers() << " | pt: "<< iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << " | dR = "<< dR << std::endl ;
     if ( dR > 0.4 ) continue;
          
-    if ( debug ) std::cout << "       MOTHER => status: " << iGen->mother()->status() << ", id: " << iGen->mother()->pdgId() << ", nDaught: " << iGen->mother()->numberOfDaughters() << " | pt: "<< iGen->mother()->pt() << " eta: " <<iGen->mother()->eta() << " phi: " <<iGen->mother()->phi() << " mass: " <<iGen->mother()->mass() << std::endl;
+    if ( debug ) std::cout << "\t" <<"MOTHER => status: " << iGen->mother()->status() << ", id: " << iGen->mother()->pdgId() << ", nDaught: " << iGen->mother()->numberOfDaughters() << " | pt: "<< iGen->mother()->pt() << " eta: " <<iGen->mother()->eta() << " phi: " <<iGen->mother()->phi() << " mass: " <<iGen->mother()->mass() << std::endl;
     
     if (nMatchedGenParticles == 0) {
-      if ( debug ) std::cout << "       nMatchedGenParticles: " << nMatchedGenParticles << std::endl;
+      if ( debug ) std::cout << "\t\t"  <<"nMatchedGenParticles: " << nMatchedGenParticles << std::endl;
       aPdgId = std::abs(iGen->mother()->pdgId());
       if ( abs(iGen->mother()->pdgId()) == 23 ) {
-	MatchedPseudoScalar = true;
+	MatchedBoson = true;
       } else {
-	MatchedPseudoScalar = false;
+	MatchedBoson = false;
       }
-      if (!MatchedPseudoScalar) {
+      if (!MatchedBoson) {
 	if ( debug ) std::cout << " MOTHER is not the pseudoscalar a"  << std::endl;
 	continue;
       }
@@ -214,11 +214,12 @@ bool RecHitAnalyzer::runEvtSel_jet_DY_ele_classification( const edm::Event& iEve
 	} // end else pt2 > pt1
       }
     } //matched gen particle = 0
+
     if ( eledR > 0.4 ) {
         if ( debug ) std::cout << " !! Electrons are not merged: gen dR_ee = " << eledR << " !! " << std::endl;
         //continue;
       } 
-     if ( !MatchedPseudoScalar ) continue;
+     if ( !MatchedBoson ) continue;
      ++nMatchedGenParticles; 
   } // primary gen particles
   
@@ -226,13 +227,9 @@ bool RecHitAnalyzer::runEvtSel_jet_DY_ele_classification( const edm::Event& iEve
     if (passedGenSel) { 
       ++nMatchedJets;
        
-  
-     std::cout<< "filling the branches" << std::endl;
-     std::cout<< "mass:" << a_mass << std::endl;
- 
      
       //Lookin at RecoEle
-      if (debug ) std::cout << "  Looking at RECO electrons: "<< std::endl;
+      if (debug ) std::cout << "  Looking at RECO electrons: electrons in event = "<< ele->size() << std::endl;
       if (ele->size() == 0) {
         if (debug ) std::cout << "   !!!!!!!!!!  NO RECO ELE IN THIS EVENT  !!!!!!!!!!"<< std::endl;
       }
@@ -240,26 +237,27 @@ bool RecHitAnalyzer::runEvtSel_jet_DY_ele_classification( const edm::Event& iEve
         //edm::Ref<reco::GsfElectronCollection> iEle( ele, iT );
         reco::GsfElectronRef iEle( ele, iT );
         float recoeledR = reco::deltaR( iJet->eta(),iJet->phi(), iEle->eta(),iEle->phi() );
+        if ( debug ) std::cout << "\t"<< " Ele pt: " << iEle->pt()  << "  ele eta: " << iEle->eta() << " ele phi: " << iEle->phi() << " dr: " << recoeledR << std::endl;
         if ( recoeledR < 0.4 && nMatchedRecoEle == 0 ) {
-          if ( debug ) std::cout << "   Reco Ele [" << iT << "]  matched jet [" << iJ << "] : dR = " << recoeledR << std::endl;
+          if ( debug ) std::cout << "\t\t"<< "Reco Ele [" << iT << "]  matched jet [" << iJ << "] : dR = " << recoeledR << std::endl;
           recoele1dR = recoeledR;
           ++nMatchedRecoEle;
         } else if ( recoeledR < 0.4 && nMatchedRecoEle == 1 ) {
-          if ( debug ) std::cout << "   Reco Ele [" << iT << "]  matched jet [" << iJ << "] : dR = " << recoeledR << std::endl;
+          if ( debug ) std::cout << "\t\t"<< "Reco Ele [" << iT << "]  matched jet [" << iJ << "] : dR = " << recoeledR << std::endl;
           if (recoeledR < recoele1dR) {
             recoele2dR = recoele1dR;
             recoele1dR = recoeledR;
           } else recoele2dR = recoeledR;
           ++nMatchedRecoEle;
         } else if ( debug && recoeledR < 0.4 && nMatchedRecoEle > 1 ) {
-          std::cout << "   !!!!!!!!!!  FOUND MORE THAN 2 ELE INSIDE JET CONE OF 0.4 !!!!!!!!!!"<< std::endl;
+          std::cout << "\t\t"<<"!!!!!!!!!!  FOUND MORE THAN 2 ELE INSIDE JET CONE OF 0.4 !!!!!!!!!!"<< std::endl;
           if (recoeledR < recoele2dR && recoeledR < recoele1dR) { 
             if (recoele1dR < recoele2dR) recoele2dR = recoele1dR;
             recoele1dR = recoeledR;
           } else if (recoeledR < recoele2dR && recoeledR > recoele1dR) recoele2dR = recoeledR; 
           ++nMatchedRecoEle;
         } else if ( debug ) {
-          std::cout << "   !!!!!!!!!!  NO MATCH FOR Reco Ele [" << iT << "]  with jet [" << iJ << "] : dR = " << recoeledR << std::endl;
+          std::cout << "\t\t" <<"!!!!!!!!!!  NO MATCH FOR Reco Ele [" << iT << "]  with jet [" << iJ << "] : dR = " << recoeledR << std::endl;
         }
       }
 
@@ -277,7 +275,7 @@ bool RecHitAnalyzer::runEvtSel_jet_DY_ele_classification( const edm::Event& iEve
       v_zee_mr_jetNrecoEle.push_back( nMatchedRecoEle );
       v_zee_mr_jetrecoEle1dR.push_back( recoele1dR );
       v_zee_mr_jetrecoEle2dR.push_back( recoele2dR );
-      v_zee_mr_jetIsDiEle.push_back( MatchedPseudoScalar );
+      v_zee_mr_jetIsDiEle.push_back( MatchedBoson );
 
     }
 
