@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: Configuration/GenProduction/python/EGM-RunIISummer19UL18GEN-00020-fragment.py --python_filename EGM-RunIISummer19UL18GEN-00020_1_cfg.py --eventcontent RAWSIM --customise Configuration/DataProcessing/Utils.addMonitoring --datatier GEN --fileout file:EGM-RunIISummer19UL18GEN-00020.root --conditions 106X_upgrade2018_realistic_v4 --beamspot Realistic25ns13TeVEarly2018Collision --step GEN --geometry DB:Extended --era Run2_2018 --no_exec
+# with command line options: Configuration/GenProduction/python/EGM-RunIISummer19UL18GEN-00014-fragment.py --python_filename EGM-RunIISummer19UL18GEN-00014_1_cfg.py --eventcontent RAWSIM --customise Configuration/DataProcessing/Utils.addMonitoring --datatier GEN --fileout file:EGM-RunIISummer19UL18GEN-00014.root --conditions 106X_upgrade2018_realistic_v4 --beamspot Realistic25ns13TeVEarly2018Collision --step GEN --geometry DB:Extended --era Run2_2018 --no_exec --mc
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Run2_2018_cff import Run2_2018
@@ -24,7 +24,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(1000)
 )
 
 # Input source
@@ -36,9 +36,9 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('Configuration/GenProduction/python/EGM-RunIISummer19UL18GEN-00020-fragment.py nevts:1'),
-    name = cms.untracked.string('Applications'),
-    version = cms.untracked.string('$Revision: 1.19 $')
+    annotation = cms.untracked.string('QCD pthat 30to50 GeV, 13 TeV, TuneCP5'),
+    name = cms.untracked.string('\\$Source$'),
+    version = cms.untracked.string('\\$Revision$')
 )
 
 # Output definition
@@ -54,7 +54,7 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(20971520),
-    fileName = cms.untracked.string('file:EGM-RunIISummer19UL18GEN-00020.root'),
+    fileName = cms.untracked.string('file:GEN_QCD_Pt-30to50_EMEnriched.root'),
     outputCommands = process.RAWSIMEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
@@ -66,30 +66,26 @@ process.genstepfilter.triggerConditions=cms.vstring("generation_step")
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, '106X_upgrade2018_realistic_v4', '')
 
-process.gj_filter = cms.EDFilter("PythiaFilterGammaGamma",
-    AcceptPrompts = cms.bool(True),
-    EnergyCut = cms.double(1.0),
-    EtaElThr = cms.double(2.8),
-    EtaGammaThr = cms.double(2.8),
-    EtaMaxCandidate = cms.double(3.0),
-    EtaSeedThr = cms.double(2.8),
-    EtaTkThr = cms.double(2.2),
-    InvMassMax = cms.double(14000.0),
-    InvMassMin = cms.double(80.0),
-    NTkConeMax = cms.int32(2),
-    NTkConeSum = cms.int32(4),
-    PromptPtThreshold = cms.double(15.0),
-    PtElThr = cms.double(2.0),
-    PtGammaThr = cms.double(0.0),
-    PtMinCandidate1 = cms.double(15.0),
-    PtMinCandidate2 = cms.double(15.0),
-    PtSeedThr = cms.double(5.0),
-    PtTkThr = cms.double(1.6),
-    dEtaSeedMax = cms.double(0.12),
-    dPhiSeedMax = cms.double(0.2),
-    dRNarrowCone = cms.double(0.02),
-    dRSeedMax = cms.double(0.0),
-    dRTkMax = cms.double(0.2)
+process.bctoefilter = cms.EDFilter("BCToEFilter",
+    filterAlgoPSet = cms.PSet(
+        eTThreshold = cms.double(10),
+        genParSource = cms.InputTag("genParticlesForFilter")
+    )
+)
+
+
+process.emenrichingfilter = cms.EDFilter("EMEnrichingFilter",
+    filterAlgoPSet = cms.PSet(
+        caloIsoMax = cms.double(10.0),
+        clusterThreshold = cms.double(20.0),
+        genParSource = cms.InputTag("genParticlesForFilter"),
+        hOverEMax = cms.double(0.5),
+        isoConeSize = cms.double(0.2),
+        isoGenParConeSize = cms.double(0.1),
+        isoGenParETMin = cms.double(20.0),
+        requireTrackMatch = cms.bool(False),
+        tkIsoMax = cms.double(5.0)
+    )
 )
 
 
@@ -101,11 +97,9 @@ process.generator = cms.EDFilter("Pythia8GeneratorFilter",
             'processParameters'
         ),
         processParameters = cms.vstring(
-            'PromptPhoton:qg2qgamma = on       ! prompt photon production', 
-            'PromptPhoton:qqbar2ggamma = on    ! prompt photon production', 
-            'PromptPhoton:gg2ggamma = on       ! prompt photon production', 
-            'PhaseSpace:pTHatMin = 20.         ! minimum pt hat for hard interactions', 
-            'PhaseSpace:pTHatMax = 40.          ! maximum pt hat for hard interactions'
+            'HardQCD:all = on', 
+            'PhaseSpace:pTHatMin = 30 ', 
+            'PhaseSpace:pTHatMax = 50 '
         ),
         pythia8CP5Settings = cms.vstring(
             'Tune:pp 14', 
@@ -143,15 +137,22 @@ process.generator = cms.EDFilter("Pythia8GeneratorFilter",
         )
     ),
     comEnergy = cms.double(13000.0),
-    crossSection = cms.untracked.double(1.0),
+    crossSection = cms.untracked.double(136000000.0),
     filterEfficiency = cms.untracked.double(1.0),
-    maxEventsToPrint = cms.untracked.int32(0),
+    maxEventsToPrint = cms.untracked.int32(1),
     pythiaHepMCVerbosity = cms.untracked.bool(False),
-    pythiaPylistVerbosity = cms.untracked.int32(0)
+    pythiaPylistVerbosity = cms.untracked.int32(1)
 )
 
 
-process.ProductionFilterSequence = cms.Sequence(process.generator+process.gj_filter)
+process.genParticlesForFilter = cms.EDProducer("GenParticleProducer",
+    abortOnUnknownPDGCode = cms.untracked.bool(False),
+    saveBarCodes = cms.untracked.bool(True),
+    src = cms.InputTag("generator","unsmeared")
+)
+
+
+process.ProductionFilterSequence = cms.Sequence(process.generator+process.genParticlesForFilter+~process.bctoefilter+process.emenrichingfilter)
 
 # Path and EndPath definitions
 process.generation_step = cms.Path(process.pgen)

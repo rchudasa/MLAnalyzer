@@ -174,13 +174,18 @@ bool RecHitAnalyzer::runEvtSel_jet_DY_ele_classification( const edm::Event& iEve
 
   
   for (reco::GenParticleCollection::const_iterator iGen = genParticles->begin(); iGen != genParticles->end(); ++iGen) {
-    if ( abs(iGen->pdgId()) != 11 ) continue;
-    if ( iGen->numberOfMothers() != 1 ) continue;
-    if ( iGen->mother()->pdgId() != 23)continue;
+    //if ( abs(iGen->pdgId()) != 11 ) continue; //DY
+    //if ( iGen->numberOfMothers() != 1 ) continue; //DY
+    //if ( iGen->mother()->pdgId() != 23)continue; //DY
+    if(abs(iGen->pdgId()) == 21 || abs(iGen->pdgId())<9)continue;//QCD
+    float dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->eta(),iGen->phi() );//QCD
+    if ( dR > 0.4 ) continue; //QCD
+    if ( iGen->pt() > 20 && (std::abs(iGen->pdgId()) == 11 || std::abs(iGen->pdgId()) == 13) ) break; //only clean jets (lepton veto) 
+    if ( !( iGen->status() == 23 ) ) continue; //QCD 
     ++iGenParticle;
-    float dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->eta(),iGen->phi() );
+    //float dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->eta(),iGen->phi() );//DY
     if ( debug ) std::cout << "\t" <<"GEN particle " << iGenParticle << " -> status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " nMoms: " <<iGen->numberOfMothers() << " | pt: "<< iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << " | dR = "<< dR << std::endl ;
-    if ( dR > 0.4 ) continue;
+    //if ( dR > 0.4 ) continue; //DY
          
     if ( debug ) std::cout << "\t" <<"MOTHER => status: " << iGen->mother()->status() << ", id: " << iGen->mother()->pdgId() << ", nDaught: " << iGen->mother()->numberOfDaughters() << " | pt: "<< iGen->mother()->pt() << " eta: " <<iGen->mother()->eta() << " phi: " <<iGen->mother()->phi() << " mass: " <<iGen->mother()->mass() << std::endl;
     

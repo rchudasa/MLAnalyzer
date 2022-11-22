@@ -2,7 +2,7 @@ from CRABClient.UserUtilities import config
 config = config()
 
 #config.section_('General')
-config.General.requestName = 'GJet_Pt-20to40_AODSIM'
+config.General.requestName = 'QCDEmEnriched_Pt-30to50_AODSIM'
 config.General.workArea = 'crab_projects'
 config.General.transferOutputs = True
 config.General.transferLogs = True
@@ -15,7 +15,7 @@ config.JobType.psetName = 'sim_GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneC
 config.Data.inputDBS = 'global'
 config.JobType.allowUndistributedCMSSW = True
 #config.JobType.numCores = 8
-config.Data.inputDataset ='/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8/RunIISummer19UL18GEN-106X_upgrade2018_realistic_v4-v1/GEN'
+config.Data.inputDataset ='/QCD_Pt-30to50_EMEnriched_TuneCP5_13TeV_pythia8/RunIISummer19UL18GEN-106X_upgrade2018_realistic_v4-v2/GEN'
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 1 
 

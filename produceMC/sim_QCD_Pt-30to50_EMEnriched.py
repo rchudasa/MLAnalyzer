@@ -36,7 +36,7 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
     dropDescendantsOfDroppedBranches = cms.untracked.bool(False),
-    fileNames = cms.untracked.vstring('file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8/crab_GJet_Pt-20to40_GEN/221118_054401/0000/EGM-RunIISummer19UL18GEN-00020_33.root'),
+    fileNames = cms.untracked.vstring('file:GEN_QCD_Pt-30to50_EMEnriched.root'),
     #fileNames = cms.untracked.vstring('file:GEN_HToTauTau_m3p6To16_pT30To180_ctau0To3_eta0To1p4_pythia8_unbiased.root'),
     #fileNames = cms.untracked.vstring('file:GEN_HToTauTau_m3p6To14_pT30To150_ctau0To3_eta0To1p4_pythia8_unbiased_115.root'),
     inputCommands = cms.untracked.vstring(
@@ -83,7 +83,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(31457280),
     outputCommands = process.AODSIMEventContent.outputCommands+cms.untracked.vstring('keep *_simSiPixelDigis_*_*','keep *_simSiStripDigis_*_*','keep *_siPixelClusters_*_*','keep *_siStripClusters_*_*','keep *_g4SimHits_*_*','keep *_generalTracks_*_*','keep *_siStripMatchedRecHits_*_*','keep *_siPixelRecHits_*_*'),
-    fileName = cms.untracked.string('file:SIM_GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5.root')
+    fileName = cms.untracked.string('file:SIM_QCD_Pt-30to50_EMEnriched.root')
 )
 
 # Additional output definition
