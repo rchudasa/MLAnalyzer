@@ -2,7 +2,7 @@ from CRABClient.UserUtilities import config
 config = config()
 
 #config.section_('General')
-config.General.requestName = 'GJet_Pt-20to40_SIM'
+config.General.requestName = 'GJet_Pt-20to40_SIM-v3'
 config.General.workArea = 'crab_projects'
 config.General.transferOutputs = True
 config.General.transferLogs = True
@@ -18,6 +18,7 @@ config.JobType.allowUndistributedCMSSW = True
 config.Data.inputDataset ='/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8/phys_heavyions-crab_GJet_Pt-20to40_GENv3-99d9aa36932aa71f9045d950d2e50dc5/USER'
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 1 
+config.Data.totalUnits = 1000
 
 config.Data.outLFNDirBase = '/store/group/lpcml/rchudasa/'
 #config.Data.outLFNDirBase = '/store/user/rchudasa/'
