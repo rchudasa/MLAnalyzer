@@ -36,7 +36,8 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
     dropDescendantsOfDroppedBranches = cms.untracked.bool(False),
-    fileNames = cms.untracked.vstring('file:GEN_DYToEE_Pythia6.root'),
+    fileNames = cms.untracked.vstring('/store/user/rchudasa/BsMMG_2018UL/DoubleElectronFlatPt1To20_GENSIM_Run2018/crab_DoubleElectronFlatPt1To20_GENSIM_Run2018/210810_062922/0000/GEM_SIM_1.root, /store/user/rchudasa/BsMMG_2018UL/DoubleElectronFlatPt1To20_GENSIM_Run2018/crab_DoubleElectronFlatPt1To20_GENSIM_Run2018/210810_062922/0000/GEM_SIM_10.root'),
+    #fileNames = cms.untracked.vstring('file:GEN_DYToEE_Pythia6.root'),
     #fileNames = cms.untracked.vstring('file:GEN_HToTauTau_m3p6To16_pT30To180_ctau0To3_eta0To1p4_pythia8_unbiased.root'),
     #fileNames = cms.untracked.vstring('file:GEN_HToTauTau_m3p6To14_pT30To150_ctau0To3_eta0To1p4_pythia8_unbiased_115.root'),
     inputCommands = cms.untracked.vstring(
@@ -83,7 +84,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(31457280),
     outputCommands = process.AODSIMEventContent.outputCommands+cms.untracked.vstring('keep *_simSiPixelDigis_*_*','keep *_simSiStripDigis_*_*','keep *_siPixelClusters_*_*','keep *_siStripClusters_*_*','keep *_g4SimHits_*_*','keep *_generalTracks_*_*','keep *_siStripMatchedRecHits_*_*','keep *_siPixelRecHits_*_*'),
-    fileName = cms.untracked.string('file:SIM_DYToEE_Pythia6.root')
+    fileName = cms.untracked.string('file:SIM_flatElectron.root')
 )
 
 # Additional output definition
