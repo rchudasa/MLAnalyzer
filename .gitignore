@@ -17,3 +17,5 @@ crab_projects
 crab_projects/*
 */crab_projects
 */crab_projects/*
+
+produceMC/gen_GluGluHToTauTau_M125_13TeV_powheg_pythia8_old.py

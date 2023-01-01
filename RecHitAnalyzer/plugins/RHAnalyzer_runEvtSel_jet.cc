@@ -19,12 +19,12 @@ vector<int>   vFailedJetIdx_;
 
 
 //const std::string jetSelection = "dijet_gg_qq"; // TODO: put switch at cfg level
-//const std::string jetSelection = "jet_tau";
+const std::string jetSelection = "jet_tau";
 //const std::string jetSelection = "dijet_ditau";
 //const std::string jetSelection = "dijet_tau_massregression";
 //const std::string jetSelection = "dijet_ele_massregression";
 //const std::string jetSelection = "jet_DY_ele_classification";
-const std::string jetSelection = "jet_background";
+//const std::string jetSelection = "jet_background";
 
 
 // Initialize branches _____________________________________________________//
@@ -47,9 +47,9 @@ void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService
     branchesEvtSel_jet_dijet_ele_massregression( tree, fs );
   } else if ( jetSelection == "jet_DY_ele_classification" ) {
     branchesEvtSel_jet_DY_ele_classification( tree, fs );
-  } else if ( jetSelection == "jet_background" ) {
+  } /*else if ( jetSelection == "jet_background" ) {
     branchesEvtSel_jet_background( tree, fs );
-  } else {
+  } */else {
     branchesEvtSel_jet_dijet( tree, fs );
   }
 
@@ -77,10 +77,10 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   }  else if ( jetSelection == "jet_DY_ele_classification" ) {
     hasPassed = runEvtSel_jet_DY_ele_classification( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED ELE SELECTION! " << std::endl;
-  }  else if ( jetSelection == "jet_background" ) {
+  } /* else if ( jetSelection == "jet_background" ) {
     hasPassed = runEvtSel_jet_background( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED ELE SELECTION! " << std::endl;
-  } else {
+  }*/ else {
     hasPassed = runEvtSel_jet_dijet( iEvent, iSetup );
   }
 
@@ -221,9 +221,9 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
     fillEvtSel_jet_dijet_ele_massregression( iEvent, iSetup );
   } else if ( jetSelection == "jet_DY_ele_classification" ) {
     fillEvtSel_jet_DY_ele_classification( iEvent, iSetup );
-  } else if ( jetSelection == "jet_background" ) {
+  } /*else if ( jetSelection == "jet_background" ) {
     fillEvtSel_jet_background( iEvent, iSetup );
-  } else {
+  }*/ else {
     fillEvtSel_jet_dijet( iEvent, iSetup );
   }
 
