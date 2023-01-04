@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: Configuration/GenProduction/python/TAU-RunIIFall18wmLHEGS-00001-fragment.py --python_filename TAU-RunIIFall18wmLHEGS-00001_1_cfg.py --eventcontent RAWSIM,LHE --customise Configuration/DataProcessing/Utils.addMonitoring --datatier GEN,LHE --fileout file:TAU-RunIIFall18wmLHEGS-00001.root --conditions 106X_upgrade2018_realistic_v4 --beamspot Realistic25ns13TeVEarly2018Collision --customise_commands process.RandomNumberGeneratorService.externalLHEProducer.initialSeed=int(100206) --step LHE,GEN --geometry DB:Extended --era Run2_2018 --no_exec --mc -n 1000
+# with command line options: Configuration/GenProduction/python/TOP-RunIISummer20UL18wmLHEGEN-00069-fragment.py --python_filename TOP-RunIISummer20UL18wmLHEGEN-00069_1_cfg.py --eventcontent RAWSIM,LHE --customise Configuration/DataProcessing/Utils.addMonitoring --datatier GEN,LHE --fileout file:TOP-RunIISummer20UL18wmLHEGEN-00069.root --conditions 106X_upgrade2018_realistic_v4 --beamspot Realistic25ns13TeVEarly2018Collision --step LHE,GEN --geometry DB:Extended --era Run2_2018 --no_exec --mc -n 100
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Run2_2018_cff import Run2_2018
@@ -36,7 +36,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('Configuration/GenProduction/python/TAU-RunIIFall18wmLHEGS-00001-fragment.py nevts:1000'),
+    annotation = cms.untracked.string('Configuration/GenProduction/python/TOP-RunIISummer20UL18wmLHEGEN-00069-fragment.py nevts:100'),
     name = cms.untracked.string('Applications'),
     version = cms.untracked.string('$Revision: 1.19 $')
 )
@@ -54,7 +54,7 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(20971520),
-    fileName = cms.untracked.string('file:gen_GluGluHToTauTau_Hadronic_M125_13TeV_powheg_pythia8.root'),
+    fileName = cms.untracked.string('file:TTToHadronic_TuneCP5CR1_13TeV-powheg-pythia8_GEN.root'),
     outputCommands = process.RAWSIMEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
@@ -64,7 +64,7 @@ process.LHEoutput = cms.OutputModule("PoolOutputModule",
         dataTier = cms.untracked.string('LHE'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('file:gen_GluGluHToTauTau_Hadronic_M125_13TeV_powheg_pythia8_inLHE.root'),
+    fileName = cms.untracked.string('file:TTToHadronic_TuneCP5CR1_13TeV-powheg-pythia8_inLHE.root'),
     outputCommands = process.LHEEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
@@ -80,37 +80,42 @@ process.generator = cms.EDFilter("Pythia8HadronizerFilter",
     PythiaParameters = cms.PSet(
         parameterSets = cms.vstring(
             'pythia8CommonSettings', 
-            'pythia8CP5Settings', 
+            'pythia8CP5CR1TuneSettings', 
             'pythia8PowhegEmissionVetoSettings', 
             'pythia8PSweightsSettings', 
             'processParameters'
         ),
         processParameters = cms.vstring(
-            'POWHEG:nFinal = 1', 
-            '25:onMode = off', 
-            '25:onIfMatch = 15 -15', 
-            '25:m0 = 125.0'
-            '15:onMode = on', 
-            '15:offIfAny = 11 -11 13 -13'
+            'POWHEG:nFinal = 2', 
+            'TimeShower:mMaxGamma = 1.0', 
+            '6:m0 = 172.5'
         ),
-        pythia8CP5Settings = cms.vstring(
+        pythia8CP5CR1TuneSettings = cms.vstring(
             'Tune:pp 14', 
             'Tune:ee 7', 
-            'MultipartonInteractions:ecmPow=0.03344', 
+            'MultipartonInteractions:alphaSvalue=0.118', 
+            'MultipartonInteractions:alphaSorder=2', 
             'MultipartonInteractions:bProfile=2', 
-            'MultipartonInteractions:pT0Ref=1.41', 
-            'MultipartonInteractions:coreRadius=0.7634', 
-            'MultipartonInteractions:coreFraction=0.63', 
-            'ColourReconnection:range=5.176', 
-            'SigmaTotal:zeroAXB=off', 
+            'MultipartonInteractions:pT0Ref=1.375', 
+            'MultipartonInteractions:ecmPow=0.03283', 
+            'MultipartonInteractions:coreFraction=0.4446', 
+            'MultipartonInteractions:coreRadius=0.6046', 
+            'ColourReconnection:mode=1', 
+            'BeamRemnants:remnantMode=1', 
+            'ColourReconnection:junctionCorrection=0.238', 
+            'ColourReconnection:timeDilationPar=8.58', 
+            'ColourReconnection:m0=1.721', 
+            'StringZ:aLund=0.38', 
+            'StringZ:bLund=0.64', 
+            'StringFlav:probQQtoQ=0.078', 
+            'StringFlav:probStoUD=0.2', 
             'SpaceShower:alphaSorder=2', 
             'SpaceShower:alphaSvalue=0.118', 
             'SigmaProcess:alphaSvalue=0.118', 
             'SigmaProcess:alphaSorder=2', 
-            'MultipartonInteractions:alphaSvalue=0.118', 
-            'MultipartonInteractions:alphaSorder=2', 
             'TimeShower:alphaSorder=2', 
             'TimeShower:alphaSvalue=0.118', 
+            'SigmaTotal:zeroAXB=off', 
             'SigmaTotal:mode = 0', 
             'SigmaTotal:sigmaEl = 21.89', 
             'SigmaTotal:sigmaTot = 100.309', 
@@ -157,7 +162,7 @@ process.generator = cms.EDFilter("Pythia8HadronizerFilter",
 
 
 process.externalLHEProducer = cms.EDProducer("ExternalLHEProducer",
-    args = cms.vstring('/cvmfs/cms.cern.ch/phys_generator/gridpacks/2017/13TeV/powheg/V2/gg_H_quark-mass-effects_NNPDF31_13TeV_M125/v1/gg_H_quark-mass-effects_NNPDF31_13TeV_M125_slc6_amd64_gcc630_CMSSW_9_3_0.tgz'),
+    args = cms.vstring('/cvmfs/cms.cern.ch/phys_generator/gridpacks/2017/13TeV/powheg/V2/TT_hvq/TT_hdamp_NNPDF31_NNLO_had.tgz'),
     nEvents = cms.untracked.uint32(100),
     numberOfParameters = cms.uint32(1),
     outputFile = cms.string('cmsgrid_final.lhe'),
@@ -195,11 +200,6 @@ process = addMonitoring(process)
 # End of customisation functions
 
 # Customisation from command line
-# Customisation from command line
-import os,random
-random.seed = os.urandom(10) #~10^14
-process.RandomNumberGeneratorService.externalLHEProducer.initialSeed = random.randint(0,999999)
-process.RandomNumberGeneratorService.generator.initialSeed = random.randint(0,999999)
 
 # Add early deletion of temporary data products to reduce peak memory need
 from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete

@@ -10,8 +10,8 @@ options.register('skipEvents',
     info = "skipEvents")
 # TODO: put this option in cmsRun scripts
 options.register('processMode', 
-    #default='JetLevel', 
-    default='EventLevel', 
+    default='JetLevel', 
+    #default='EventLevel', 
     mult=VarParsing.VarParsing.multiplicity.singleton,
     mytype=VarParsing.VarParsing.varType.string,
     info = "process mode: JetLevel or EventLevel")

@@ -36,8 +36,7 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
     dropDescendantsOfDroppedBranches = cms.untracked.bool(False),
-    fileNames = cms.untracked.vstring('file:/eos/uscms/store/group/lpcml/rchudasa/inference/DoublePhotonFlatPt1To20/GEM_SIM_1.root'),
-    #fileNames = cms.untracked.vstring('file:GEN_DYToEE_Pythia6.root'),
+    fileNames = cms.untracked.vstring('file:TTToHadronic_TuneCP5CR1_13TeV-powheg-pythia8_GEN.root'),
     #fileNames = cms.untracked.vstring('file:GEN_HToTauTau_m3p6To16_pT30To180_ctau0To3_eta0To1p4_pythia8_unbiased.root'),
     #fileNames = cms.untracked.vstring('file:GEN_HToTauTau_m3p6To14_pT30To150_ctau0To3_eta0To1p4_pythia8_unbiased_115.root'),
     inputCommands = cms.untracked.vstring(
@@ -84,7 +83,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(31457280),
     outputCommands = process.AODSIMEventContent.outputCommands+cms.untracked.vstring('keep *_simSiPixelDigis_*_*','keep *_simSiStripDigis_*_*','keep *_siPixelClusters_*_*','keep *_siStripClusters_*_*','keep *_g4SimHits_*_*','keep *_generalTracks_*_*','keep *_siStripMatchedRecHits_*_*','keep *_siPixelRecHits_*_*'),
-    fileName = cms.untracked.string('file:SIM_flatPhoton.root')
+    fileName = cms.untracked.string('file:SIM_TTToHadronic_TuneCP5CR1_13TeV-powheg-pythia8.root')
 )
 
 # Additional output definition

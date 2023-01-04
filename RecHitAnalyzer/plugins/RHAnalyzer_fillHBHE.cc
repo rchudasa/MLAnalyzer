@@ -123,11 +123,12 @@ void RecHitAnalyzer::fillHBHE ( const edm::Event& iEvent, const edm::EventSetup&
     for (int iphi = 1; iphi < hEvt_HBHE_energy->GetNbinsX()+1; iphi++) {
 
       energy_ = hEvt_HBHE_energy->GetBinContent( iphi, ieta );
+      if(energy_>0.0) std::cout << "HB HE rec hit energy:" << energy_ << std::endl;
       if ( energy_ <= zs ) continue;
       idx_ = (ieta-1)*HBHE_IPHI_NUM + (iphi-1);
       // Fill vector for image
       vHBHE_energy_[idx_] = energy_;
-
+      //std::cout << "HB HE rec hit energy:" << energy_ << std::endl;
     } // iphi
   } // ieta
 

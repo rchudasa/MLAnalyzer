@@ -130,19 +130,35 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
     if (debug ) std::cout << "  >>>>>> Jet [" << iJ << "] ->  Pt: " << iJet->pt() << ", Eta: " << iJet->eta() << ", Phi: " << iJet->phi() << std::endl;
     bool passedGenSel = false;
     unsigned int iGenParticle = 0;
+   
     for (reco::GenParticleCollection::const_iterator iGen = genParticles->begin(); iGen != genParticles->end(); ++iGen) {
       float dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->eta(),iGen->phi() );
       if ( dR > 0.4 ) continue;
-      if ( !(  (std::abs(iGen->pdgId()) == 15 && iGen->status() == 2 ) || iGen->status() == 23 || iGen->status() == 43 ) ) continue;
+      //if ( !(  (std::abs(iGen->pdgId()) == 15 && iGen->status() == 2 ) || iGen->status() == 23 || iGen->status() == 43 ) ) continue;
 
-      if ( iGen->pdgId() == 12 || iGen->pdgId() == 14 || iGen->pdgId() == 16 ) continue;
-      //if ( !(std::abs(iGen->pdgId()) == 15 ) ) continue;
+      //if ( iGen->pdgId() == 12 || iGen->pdgId() == 14 || iGen->pdgId() == 16 ) continue;
+      if ( !(std::abs(iGen->pdgId()) == 15 ) ) continue;
+      if ( iGen->mother()->pdgId() != 25 ) continue;
 
-      if ( debug ) std::cout << "   GEN particle " << iGenParticle << " -> status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " nMoms: " <<iGen->numberOfMothers() << " | pt: "<< iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << " | dR: " << dR << std::endl;
-      
+      if ( debug ) std::cout << "   GEN particle " << iGenParticle << " -> status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " nMoms: " <<iGen->numberOfMothers() << " mother ID: " << iGen->mother()->pdgId() << "  | pt: "<< iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << " | dR: " << dR << std::endl;
+
+        JetIsTau = true;
+        PdgId = std::abs(iGen->pdgId());
+        jetdR = dR;
+        taupT = iGen->pt();
+   
+        tauDaughters = 0; 
+        for (unsigned int iDaughter = 0; iDaughter != iGen->numberOfDaughters(); ++iDaughter ){
+          if ( debug ) std::cout << "    Tau daughter [" << iDaughter << "] : "<<  std::abs(iGen->daughter(iDaughter)->pdgId()); 
+          if ( debug ) std::cout <<  "  charge : "<< iGen->daughter(iDaughter)->charge() << "  | pt : "<< iGen->daughter(iDaughter)->pt();
+          if ( debug ) std::cout << " | eta:" << iGen->daughter(iDaughter)->eta() << " |Energy:" << iGen->daughter(iDaughter)->energy() << std::endl;
+          tauDaughters++;
+          }
+        if ( debug ) std::cout << "    Tau prongs = " << tauDaughters-1 << std::endl;  
+
       //if ( debug ) std::cout << "   GEN particle " << iGenParticle << " -> status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " nMoms: " <<iGen->numberOfMothers() << " | pt: "<< iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << " | dR: " << dR << std::endl;
       
-      if ( std::abs(iGen->pdgId()) == 15 ) {
+    /*  if ( std::abs(iGen->pdgId()) == 15 ) {
         JetIsTau = true;
 
 
@@ -165,13 +181,12 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
         PdgId = std::abs(iGen->pdgId());
         jetdR = dR;
         taupT = iGen->pt();
-      }
+      }*/
 
       passedGenSel = true;
       ++iGenParticle;
 
     } // primary gen particles
-
     if (passedGenSel) { 
       ++nMatchedJets;
       vJetIdxs.push_back( iJ );
@@ -245,7 +260,7 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
     if ( debug ) std::cout << " >>>>>> Jet " << iJ << " has "<< nConstituents << " constituents" << std::endl;
     for ( unsigned int j = 0; j < nConstituents; j++ ) {
       const reco::PFCandidatePtr subJet = iJet->getPFConstituent( j );
-      if ( debug ) std::cout << " >>>>>>>>>>>  Jet constituent " << j << "-> E:" << subJet->energy() << " px:" << subJet->px() << " py:" << subJet->py() << " pz:" << subJet->pz() << std::endl;
+      //if ( debug ) std::cout << " >>>>>>>>>>>  Jet constituent " << j << "-> E:" << subJet->energy() << " px:" << subJet->px() << " py:" << subJet->py() << " pz:" << subJet->pz() << std::endl;
       v_tau_subJetE_[iJ].push_back( subJet->energy() );
       v_tau_subJetPx_[iJ].push_back( subJet->px() );
       v_tau_subJetPy_[iJ].push_back( subJet->py() );
