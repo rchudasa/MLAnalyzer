@@ -3,7 +3,7 @@ config = config()
 
 #config.section_('General')
 config.General.requestName = 'GluGluHToTauTau_AODSIM'
-config.General.workArea = 'crab_projects'
+config.General.workArea = 'crab_inference'
 config.General.transferOutputs = True
 config.General.transferLogs = True
 
@@ -16,7 +16,7 @@ config.JobType.maxMemoryMB = 4000
 config.Data.inputDBS = 'phys03'
 config.JobType.allowUndistributedCMSSW = True
 #config.JobType.numCores = 8
-config.Data.inputDataset ='/GluGluHToTauTau_Hadronic_M125_13TeV_powheg_pythia8/phys_heavyions-crab_GluGluHToTauTau_M125_GEN-v3-LHEoutput-5cf27f8dc192866c7528a9c0ed7a4cee/USER'
+config.Data.inputDataset ='/GluGluHToTauTau_Hadronic_M125_13TeV_powheg_pythia8/phys_heavyions-crab_GluGluHToTauTau_M125_GEN-LHEoutput-5cf27f8dc192866c7528a9c0ed7a4cee/USER'
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 1 
 #config.Data.totalUnits = 1500
