@@ -30,14 +30,13 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(-1)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
     dropDescendantsOfDroppedBranches = cms.untracked.bool(False),
-    fileNames = cms.untracked.vstring('file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/GluGluHToTauTau_Hadronic_M125_13TeV_powheg_pythia8/crab_GluGluHToTauTau_M125_GEN/230104_114800/0000/gen_GluGluHToTauTau_Hadronic_M125_13TeV_powheg_pythia8_1.root'),
-    #fileNames = cms.untracked.vstring('file:gen_GluGluHToTauTau_Hadronic_M125_13TeV_powheg_pythia8.root'),
+    fileNames = cms.untracked.vstring('file:TAU-RunIIFall18wmLHEGS-00001.root'),
     #fileNames = cms.untracked.vstring('file:GEN_HToTauTau_m3p6To16_pT30To180_ctau0To3_eta0To1p4_pythia8_unbiased.root'),
     #fileNames = cms.untracked.vstring('file:GEN_HToTauTau_m3p6To14_pT30To150_ctau0To3_eta0To1p4_pythia8_unbiased_115.root'),
     inputCommands = cms.untracked.vstring(
@@ -83,12 +82,8 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(31457280),
-    outputCommands = process.AODSIMEventContent.outputCommands+cms.untracked.vstring('keep *_simSiPixelDigis_*_*','keep *_simSiStripDigis_*_*','keep *_siPixelClusters_*_*','keep *_siStripClusters_*_*','keep *_g4SimHits_*_*','keep *_generalTracks_*_*','keep *_siStripMatchedRecHits_*_*','keep *_siPixelRecHits_*_*', 'keep *_hbhereco_*_*',
-        'keep *_hbheprereco_*_*',
-        'keep *_hfprereco_*_*',
-        'keep *_hfreco_*_*',
-        'keep *_horeco_*_*'),
-    fileName = cms.untracked.string('file:SIM_GluGluHToTauTau_Pythia8_HCAL_RECO-RECHits.root')
+    outputCommands = process.AODSIMEventContent.outputCommands+cms.untracked.vstring('keep *_simSiPixelDigis_*_*','keep *_simSiStripDigis_*_*','keep *_siPixelClusters_*_*','keep *_siStripClusters_*_*','keep *_g4SimHits_*_*','keep *_generalTracks_*_*','keep *_siStripMatchedRecHits_*_*','keep *_siPixelRecHits_*_*'),
+    fileName = cms.untracked.string('file:SIM_DoubleGammaPt50_Pythia8.root')
 )
 
 # Additional output definition
