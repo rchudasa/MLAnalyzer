@@ -30,13 +30,15 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(1000)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
     dropDescendantsOfDroppedBranches = cms.untracked.bool(False),
-    fileNames = cms.untracked.vstring('file:TAU-RunIIFall18wmLHEGS-00001.root'),
+#    fileNames = cms.untracked.vstring('/store/group/phys_heavyions/rchudasa/e2e/GluGluHToTauTau_Hadronic_M125_13TeV_powheg_pythia8/crab_GluGluHToTauTau_M125_GEN-v3/230101_132743/0000/gen_GluGluHToTauTau_Hadronic_M125_13TeV_powheg_pythia8_109.root',
+#'/store/group/phys_heavyions/rchudasa/e2e/GluGluHToTauTau_Hadronic_M125_13TeV_powheg_pythia8/crab_GluGluHToTauTau_M125_GEN-v3/230101_132743/0000/gen_GluGluHToTauTau_Hadronic_M125_13TeV_powheg_pythia8_110.root'),
+    fileNames = cms.untracked.vstring('file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/GluGluHToTauTau_Hadronic_M125_13TeV_powheg_pythia8/crab_GluGluHToTauTau_M125_GEN/230104_114800/0000/gen_GluGluHToTauTau_Hadronic_M125_13TeV_powheg_pythia8_1.root'),
     #fileNames = cms.untracked.vstring('file:GEN_HToTauTau_m3p6To16_pT30To180_ctau0To3_eta0To1p4_pythia8_unbiased.root'),
     #fileNames = cms.untracked.vstring('file:GEN_HToTauTau_m3p6To14_pT30To150_ctau0To3_eta0To1p4_pythia8_unbiased_115.root'),
     inputCommands = cms.untracked.vstring(

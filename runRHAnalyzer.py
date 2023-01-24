@@ -2,7 +2,8 @@ import os
 
 #cfg='RecHitAnalyzer/python/ConfFile_data_cfg.py'
 cfg='RecHitAnalyzer/python/ConfFile_cfg.py'
-inputFiles_='file:/eos/uscms/store/group/lpcml/rchudasa/inference/GluGluHToTauTau_Pythia8_AODSIM_10K_0.root'
+inputFiles_='file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/QCD_Pt_300to470_TuneCP5_Pythia8/QCD_Pt_300to470_TuneCP5_Pythia8_AODSIM/230103_043110/0000/merged/QCD_Pt_300to470_TuneCP5_Pythia8_AODSIM_10K_0.root'
+#inputFiles_='file:/eos/uscms/store/group/lpcml/rchudasa/inference/GluGluHToTauTau_Pythia8_AODSIM_10K_0.root'
 #inputFiles_='file:../mychecks/SIM_TAU.root'
 #inputFiles_='file:/afs/cern.ch/work/r/rchudasa/private/TauClassification/CMSSW_10_6_20/src/MLAnalyzer/produceMC/SIM_QCD_Pt-30to50_EMEnriched.root'
 #inputFiles_='file:/afs/cern.ch/work/r/rchudasa/private/TauClassification/CMSSW_10_6_20/src/MLAnalyzer/produceMC/SIM_QCD_Pt-30to50_EMEnriched.root'

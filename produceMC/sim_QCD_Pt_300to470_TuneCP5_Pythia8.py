@@ -30,13 +30,13 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(1000)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
     dropDescendantsOfDroppedBranches = cms.untracked.bool(False),
-    fileNames = cms.untracked.vstring('file:QCD_Pt_300to470_TuneCP5_Pythia8_GEN.root'),
+    fileNames = cms.untracked.vstring('file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/QCD_Pt_300to470_TuneCP5_Pythia8/crab_QCD_Pt_300to470_TuneCP5_Pythia8_GEN/230104_122417/0000/QCD_Pt_300to470_TuneCP5_Pythia8_GEN_1.root'),
     #fileNames = cms.untracked.vstring('file:GEN_HToTauTau_m3p6To16_pT30To180_ctau0To3_eta0To1p4_pythia8_unbiased.root'),
     #fileNames = cms.untracked.vstring('file:GEN_HToTauTau_m3p6To14_pT30To150_ctau0To3_eta0To1p4_pythia8_unbiased_115.root'),
     inputCommands = cms.untracked.vstring(
