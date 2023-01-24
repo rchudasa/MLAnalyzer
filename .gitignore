@@ -19,5 +19,6 @@ crab_projects/*
 */crab_projects/*
 */crab_inference
 */crab_inference/*
-
+produceMC/*.C
+produceMC/Ruchi_HToTauTau_dump_event_content.C
 produceMC/gen_GluGluHToTauTau_M125_13TeV_powheg_pythia8_old.py
