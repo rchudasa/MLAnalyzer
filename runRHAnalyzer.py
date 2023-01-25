@@ -2,7 +2,9 @@ import os
 
 #cfg='RecHitAnalyzer/python/ConfFile_data_cfg.py'
 cfg='RecHitAnalyzer/python/ConfFile_cfg.py'
-inputFiles_='file:/eos/uscms/store/group/lpcml/rchudasa/inference/QCD_Pt_300to470_TuneCP5_Pythia8_AODSIM_1K.root'
+inputFiles_='file:SIM_GluGluHToTauTau_Pythia8_HCAL_RECO-RECHits.root'
+#inputFiles_='file:../SIM_QCD_Pt_15to30_TuneCP5_Pythia8.root'
+#inputFiles_='file:/eos/uscms/store/group/lpcml/rchudasa/inference/QCD_Pt_300to470_TuneCP5_Pythia8_AODSIM_1K.root'
 #inputFiles_='file:/eos/uscms/store/group/lpcml/rchudasa/inference/GluGluHToTauTau_Pythia8_AODSIM_1K.root'
 #inputFiles_='file:../mychecks/SIM_TAU.root'
 #inputFiles_='file:/afs/cern.ch/work/r/rchudasa/private/TauClassification/CMSSW_10_6_20/src/MLAnalyzer/produceMC/SIM_QCD_Pt-30to50_EMEnriched.root'
