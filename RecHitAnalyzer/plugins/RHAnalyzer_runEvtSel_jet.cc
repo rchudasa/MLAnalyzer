@@ -179,7 +179,6 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
     // Required to keep the seed at the image center
     if ( HBHE_IETA_MAX_HE-1 - ietaAbs_ < image_padding ) { 
       if ( debug ) std::cout << " Fail HE edge cut " << std::endl;
-      std::cout << " Fail HE edge cut " << std::endl;
       vFailedJetIdx_.push_back(thisJetIdx);
       continue;
     }

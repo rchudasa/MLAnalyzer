@@ -2,7 +2,11 @@ import os
 
 #cfg='RecHitAnalyzer/python/ConfFile_data_cfg.py'
 cfg='RecHitAnalyzer/python/ConfFile_cfg.py'
-inputFiles_='file:SIM_GluGluHToTauTau_Pythia8_HCAL_RECO-RECHits.root'
+#inputFiles_='file:../MCProduction/E2E-TauClassifier/digiToRecoStep_multiThread.root'
+inputFiles_='file:../MCProduction/E2E-TauClassifier/digiToRecoStep.root'
+#inputFiles_='file:../MCProduction/E2E-TauClassifier/simToRecoStep_wog4SimHits.root'
+#inputFiles_='file:../MCProduction/E2E-TauClassifier/simToRecoStep.root'
+#inputFiles_='file:SIM_GluGluHToTauTau_Pythia8_HCAL_RECO-RECHits.root'
 #inputFiles_='file:../SIM_QCD_Pt_15to30_TuneCP5_Pythia8.root'
 #inputFiles_='file:/eos/uscms/store/group/lpcml/rchudasa/inference/QCD_Pt_300to470_TuneCP5_Pythia8_AODSIM_1K.root'
 #inputFiles_='file:/eos/uscms/store/group/lpcml/rchudasa/inference/GluGluHToTauTau_Pythia8_AODSIM_1K.root'
