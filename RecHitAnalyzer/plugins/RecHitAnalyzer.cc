@@ -154,6 +154,7 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   //branchesTRKvolumeAtEBEE(RHTree, fs);
   //branchesTRKvolumeAtECAL(RHTree, fs);
   branchesJetInfoAtECALstitched( RHTree, fs);
+  branchesScalarInfo( RHTree, fs);  
   branchesTRKlayersAtECALstitched(RHTree, fs);
 
   // For FC inputs
@@ -212,6 +213,7 @@ RecHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //fillTRKvolumeAtEBEE( iEvent, iSetup );
   //fillTRKvolumeAtECAL( iEvent, iSetup );
   fillJetInfoAtECALstitched( iEvent, iSetup );
+  fillScalarInfo( iEvent, iSetup );
   for (unsigned int i=0;i<Nhitproj;i++)
   {
     fillTRKlayersAtECALstitched( iEvent, iSetup, i );

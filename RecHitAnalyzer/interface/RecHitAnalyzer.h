@@ -264,6 +264,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     //void branchesTRKvolumeAtECAL( TTree*, edm::Service<TFileService>& );
     void branchesJetInfoAtECALstitched   ( TTree*, edm::Service<TFileService>& );
     void branchesTRKlayersAtECALstitched( TTree*, edm::Service<TFileService>& );
+    void branchesScalarInfo( TTree*, edm::Service<TFileService>& );
 
     bool runEvtSel          ( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet      ( const edm::Event&, const edm::EventSetup& );
@@ -285,6 +286,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void fillJetInfoAtECALstitched   ( const edm::Event&, const edm::EventSetup& );
     //void fillTRKlayersAtECALstitched( TTree*, edm::Service<TFileService>& );
     void fillTRKlayersAtECALstitched( const edm::Event&, const edm::EventSetup&, unsigned int proj );
+    void fillScalarInfo( const edm::Event&, const edm::EventSetup& );
 
     const reco::PFCandidate* getPFCand(edm::Handle<PFCollection> pfCands, float eta, float phi, float& minDr, bool debug = false);
     const reco::Track* getTrackCand(edm::Handle<reco::TrackCollection> trackCands, float eta, float phi, float& minDr, bool debug = false);
