@@ -288,6 +288,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void fillTRKlayersAtECALstitched( const edm::Event&, const edm::EventSetup&, unsigned int proj );
     void fillScalarInfo( const edm::Event&, const edm::EventSetup& );
 
+    bool debug;
     const reco::PFCandidate* getPFCand(edm::Handle<PFCollection> pfCands, float eta, float phi, float& minDr, bool debug = false);
     const reco::Track* getTrackCand(edm::Handle<reco::TrackCollection> trackCands, float eta, float phi, float& minDr, bool debug = false);
     int   getTruthLabel(const reco::PFJetRef& recJet, edm::Handle<reco::GenParticleCollection> genParticles, float dRMatch = 0.4, bool debug = false);
@@ -297,6 +298,9 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
     // Jet level functions
     std::string mode_;  // EventLevel / JetLevel
+    std::string task_;
+    bool isSignal_;  
+    bool isW_;  
     bool doJets_;
     int  nJets_;
     double minJetPt_;
@@ -329,6 +333,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void fillEvtSel_jet_dijet_gg_qq( const edm::Event&, const edm::EventSetup& );
 
     int nTotal, nPassed;
+    //bool debug;
 
     std::map<uint32_t,SiPixelRecHitModule*> thePixelStructure;
 
@@ -351,7 +356,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 // constants, enums and typedefs
 //
 //static const bool debug = true;
-static const bool debug = false;
+//static const bool debug = false;
 
 static const int nEE = 2;
 static const int nTOB = 6;

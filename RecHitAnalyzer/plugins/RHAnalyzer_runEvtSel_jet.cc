@@ -18,13 +18,14 @@ vector<float> vJetSeed_ieta_;
 vector<int>   vFailedJetIdx_;
 
 
-const std::string jetSelection = "dijet_gg_qq"; // TODO: put switch at cfg level 
-//const std::string jetSelection = "jet_tau"; //for GluGluHToTauTau
-//const std::string jetSelection = "dijet_ditau";
-//const std::string jetSelection = "dijet_tau_massregression";
-//const std::string jetSelection = "dijet_ele_massregression";
-//const std::string jetSelection = "jet_DY_ele_classification";
-//const std::string jetSelection = "jet_background";
+//const std::string task_ = ""; // TODO: put switch at cfg level 
+//const std::string task_ = "dijet_gg_qq"; // TODO: put switch at cfg level 
+//const std::string task_ = "jet_tau"; //for GluGluHToTauTau
+//const std::string task_ = "dijet_ditau";
+//const std::string task_ = "dijet_tau_massregression";
+//const std::string task_ = "dijet_ele_massregression";
+//const std::string task_ = "jet_DY_ele_classification";
+//const std::string task_ = "jet_background";
 
 
 // Initialize branches _____________________________________________________//
@@ -37,17 +38,17 @@ void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService
   tree->Branch("jetSeed_ieta",   &vJetSeed_ieta_);
 
   // Fill branches in explicit jet selection
-  if ( jetSelection == "jet_tau" ) {
+  if ( task_ == "tau_classification" ) {
     branchesEvtSel_jet_dijet_tau( tree, fs );
-  } else if ( jetSelection == "dijet_ditau" ) {
+  } else if ( task_ == "dijet_ditau" ) {
     branchesEvtSel_jet_dijet_ditau( tree, fs );
-  } else if ( jetSelection == "dijet_tau_massregression" ) {
+  } else if ( task_ == "dijet_tau_massregression" ) {
     branchesEvtSel_jet_dijet_tau_massregression( tree, fs );
-  } else if ( jetSelection == "dijet_ele_massregression" ) {
+  } else if ( task_ == "dijet_ele_massregression" ) {
     branchesEvtSel_jet_dijet_ele_massregression( tree, fs );
-  } else if ( jetSelection == "jet_DY_ele_classification" ) {
+  } else if ( task_ == "jet_DY_ele_classification" ) {
     branchesEvtSel_jet_DY_ele_classification( tree, fs );
-  } /*else if ( jetSelection == "jet_background" ) {
+  } /*else if ( task_ == "jet_background" ) {
     branchesEvtSel_jet_background( tree, fs );
   } */else {
     branchesEvtSel_jet_dijet( tree, fs );
@@ -62,22 +63,22 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
 
   // Run explicit jet selection
   bool hasPassed;
-  if ( jetSelection == "jet_tau" ) {
+  if ( task_ == "tau_classification" ) {
     hasPassed = runEvtSel_jet_dijet_tau( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET SELECTION HAS PASSED! " << std::endl; 
-  } else if ( jetSelection == "dijet_ditau" ) {
+  } else if ( task_ == "dijet_ditau" ) {
     hasPassed = runEvtSel_jet_dijet_ditau( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET SELECTION HAS PASSED! " << std::endl;
-  } else if ( jetSelection == "dijet_tau_massregression" ) {
+  } else if ( task_ == "dijet_tau_massregression" ) {
     hasPassed = runEvtSel_jet_dijet_tau_massregression( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET SELECTION HAS PASSED! " << std::endl;
-  } else if ( jetSelection == "dijet_ele_massregression" ) {
+  } else if ( task_ == "dijet_ele_massregression" ) {
     hasPassed = runEvtSel_jet_dijet_ele_massregression( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED ELE SELECTION! " << std::endl;
-  }  else if ( jetSelection == "jet_DY_ele_classification" ) {
+  }  else if ( task_ == "jet_DY_ele_classification" ) {
     hasPassed = runEvtSel_jet_DY_ele_classification( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED ELE SELECTION! " << std::endl;
-  } /* else if ( jetSelection == "jet_background" ) {
+  } /* else if ( task_ == "jet_background" ) {
     hasPassed = runEvtSel_jet_background( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED ELE SELECTION! " << std::endl;
   }*/ else {
@@ -210,17 +211,17 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   jet_runId_ = iEvent.id().run();
   jet_lumiId_ = iEvent.id().luminosityBlock();
 
-  if ( jetSelection == "jet_tau" ) {
+  if ( task_ == "tau_classification" ) {
     fillEvtSel_jet_dijet_tau( iEvent, iSetup );
-  } else if ( jetSelection == "dijet_ditau" ) {
+  } else if ( task_ == "dijet_ditau" ) {
     fillEvtSel_jet_dijet_ditau( iEvent, iSetup );
-  } else if ( jetSelection == "dijet_tau_massregression" ) {
+  } else if ( task_ == "dijet_tau_massregression" ) {
     fillEvtSel_jet_dijet_tau_massregression( iEvent, iSetup );
-  } else if ( jetSelection == "dijet_ele_massregression" ) {
+  } else if ( task_ == "dijet_ele_massregression" ) {
     fillEvtSel_jet_dijet_ele_massregression( iEvent, iSetup );
-  } else if ( jetSelection == "jet_DY_ele_classification" ) {
+  } else if ( task_ == "jet_DY_ele_classification" ) {
     fillEvtSel_jet_DY_ele_classification( iEvent, iSetup );
-  } /*else if ( jetSelection == "jet_background" ) {
+  } /*else if ( task_ == "jet_background" ) {
     fillEvtSel_jet_background( iEvent, iSetup );
   }*/ else {
     fillEvtSel_jet_dijet( iEvent, iSetup );

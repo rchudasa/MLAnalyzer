@@ -103,7 +103,7 @@ float lookup_mass_invpdf(float Mgen, vector <float> M_bins, vector <float> M_inv
         if (ib + 1 >  s2 - 1) { break; }
         if (Mgen <= M_bins[ib]) { break; }
     }
-    if (debug) std::cout << "   mass gen = " << Mgen << " | bin = " << ipt << " | mass bin = " << M_bins[ipt] << " | inv mass bin = " << M_invpdf[ipt] << std::endl;
+    //if (debug) std::cout << "   mass gen = " << Mgen << " | bin = " << ipt << " | mass bin = " << M_bins[ipt] << " | inv mass bin = " << M_invpdf[ipt] << std::endl;
     return M_invpdf[ipt];
 }
 
@@ -116,11 +116,12 @@ float lookup_pt_invpdf(int pTgen, vector <int> pT_bins, vector <float> pT_invpdf
         if (ib + 1 >  s2 - 1) { break; }
         if (pTgen <= pT_bins[ib]) { break; }
     }
-    if (debug) std::cout << "   pT gen = " << pTgen << " | bin = " << ipt << " | pt bin = " << pT_bins[ipt] << " | inv pt bin = " << pT_invpdf[ipt] << std::endl;
+    //if (debug) std::cout << "   pT gen = " << pTgen << " | bin = " << ipt << " | pt bin = " << pT_bins[ipt] << " | inv pt bin = " << pT_invpdf[ipt] << std::endl;
     return pT_invpdf[ipt];
 }
 
 float lookup_invpdf(float Mgen, vector <float> M_bins, float pTgen, vector <int> pT_bins, vector <float> invpdf) {
+    bool debug = false;
     unsigned int ibin = 0;
     unsigned int ibinx = 0;
     unsigned int ibiny = 0;
@@ -129,7 +130,7 @@ float lookup_invpdf(float Mgen, vector <float> M_bins, float pTgen, vector <int>
     unsigned int inv = invpdf.size();
     bool found_mass = false;
     bool found_end  = false;
-    if (debug) std::cout << "   Nbin = " << inv << " | Nbinx = " << m1 << " , Nbiny = " << pt1 << std::endl;
+    //if (debug) std::cout << "   Nbin = " << inv << " | Nbinx = " << m1 << " , Nbiny = " << pt1 << std::endl;
     for (unsigned int ibx = 0; ibx < m1; ibx++) {
         if (found_mass || found_end) { break; }
         for (unsigned int iby = 0; iby < pt1; iby++) {

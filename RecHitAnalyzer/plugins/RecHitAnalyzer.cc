@@ -76,7 +76,11 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   metSigAlgo_               = new metsig::METSignificance(iConfig);
 
   //johnda add configuration
+  debug      = iConfig.getParameter<bool>("isDebug");
   mode_      = iConfig.getParameter<std::string>("mode");
+  task_      = iConfig.getParameter<std::string>("task");
+  isSignal_  = iConfig.getParameter<bool>("isSignal");
+  isW_       = iConfig.getParameter<bool>("isW");
   minJetPt_  = iConfig.getParameter<double>("minJetPt");
   maxJetEta_ = iConfig.getParameter<double>("maxJetEta");
   z0PVCut_   = iConfig.getParameter<double>("z0PVCut");
