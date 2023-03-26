@@ -159,8 +159,8 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
 
         for (unsigned int iDaughter = 0; iDaughter != iGen->numberOfDaughters(); ++iDaughter ){
           if ( debug ) std::cout << "\t\t\t\t" <<" Tau daughter [" << iDaughter << "] : "<<  std::abs(iGen->daughter(iDaughter)->pdgId()); 
-          if ( debug ) std::cout <<  "\t\t\t\t" <<" charge : "<< iGen->daughter(iDaughter)->charge() << "  | pt : "<< iGen->daughter(iDaughter)->pt();
-          if ( debug ) std::cout << "\t\t\t\t" <<" eta:" << iGen->daughter(iDaughter)->eta() << " |Energy:" << iGen->daughter(iDaughter)->energy() << std::endl;
+          if ( debug ) std::cout << " charge : "<< iGen->daughter(iDaughter)->charge() << "  | pt : "<< iGen->daughter(iDaughter)->pt();
+          if ( debug ) std::cout << " eta:" << iGen->daughter(iDaughter)->eta() << " |Energy:" << iGen->daughter(iDaughter)->energy() << std::endl;
           if ( abs(iGen->daughter(iDaughter)->pdgId()) == 111 ) tauPi0++;
           if ( iGen->daughter(iDaughter)->charge() == 0 ) continue;          
           tauDaughters++;

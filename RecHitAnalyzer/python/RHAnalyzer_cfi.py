@@ -55,9 +55,9 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     , srcLeptons                     = cms.VInputTag("gedGsfElectrons","muons","gedPhotons")
 
     # Jet level cfg
-    , isDebug                        = cms.bool(True)
+    , isDebug                        = cms.bool(False)
     , task                           = cms.string("tau_classification")
-    , isSignal                       = cms.bool(False)
+    , isSignal                       = cms.bool(True)
     #, isW                            = cms.bool(True)
     , isW                            = cms.bool(False)
     , nJets     = cms.int32(-1)
