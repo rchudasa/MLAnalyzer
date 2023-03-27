@@ -136,8 +136,9 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
       float dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->eta(),iGen->phi() );
       if ( dR > 0.4 ) continue;
 
-      //if ( debug ) std::cout << "\t\t\t" << " GEN particle " << iGenParticle << ", status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << ", nMoms: " <<iGen->numberOfMothers() << ", mother ID: " << iGen->mother()->pdgId() << ", pt: "<< iGen->pt() << ", eta: " <<iGen->eta() << ", phi: " <<iGen->phi() << ", dR: " << dR << std::endl;
-      //if ( iGen->pdgId() == 12 || iGen->pdgId() == 14 || iGen->pdgId() == 16 ) continue;
+      if ( iGen->pt() > 20 && (std::abs(iGen->pdgId()) == 11 || std::abs(iGen->pdgId()) == 13) ) break; //only clean jets (lepton veto) 
+      if ( std::abs(iGen->pdgId()) == 12 || std::abs(iGen->pdgId()) == 14 || std::abs(iGen->pdgId()) == 16 ) continue;
+
       if (isSignal_ && !(std::abs(iGen->pdgId()) == 15 && iGen->status() == 2) ) continue;      // for drell yan and HiggsToTauTau
       if ( !isSignal_ && !isW_ && !( iGen->status() == 23 ) ) continue;                         //for QCD background
       if ( !isSignal_ &&  isW_ && !( iGen->status() == 71 ) ) continue;                         //only for W + jet background

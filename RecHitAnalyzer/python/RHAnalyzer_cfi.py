@@ -57,9 +57,9 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     # Jet level cfg
     , isDebug                        = cms.bool(False)
     , task                           = cms.string("tau_classification")
-    , isSignal                       = cms.bool(True)
-    #, isW                            = cms.bool(True)
-    , isW                            = cms.bool(False)
+    , isSignal                       = cms.bool(False)
+    , isW                            = cms.bool(True)
+    #, isW                            = cms.bool(False)
     , nJets     = cms.int32(-1)
     , minJetPt  = cms.double(20.)
     , maxJetEta = cms.double(2.4)
