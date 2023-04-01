@@ -1,7 +1,7 @@
 from CRABClient.UserUtilities import config
 config = config()
 
-CFG = 'DYToTauTau_ntuples-v3'
+CFG = 'DYToTauTau_ntuples'
 
 # Local job directory will be created in:
 config.General.workArea = 'crab_projects'
@@ -12,7 +12,7 @@ config.General.transferLogs = True
 # CMS cfg file goes here:
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'RecHitAnalyzer/python/ConfFile_cfg.py' # analyzer cfg file
-config.JobType.maxMemoryMB = 4000
+config.JobType.maxMemoryMB = 5000
 
 # Define input and units per job here:
 config.Data.inputDBS = 'phys03'
@@ -26,4 +26,5 @@ config.Data.publication = False
 # Output files will be stored in config.Site.storageSite at directory:
 config.Site.storageSite = 'T3_US_FNALLPC'
 config.Data.outLFNDirBase = '/store/group/lpcml/rchudasa/NTuples' # add your username as subdirectory
+config.Data.outputPrimaryDataset = 'DYToTauTau_M-50_13TeV-powheg_pythia8'#if providing text file input then primary dataset name is required
 config.Data.outputDatasetTag = config.General.requestName
