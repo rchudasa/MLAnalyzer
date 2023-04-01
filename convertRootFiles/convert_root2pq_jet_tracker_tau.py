@@ -6,7 +6,7 @@ import glob, os
 from skimage.measure import block_reduce # pip install scikit-image
 from numpy.lib.stride_tricks import as_strided
 
-print(os.environ)
+#print(os.environ)
 
 import argparse
 parser = argparse.ArgumentParser(description='Process some integers.')
@@ -79,8 +79,8 @@ print (" >> Output file:",outStr)
 
 # Event range to process
 iEvtStart = 0
-#iEvtEnd   = 10
-iEvtEnd   = nEvts 
+iEvtEnd   = 10
+#iEvtEnd   = nEvts 
 assert iEvtEnd <= nEvts
 print (" >> Processing entries: [",iEvtStart,"->",iEvtEnd,")")
 
@@ -93,7 +93,7 @@ for iEvt in range(iEvtStart,iEvtEnd):
     # Initialize event
     rhTree.GetEntry(iEvt)
 
-    if iEvt % 10000 == 0:
+    if iEvt % 10 == 0:
         print (" .. Processing entry",iEvt)
 
     ECAL_energy = np.array(rhTree.ECAL_energy).reshape(280,360)
@@ -121,12 +121,10 @@ for iEvt in range(iEvtStart,iEvtEnd):
     ys      = rhTree.jet_IsTau
     jetMs   = rhTree.jet_M
     jetPts  = rhTree.jet_Pt
-    #dRs    = rhTree.jetadR
-    #pts    = rhTree.jetPt
-    #m0s    = rhTree.jetM
+    dRs    = rhTree.jet_dR
     iphis  = rhTree.jetSeed_iphi
     ietas  = rhTree.jetSeed_ieta
-    #pdgIds = rhTree.jetPdgIds
+    pdgIds = rhTree.jet_PdgIds
     njets  = len(ys)
 
     for i in range(njets):
@@ -134,12 +132,10 @@ for iEvt in range(iEvtStart,iEvtEnd):
         data['y']       = ys[i]
         data['jetM']    = jetMs[i]
         data['jetPt']   = jetPts[i]
-        #data['dR']    = dRs[i]
-        #data['pt']    = pts[i]
-        #data['m0']    = m0s[i]
+        data['dR']    = dRs[i]
         data['iphi']  = iphis[i]
         data['ieta']  = ietas[i]
-        #data['pdgId'] = pdgIds[i]
+        data['pdgId'] = pdgIds[i]
         data['X_jet'] = crop_jet(X_CMSII, data['iphi'], data['ieta']) # (7, 125, 125)
 
         # Create pyarrow.Table
@@ -165,8 +161,7 @@ print ("========================================================")
 pqIn = pq.ParquetFile(outStr)
 print(pqIn.metadata)
 print(pqIn.schema)
-X = pqIn.read_row_group(0, columns=['y','jetM','iphi','ieta']).to_pydict()
-#X = pqIn.read_row_group(0, columns=['y','am','dR','pt','m0','iphi','ieta','pdgId']).to_pydict()
+X = pqIn.read_row_group(0, columns=['y','jetM','jetPt','dR','iphi','ieta','pdgId']).to_pydict()
 print(X)
 #X = pqIn.read_row_group(0, columns=['X_jet.list.item.list.item.list.item']).to_pydict()['X_jet'] # read row-by-row 
 #X = pqIn.read(['X_jet.list.item.list.item.list.item', 'y']).to_pydict()['X_jet'] # read entire column(s)
