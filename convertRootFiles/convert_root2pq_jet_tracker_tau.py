@@ -136,7 +136,7 @@ for iEvt in range(iEvtStart,iEvtEnd):
         data['iphi']  = iphis[i]
         data['ieta']  = ietas[i]
         data['pdgId'] = pdgIds[i]
-        data['X_jet'] = crop_jet(X_CMSII, data['iphi'], data['ieta']) # (7, 125, 125)
+        data['X_jet'] = crop_jet(X_CMSII, data['iphi'], data['ieta']) # (13, 125, 125)
 
         # Create pyarrow.Table
 

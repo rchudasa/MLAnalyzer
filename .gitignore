@@ -20,6 +20,12 @@ crab_projects/*
 */crab_inference
 */crab_inference/*
 dump_hbhereco_gluhtau.C
+*/.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+plottingMacros/croppedJetIMG
+plottingMacros/croppedJetIMG/*
+plottingMacros/event_images/
+plottingMacros/event_images/*
 plottingMacros/IMG
 plottingMacros/IMG/*
 produceMC/*.C
