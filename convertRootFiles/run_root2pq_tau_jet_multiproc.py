@@ -19,13 +19,24 @@ def run_process(process):
 
 decay='DYToTauTau_M-50_13TeV'
 
+cluster = 'CERN'
 #xrootd='root://cmsxrootd.fnal.gov' # FNAL
 #xrootd='root://eoscms.cern.ch' # CERN
-local='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples/230327_062100/0000'
+#local='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples/230327_062100/0000'
+local =''
+outDir=''
+if(cluster=='CERN'):
+    local='/eos/cms/store/group/phys_heavyions/rchudasa/e2e/RHAnalyzer_Ntuples/DYToTauTau_M-50_13TeV-powheg_pythia8'
+    outDir='/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles/DYToTauTau_M-50_13TeV-powheg_pythia8'
+if(cluster=='FNAL'):
+    local='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples/230327_062100/0000'
+    outDir='/eos/uscms/store/group/lpcml/rchudasa/ParquetFiles/DYToTauTau_M-50_13TeV-powheg_pythia8'
+
 
 #Paths to input files
 #rhFileList = '%s/%s/*.root'%(xrootd,local)
-rhFileList = '%s/*.root'%(local)
+rhFileList = '%s/output*.root'%(local)
+#rhFileList = '%s/*.root'%(local)
 print(" >> Input file list: %s"%rhFileList)
 rhFileList = glob.glob(rhFileList)
 assert len(rhFileList) > 0
@@ -34,10 +45,11 @@ print(" >> %d files found"%len(rhFileList))
 #print(' >> Input File[0]: %s'%rhFileList[0])
 sort_nicely(rhFileList)
 
-files_per_run =1 
-#files_per_run = 5
+#files_per_run =1 
+files_per_run = 2
 # Output path
-outDir='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/'
+#outDir='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/'
+outDir='/eos/cms/store/group/phys_heavyions/rchudasa/e2e/RHAnalyzer_Ntuples/DYToTauTau_M-50_13TeV'
 if not os.path.isdir(outDir):
     os.makedirs(outDir)
 print(' >> Output directory: %s'%outDir)
@@ -54,6 +66,6 @@ for it,i in enumerate(range(0, len(rhFileList), files_per_run)):
     #print(processes[it])
     #print(' >> Process[0]: %s'%processes[0])
     
-    #pool = Pool(processes=2)
-    pool = Pool(processes=len(processes))
+    pool = Pool(processes=2)
+    #pool = Pool(processes=len(processes))
     pool.map(run_process, processes)

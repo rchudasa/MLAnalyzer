@@ -22,6 +22,7 @@ crab_projects/*
 dump_hbhereco_gluhtau.C
 */.ipynb_checkpoints
 */.ipynb_checkpoints/*
+convertRootFiles/Untitled.ipynb
 plottingMacros/croppedJetIMG
 plottingMacros/croppedJetIMG/*
 plottingMacros/event_images/

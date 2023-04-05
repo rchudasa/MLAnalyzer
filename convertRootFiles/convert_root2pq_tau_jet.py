@@ -83,7 +83,7 @@ print (" >> Output file:",outStr)
 
 # Event range to process
 iEvtStart =0 
-#iEvtEnd   = 820
+#iEvtEnd   = 10
 iEvtEnd   = nEvts 
 assert iEvtEnd <= nEvts
 print (" >> Processing entries: [",iEvtStart,"->",iEvtEnd,")")
@@ -140,6 +140,13 @@ for iEvt in range(iEvtStart,iEvtEnd):
         data['iphi']  = iphis[i]
         data['ieta']  = ietas[i]
         data['pdgId'] = pdgIds[i]
+        data['metSumEt'] = np.float32(rhTree.MET_sumET)[0]
+        data['metPt']    = np.float32(rhTree.MET_pt)[0]
+        data['metPhi']   = np.float32(rhTree.MET_phi)[0]
+        data['nPVtx']    = rhTree.nVtx
+        data['nPVtx_x']  = np.array(rhTree.Vtx_x)[0]
+        data['nPVtx_y']  = np.array(rhTree.Vtx_y)[0]
+        data['nPVtx_z']  = np.array(rhTree.Vtx_z)[0]
         data['X_jet'] = crop_jet(X_CMSII, data['iphi'], data['ieta']) # (13, 125, 125)
 
         # Create pyarrow.Table
