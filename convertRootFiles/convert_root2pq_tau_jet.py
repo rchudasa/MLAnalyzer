@@ -10,7 +10,9 @@ from numpy.lib.stride_tricks import as_strided
 
 import argparse
 parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('-i', '--infile', default='/eos/cms/store/group/phys_heavyions/rchudasa/e2e/eventGenerationChecks/DYTauTau_output_474.root', type=str, help='Input root file.')
+parser.add_argument('-i', '--infile', default=['output.root'], nargs='+', type=str, help='Input root file.')
+#parser.add_argument('-i', '--infile', default='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples/230327_062100/0000/output_474.root', type=str, help='Input root file.')
+#parser.add_argument('-i', '--infile', default='/eos/cms/store/group/phys_heavyions/rchudasa/e2e/eventGenerationChecks/DYTauTau_output_474.root', type=str, help='Input root file.')
 parser.add_argument('-o', '--outdir', default='.', type=str, help='Output pq file dir.')
 parser.add_argument('-d', '--decay', default='test', type=str, help='Decay name.')
 parser.add_argument('-n', '--idx', default=0, type=int, help='Input root file index.')
@@ -67,7 +69,9 @@ def crop_jet(imgECAL, iphi, ieta, jet_shape=125):
 
 rhTreeStr = args.infile 
 rhTree = ROOT.TChain("fevt/RHTree")
-rhTree.Add(rhTreeStr)
+for f in rhTreeStr:
+  rhTree.Add(f)
+#rhTree.Add(rhTreeStr)
 nEvts = rhTree.GetEntries()
 assert nEvts > 0
 print (" >> Input file:",rhTreeStr)
@@ -78,9 +82,9 @@ print (" >> Output file:",outStr)
 ##### MAIN #####
 
 # Event range to process
-iEvtStart = 0
-iEvtEnd   = 10
-#iEvtEnd   = nEvts 
+iEvtStart =0 
+#iEvtEnd   = 820
+iEvtEnd   = nEvts 
 assert iEvtEnd <= nEvts
 print (" >> Processing entries: [",iEvtStart,"->",iEvtEnd,")")
 
@@ -93,7 +97,7 @@ for iEvt in range(iEvtStart,iEvtEnd):
     # Initialize event
     rhTree.GetEntry(iEvt)
 
-    if iEvt % 10 == 0:
+    if iEvt % 100 == 0:
         print (" .. Processing entry",iEvt)
 
     ECAL_energy = np.array(rhTree.ECAL_energy).reshape(280,360)
