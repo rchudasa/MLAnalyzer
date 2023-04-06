@@ -10,8 +10,8 @@ from numpy.lib.stride_tricks import as_strided
 
 import argparse
 parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('-i', '--infile', default=['output.root'], nargs='+', type=str, help='Input root file.')
-#parser.add_argument('-i', '--infile', default='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples/230327_062100/0000/output_474.root', type=str, help='Input root file.')
+#parser.add_argument('-i', '--infile', default=['output.root'], nargs='+', type=str, help='Input root file.')
+parser.add_argument('-i', '--infile', default='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples/230327_062100/0000/output_474.root', type=str, help='Input root file.')
 #parser.add_argument('-i', '--infile', default='/eos/cms/store/group/phys_heavyions/rchudasa/e2e/eventGenerationChecks/DYTauTau_output_474.root', type=str, help='Input root file.')
 parser.add_argument('-o', '--outdir', default='.', type=str, help='Output pq file dir.')
 parser.add_argument('-d', '--decay', default='test', type=str, help='Decay name.')
@@ -69,15 +69,15 @@ def crop_jet(imgECAL, iphi, ieta, jet_shape=125):
 
 rhTreeStr = args.infile 
 rhTree = ROOT.TChain("fevt/RHTree")
-for f in rhTreeStr:
-  rhTree.Add(f)
-#rhTree.Add(rhTreeStr)
+#for f in rhTreeStr:
+#  rhTree.Add(f)
+rhTree.Add(rhTreeStr)
 nEvts = rhTree.GetEntries()
 assert nEvts > 0
-print (" >> Input file:",rhTreeStr)
-print (" >> nEvts:",nEvts)
+print " >> Input file:",rhTreeStr
+print " >> nEvts:",nEvts
 outStr = '%s/%s.parquet.%d'%(args.outdir, args.decay, args.idx) 
-print (" >> Output file:",outStr)
+print " >> Output file:",outStr
 
 ##### MAIN #####
 
@@ -86,7 +86,7 @@ iEvtStart =0
 #iEvtEnd   = 10
 iEvtEnd   = nEvts 
 assert iEvtEnd <= nEvts
-print (" >> Processing entries: [",iEvtStart,"->",iEvtEnd,")")
+print " >> Processing entries: [",iEvtStart,"->",iEvtEnd,")"
 
 nJets = 0
 data = {} # Arrays to be written to parquet should be saved to data dict
@@ -98,7 +98,7 @@ for iEvt in range(iEvtStart,iEvtEnd):
     rhTree.GetEntry(iEvt)
 
     if iEvt % 100 == 0:
-        print (" .. Processing entry",iEvt)
+        print " .. Processing entry",iEvt
 
     ECAL_energy = np.array(rhTree.ECAL_energy).reshape(280,360)
     ECAL_energy = resample_EE(ECAL_energy)
@@ -125,10 +125,10 @@ for iEvt in range(iEvtStart,iEvtEnd):
     ys      = rhTree.jet_IsTau
     jetMs   = rhTree.jet_M
     jetPts  = rhTree.jet_Pt
-    dRs    = rhTree.jet_dR
+    #dRs    = rhTree.jet_dR
     iphis  = rhTree.jetSeed_iphi
     ietas  = rhTree.jetSeed_ieta
-    pdgIds = rhTree.jet_PdgIds
+    #pdgIds = rhTree.jet_PdgIds
     njets  = len(ys)
 
     for i in range(njets):
@@ -136,10 +136,10 @@ for iEvt in range(iEvtStart,iEvtEnd):
         data['y']       = ys[i]
         data['jetM']    = jetMs[i]
         data['jetPt']   = jetPts[i]
-        data['dR']    = dRs[i]
+        #data['dR']    = dRs[i]
         data['iphi']  = iphis[i]
         data['ieta']  = ietas[i]
-        data['pdgId'] = pdgIds[i]
+        #data['pdgId'] = pdgIds[i]
         data['metSumEt'] = np.float32(rhTree.MET_sumET)[0]
         data['metPt']    = np.float32(rhTree.MET_pt)[0]
         data['metPhi']   = np.float32(rhTree.MET_phi)[0]
@@ -153,7 +153,8 @@ for iEvt in range(iEvtStart,iEvtEnd):
 
         pqdata = [pa.array([d]) if (np.isscalar(d) or type(d) == list) else pa.array([d.tolist()]) for d in data.values()]
 
-        table = pa.Table.from_arrays(pqdata, list(data.keys()))
+        table = pa.Table.from_arrays(pqdata, list(data.keys())) #python3
+        #table = pa.Table.from_arrays(pqdata, data.keys())#python2
 
         if nJets == 0:
             writer = pq.ParquetWriter(outStr, table.schema, compression='snappy')
@@ -163,16 +164,16 @@ for iEvt in range(iEvtStart,iEvtEnd):
         nJets += 1
 
 writer.close()
-print (" >> nJets:",nJets)
-print (" >> Real time:",sw.RealTime()/60.,"minutes")
-print (" >> CPU time: ",sw.CpuTime() /60.,"minutes")
-print ("========================================================")
+print " >> nJets:",nJets
+print " >> Real time:",sw.RealTime()/60.,"minutes"
+print " >> CPU time: ",sw.CpuTime() /60.,"minutes"
+print "========================================================"
 
 # Verify output file
 pqIn = pq.ParquetFile(outStr)
 print(pqIn.metadata)
 print(pqIn.schema)
-X = pqIn.read_row_group(0, columns=['y','jetM','jetPt','dR','iphi','ieta','pdgId']).to_pydict()
+X = pqIn.read_row_group(0, columns=['y','jetM','jetPt','iphi','ieta']).to_pydict()
 print(X)
 #X = pqIn.read_row_group(0, columns=['X_jet.list.item.list.item.list.item']).to_pydict()['X_jet'] # read row-by-row 
 #X = pqIn.read(['X_jet.list.item.list.item.list.item', 'y']).to_pydict()['X_jet'] # read entire column(s)

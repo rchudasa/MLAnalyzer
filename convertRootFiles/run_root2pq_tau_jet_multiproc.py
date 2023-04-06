@@ -27,7 +27,7 @@ local =''
 outDir=''
 if(cluster=='CERN'):
     local='/eos/cms/store/group/phys_heavyions/rchudasa/e2e/RHAnalyzer_Ntuples/DYToTauTau_M-50_13TeV-powheg_pythia8'
-    outDir='/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles/DYToTauTau_M-50_13TeV-powheg_pythia8'
+    outDir='/eos/user/r/rchudasa/e2e_project/ParquetFiles/DYToTauTau_M-50_13TeV-powheg_pythia8'
 if(cluster=='FNAL'):
     local='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples/230327_062100/0000'
     outDir='/eos/uscms/store/group/lpcml/rchudasa/ParquetFiles/DYToTauTau_M-50_13TeV-powheg_pythia8'
@@ -37,28 +37,48 @@ if(cluster=='FNAL'):
 #rhFileList = '%s/%s/*.root'%(xrootd,local)
 rhFileList = '%s/output*.root'%(local)
 #rhFileList = '%s/*.root'%(local)
-print(" >> Input file list: %s"%rhFileList)
+print " >> Input file list: %s"%rhFileList
 rhFileList = glob.glob(rhFileList)
 assert len(rhFileList) > 0
-print(" >> %d files found"%len(rhFileList))
+print " >> %d files found"%len(rhFileList)
 #rhFileList = [('%s/%s'%(xrootd, rhFile)).replace('/eos/uscms','') for rhFile in rhFileList]
 #print(' >> Input File[0]: %s'%rhFileList[0])
 sort_nicely(rhFileList)
 
 #files_per_run =1 
-files_per_run = 2
-# Output path
-#outDir='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/'
-outDir='/eos/cms/store/group/phys_heavyions/rchudasa/e2e/RHAnalyzer_Ntuples/DYToTauTau_M-50_13TeV'
+files_per_run =10 
+
 if not os.path.isdir(outDir):
     os.makedirs(outDir)
-print(' >> Output directory: %s'%outDir)
+print ' >> Output directory: %s'%outDir
 
+files_per_run = 10
+file_idx_ = range( 0, len(rhFileList), files_per_run )
+n_iter_ = len( file_idx_ )
+file_idx_.append( len(rhFileList) )
+print ( file_idx_ )
+
+for irun_ in range( n_iter_ ):
+    #to do run 10,42
+    if (irun_ < 8) : continue
+    #if (irun_ > 2) : continue
+    files_ = rhFileList[ file_idx_[ irun_ ] : file_idx_[irun_+1] ]  
+    for idx_, file_ in enumerate(files_):
+        print(' >> Input File[%d]: %s' % ( idx_, file_ ) )
+    
+    proc_file = 'convert_root2pq_tau_jet.py'
+    processes = ['%s -i %s -o %s -d %s -n %d'%(proc_file, rhFile, outDir, decay, ( irun_*files_per_run + i + 1 )) for i,rhFile in enumerate( files_ )]
+    print(' >> Process[0]: %s'%processes[0])
+    
+    pool = Pool(processes=len(processes))
+    pool.map(run_process, processes)
+
+'''
 proc_file = 'convert_root2pq_tau_jet.py'
 #processes = []
 
 for it,i in enumerate(range(0, len(rhFileList), files_per_run)):
-    if(it>1): continue
+    #if(it>1): continue
     #if(it>2): continue
     rhFileList_batch = rhFileList[i:i+files_per_run]
     #processes.append('%s -i %s -o %s -d %s -n %d'%(proc_file, ' '.join(rhFileList_batch), outDir, decay, it))
@@ -69,3 +89,4 @@ for it,i in enumerate(range(0, len(rhFileList), files_per_run)):
     pool = Pool(processes=2)
     #pool = Pool(processes=len(processes))
     pool.map(run_process, processes)
+'''
