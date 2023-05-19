@@ -24,7 +24,7 @@ vector<int>   vFailedJetIdx_;
 //const std::string task_ = "dijet_ditau";
 //const std::string task_ = "dijet_tau_massregression";
 //const std::string task_ = "dijet_ele_massregression";
-//const std::string task_ = "jet_DY_ele_classification";
+//const std::string task_ = "jet_ele_classification";
 //const std::string task_ = "jet_background";
 
 
@@ -46,8 +46,8 @@ void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService
     branchesEvtSel_jet_dijet_tau_massregression( tree, fs );
   } else if ( task_ == "dijet_ele_massregression" ) {
     branchesEvtSel_jet_dijet_ele_massregression( tree, fs );
-  } else if ( task_ == "jet_DY_ele_classification" ) {
-    branchesEvtSel_jet_DY_ele_classification( tree, fs );
+  } else if ( task_ == "jet_ele_classification" ) {
+    branchesEvtSel_jet_ele_classification( tree, fs );
   } /*else if ( task_ == "jet_background" ) {
     branchesEvtSel_jet_background( tree, fs );
   } */else {
@@ -75,8 +75,8 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   } else if ( task_ == "dijet_ele_massregression" ) {
     hasPassed = runEvtSel_jet_dijet_ele_massregression( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED ELE SELECTION! " << std::endl;
-  }  else if ( task_ == "jet_DY_ele_classification" ) {
-    hasPassed = runEvtSel_jet_DY_ele_classification( iEvent, iSetup );
+  }  else if ( task_ == "jet_ele_classification" ) {
+    hasPassed = runEvtSel_jet_ele_classification( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED ELE SELECTION! " << std::endl;
   } /* else if ( task_ == "jet_background" ) {
     hasPassed = runEvtSel_jet_background( iEvent, iSetup );
@@ -219,8 +219,8 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
     fillEvtSel_jet_dijet_tau_massregression( iEvent, iSetup );
   } else if ( task_ == "dijet_ele_massregression" ) {
     fillEvtSel_jet_dijet_ele_massregression( iEvent, iSetup );
-  } else if ( task_ == "jet_DY_ele_classification" ) {
-    fillEvtSel_jet_DY_ele_classification( iEvent, iSetup );
+  } else if ( task_ == "jet_ele_classification" ) {
+    fillEvtSel_jet_ele_classification( iEvent, iSetup );
   } /*else if ( task_ == "jet_background" ) {
     fillEvtSel_jet_background( iEvent, iSetup );
   }*/ else {

@@ -18,6 +18,7 @@ vector<float> v_jetdR;
 vector<float> v_goodvertices;
 vector<float> v_taupT;
 vector<float> v_tauDaughters;
+vector<float> v_tauJetPdgId;
 
 vector<float> v_tau_jet_m0_;
 vector<float> v_tau_jet_pt_;
@@ -94,6 +95,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
   v_goodvertices.clear();
   v_taupT.clear();
   v_tauDaughters.clear();
+  v_tauJetPdgId.clear();
 
   /*
   edm::Handle<reco::GenJetCollection> genJets;
@@ -188,7 +190,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
     if (passedGenSel) { 
       ++nMatchedJets;
       vJetIdxs.push_back( iJ );
-      v_tau_jetPdgIds_.push_back( PdgId );
+      v_tauJetPdgId.push_back( PdgId );
       v_taupT.push_back( taupT );
       v_tauDaughters.push_back( tauDaughters );
       v_jetdR.push_back( jetdR );
@@ -223,6 +225,7 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
   v_tau_jetIsTau_.clear();
   v_tau_jetdR_.clear();
   v_tau_goodvertices_.clear();
+  v_tau_jetPdgIds_.clear();
  
   for ( unsigned iJ(0); iJ != vJetIdxs.size(); ++iJ ) {
 
@@ -247,6 +250,7 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
     v_tau_goodvertices_.push_back( v_goodvertices[iJ] );
     v_tau_gen_pt_.push_back( v_taupT[iJ] );
     v_tau_gen_prongs_.push_back( v_tauDaughters[iJ] );
+    v_tau_jetPdgIds_.push_back(v_tauJetPdgId[iJ]);
 
     // Gen jet constituents
     v_tau_subJetE_[iJ].clear();
