@@ -111,6 +111,7 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   vJetSeed_iphi_.clear();
   vJetSeed_ieta_.clear();
   vFailedJetIdx_.clear();
+  passedJetIdxs.clear();
 
   // Loop over jets
   for ( int thisJetIdx : vJetIdxs ) {
@@ -194,14 +195,20 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   } // good jets 
 
   // Remove jets that failed the Seed cuts 
-  for(int failedJetIdx : vFailedJetIdx_)
+  for(int failedJetIdx : vFailedJetIdx_){
     vJetIdxs.erase(std::remove(vJetIdxs.begin(),vJetIdxs.end(),failedJetIdx),vJetIdxs.end());
-
+    std::cout << "Failed jets ID:" << failedJetIdx << std::endl;
+  }
   if ( vJetIdxs.size() == 0){
     if ( debug ) std::cout << " No passing jets...  " << std::endl;
     std::cout << " >> analyze failed: no passing jets" << std::endl;
     return false;
   }
+
+  for (int passJetIdx : vJetIdxs){
+    passedJetIdxs.push_back(passJetIdx); 
+    std::cout << "passed jet index is :" << passJetIdx << std::endl;
+ }
 
   if ((nJets_ > 0) && nJet == nJets_) std::cout << " >> analyze failed: " << nJets_ << " passing jets" << std::endl;
   if ( (nJets_ > 0) && nJet != nJets_ ) return false;
@@ -220,7 +227,8 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   } else if ( task_ == "dijet_ele_massregression" ) {
     fillEvtSel_jet_dijet_ele_massregression( iEvent, iSetup );
   } else if ( task_ == "jet_ele_classification" ) {
-    fillEvtSel_jet_ele_classification( iEvent, iSetup );
+    //fillEvtSel_jet_ele_classification( iEvent, iSetup, vJetIdxs );
+    fillEvtSel_jet_ele_classification( iEvent, iSetup, passedJetIdxs, vFailedJetIdx_ );
   } /*else if ( task_ == "jet_background" ) {
     fillEvtSel_jet_background( iEvent, iSetup );
   }*/ else {
