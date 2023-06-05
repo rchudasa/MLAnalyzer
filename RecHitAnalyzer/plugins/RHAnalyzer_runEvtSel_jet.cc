@@ -50,7 +50,9 @@ void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService
     branchesEvtSel_jet_ele_classification( tree, fs );
   } else if ( task_ == "ttbar") {
     branchesEvtSel_jet_dijet_top( tree, fs );
-  } else {
+  } else if ( task_ == "qcd") {
+    branchesEvtSel_jet_qcd( tree, fs );
+  }else {
     branchesEvtSel_jet_dijet( tree, fs );
   }
 
@@ -80,7 +82,10 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED ELE SELECTION! " << std::endl;
   }  else if ( task_ == "ttbar" ) {
     hasPassed = runEvtSel_jet_dijet_top( iEvent, iSetup );
-    if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED ELE SELECTION! " << std::endl;
+    if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED TOP SELECTION! " << std::endl;
+  } else if ( task_ == "qcd"){
+    hasPassed = runEvtSel_jet_qcd( iEvent, iSetup );
+    if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED QCD SELECTION! " << std::endl;
   } else {
     hasPassed = runEvtSel_jet_dijet( iEvent, iSetup );
   }
@@ -231,7 +236,9 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
     //fillEvtSel_jet_ele_classification( iEvent, iSetup, passedJetIdxs, vFailedJetIdx_ );
   } else if ( task_ == "ttbar") {
     fillEvtSel_jet_dijet_top( iEvent, iSetup );
-  }else {
+  } else if ( task_ == "qcd") {
+    fillEvtSel_jet_qcd( iEvent, iSetup );
+  } else {
     fillEvtSel_jet_dijet( iEvent, iSetup );
   }
 
