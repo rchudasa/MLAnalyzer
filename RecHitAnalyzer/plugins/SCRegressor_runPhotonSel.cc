@@ -124,7 +124,7 @@ bool SCRegressor::runPhotonSel ( const edm::Event& iEvent, const edm::EventSetup
     ///*
     if ( iRecoPho->full5x5_r9() <= 0.85 ) {
       if ( iRecoPho->full5x5_sigmaIetaIeta() >= 0.015 ) continue;
-      if ( iRecoPho->userFloat("phoPhotonIsolation") >= 4.0 ) continue;
+      //if ( iRecoPho->userFloat("phoPhotonIsolation") >= 4.0 ) continue;
       //if ( iRecoPho->photonIso() >= 4.0 ) continue;
       if ( iRecoPho->trkSumPtHollowConeDR03() >= 6. ) continue;
       //if ( iRecoPho->trackIso() >= 6. ) continue;
@@ -187,6 +187,11 @@ void SCRegressor::fillPhotonSel ( const edm::Event& iEvent, const edm::EventSetu
 
     // Skip phos which are not valid for regression
     if ( iPho.matchedPreselPhoIdxs.empty() || iPho.matchedPreselPhoIdxs.size() > 1 ) continue;
+    /*std::vector<int>::iterator it;    
+    //it =std::find(vRegressPhoIdxs_.begin(), vRegressPhoIdxs_.end(), iPho.matchedPreselPhoIdxs[0]) ;
+    if(it!= vRegressPhoIdxs_.end()) std::cout <<"_______ Element " << it-vRegressPhoIdxs_.begin() << std::endl;*/
+
+    //if matched preselcted photon does not pass zero suppression ( they are:regressed photon IDx) then continue
     if ( std::find(vRegressPhoIdxs_.begin(), vRegressPhoIdxs_.end(), iPho.matchedPreselPhoIdxs[0]) == vRegressPhoIdxs_.end() ) continue;
 
     reco::GenParticleRef iGen( genParticles, iPho.idx );

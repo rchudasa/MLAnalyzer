@@ -288,7 +288,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void fillTRKlayersAtECALstitched( const edm::Event&, const edm::EventSetup&, unsigned int proj );
     void fillScalarInfo( const edm::Event&, const edm::EventSetup& );
 
-    bool debug;
+    //bool debug;
     const reco::PFCandidate* getPFCand(edm::Handle<PFCollection> pfCands, float eta, float phi, float& minDr, bool debug = false);
     const reco::Track* getTrackCand(edm::Handle<reco::TrackCollection> trackCands, float eta, float phi, float& minDr, bool debug = false);
     int   getTruthLabel(const reco::PFJetRef& recJet, edm::Handle<reco::GenParticleCollection> genParticles, float dRMatch = 0.4, bool debug = false);
@@ -311,6 +311,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     std::vector<int> passedJetIdxs;
     void branchesEvtSel_jet_dijet      ( TTree*, edm::Service<TFileService>& );
     void branchesEvtSel_jet_dijet_tau( TTree*, edm::Service<TFileService>& );
+    void branchesEvtSel_jet_dijet_top( TTree*, edm::Service<TFileService>& );
     void branchesEvtSel_jet_dijet_ditau( TTree*, edm::Service<TFileService>& );
     void branchesEvtSel_jet_dijet_tau_massregression( TTree*, edm::Service<TFileService>& );
     void branchesEvtSel_jet_dijet_ele_massregression( TTree*, edm::Service<TFileService>& );
@@ -319,6 +320,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void branchesEvtSel_jet_dijet_gg_qq( TTree*, edm::Service<TFileService>& );
     bool runEvtSel_jet_dijet      ( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet_dijet_tau( const edm::Event&, const edm::EventSetup& );
+    bool runEvtSel_jet_dijet_top( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet_dijet_ditau( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet_dijet_tau_massregression( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet_dijet_ele_massregression( const edm::Event&, const edm::EventSetup& );
@@ -327,10 +329,12 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     bool runEvtSel_jet_dijet_gg_qq( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet      ( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet_tau( const edm::Event&, const edm::EventSetup& );
+    void fillEvtSel_jet_dijet_top( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet_ditau( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet_tau_massregression( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet_ele_massregression( const edm::Event&, const edm::EventSetup& );
-    void fillEvtSel_jet_ele_classification( const edm::Event&, const edm::EventSetup&, std::vector<int>, std::vector<int> );
+    void fillEvtSel_jet_ele_classification( const edm::Event&, const edm::EventSetup& );
+    //void fillEvtSel_jet_ele_classification( const edm::Event&, const edm::EventSetup&, std::vector<int>, std::vector<int> );
     void fillEvtSel_jet_background( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet_gg_qq( const edm::Event&, const edm::EventSetup& );
 
@@ -358,7 +362,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 // constants, enums and typedefs
 //
 //static const bool debug = true;
-//static const bool debug = false;
+static const bool debug = false;
 
 static const int nEE = 2;
 static const int nTOB = 6;

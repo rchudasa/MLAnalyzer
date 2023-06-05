@@ -22,8 +22,9 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.load("Geometry.CaloEventSetup.CaloGeometry_cfi");
 #process.load("Geometry.CaloEventSetup.CaloTopology_cfi");
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.MessageLogger.cerr.FwkReport.reportEvery = 10000
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
+#process.MessageLogger.cerr.FwkReport.reportEvery = 100
+#process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
 process.maxEvents = cms.untracked.PSet(
     #input = cms.untracked.int32(1)
@@ -60,7 +61,8 @@ process.source = cms.Source("PoolSource",
 
 #process.GlobalTag.globaltag = cms.string('80X_dataRun2_HLT_v12')
 #process.GlobalTag.globaltag = cms.string('94X_mcRun2_asymptotic_v3') # 2016
-process.GlobalTag.globaltag = cms.string('94X_mc2017_realistic_v17') # 2017
+#process.GlobalTag.globaltag = cms.string('94X_mc2017_realistic_v17') # 2017
+process.GlobalTag.globaltag = cms.string('106X_upgrade2018_realistic_v11_L1v1') # 2017
 process.es_prefer_GlobalTag = cms.ESPrefer('PoolDBESSource','GlobalTag')
 
 process.fevt = cms.EDAnalyzer('SCRegressor'
@@ -108,6 +110,7 @@ process.hltFilter = cms.EDFilter("HLTHighLevel",
                                           )
 
 ### fix a bug in the ECAL-Tracker momentum combination when applying the scale and smearing
+'''
 from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
 setupEgammaPostRecoSeq(process,
                        runVID=True,
@@ -129,10 +132,10 @@ runMetCorAndUncFromMiniAOD (
         fixEE2017Params = {'userawPt': True, 'ptThreshold':50.0, 'minEtaThreshold':2.65, 'maxEtaThreshold': 3.139} ,
         postfix = "ModifiedMET"
 )
-
+'''
 process.p = cms.Path(
   #process.hltFilter*
-  process.fullPatMetSequenceModifiedMET*
-  process.egammaPostRecoSeq*
+  #process.fullPatMetSequenceModifiedMET*
+  #process.egammaPostRecoSeq*
   process.fevt
 )

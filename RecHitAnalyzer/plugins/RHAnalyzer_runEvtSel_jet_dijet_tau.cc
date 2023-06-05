@@ -130,7 +130,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
     reco::PFJetRef iJet( jets, iJ );
     if ( std::abs(iJet->pt())  < minJetPt_ ) continue;
     if ( std::abs(iJet->eta()) > maxJetEta_ ) continue;
-    if (debug ) std::cout << "\t\t"<< " Jet [" << iJ << "] ->  Pt: " << iJet->pt() << ", Eta: " << iJet->eta() << ", Phi: " << iJet->phi() << std::endl;
+    //if (debug ) std::cout << "\t\t"<< " Jet [" << iJ << "] ->  Pt: " << iJet->pt() << ", Eta: " << iJet->eta() << ", Phi: " << iJet->phi() << std::endl;
     bool passedGenSel = false;
     unsigned int iGenParticle = 0;
    
@@ -138,6 +138,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
       float dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->eta(),iGen->phi() );
       if ( dR > 0.4 ) continue;
 
+      //if (debug ) std::cout << "\t\t"<< " Jet [" << iJ << "] ->  Pt: " << iJet->pt() << ", Eta: " << iJet->eta() << ", Phi: " << iJet->phi() << std::endl;
       if ( iGen->pt() > 20 && (std::abs(iGen->pdgId()) == 11 || std::abs(iGen->pdgId()) == 13) ) break; //only clean jets (lepton veto) 
       if ( std::abs(iGen->pdgId()) == 12 || std::abs(iGen->pdgId()) == 14 || std::abs(iGen->pdgId()) == 16 ) continue;
 

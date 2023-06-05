@@ -128,9 +128,9 @@ void SCRegressor::fillPhoVars ( const edm::Event& iEvent, const edm::EventSetup&
     float EAPho = iPho->eta() < 1.0 ? 0.1113 : 0.0953;
     float EAChg = iPho->eta() < 1.0 ? 0.0112 : 0.0108;
     float EANeu = iPho->eta() < 1.0 ? 0.0668 : 0.1054;
-    vPho_phoIsoCorr_.push_back(     std::max(iPho->userFloat("phoPhotonIsolation") - rho*EAPho, (float)0.) );
+    //vPho_phoIsoCorr_.push_back(     std::max(iPho->userFloat("phoPhotonIsolation") - rho*EAPho, (float)0.) );
     vPho_ecalIsoCorr_.push_back(    std::max(iPho->ecalPFClusterIso() - rho*EAPho, (float)0.) );
-    vPho_phoIso_.push_back(         iPho->userFloat("phoPhotonIsolation") );
+    //vPho_phoIso_.push_back(         iPho->userFloat("phoPhotonIsolation") );
     vPho_chgIso_.push_back(         iPho->userFloat("phoChargedIsolation") );
     vPho_chgIsoWrongVtx_.push_back( iPho->userFloat("phoWorstChargedIsolation") );
     vPho_neuIso_.push_back(         iPho->userFloat("phoNeutralHadronIsolation") );

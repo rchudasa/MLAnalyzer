@@ -317,8 +317,8 @@ class SCRegressor : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 static const float zs = 0.;
 
 static const int crop_size = 32;
-//static const bool debug = true;
-static const bool debug = false;
+static const bool debug = true;
+//static const bool debug = false;
 
 static const int EB_IPHI_MIN = EBDetId::MIN_IPHI;//1;
 static const int EB_IPHI_MAX = EBDetId::MAX_IPHI;//360;

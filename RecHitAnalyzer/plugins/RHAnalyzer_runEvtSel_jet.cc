@@ -48,9 +48,9 @@ void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService
     branchesEvtSel_jet_dijet_ele_massregression( tree, fs );
   } else if ( task_ == "jet_ele_classification" ) {
     branchesEvtSel_jet_ele_classification( tree, fs );
-  } /*else if ( task_ == "jet_background" ) {
-    branchesEvtSel_jet_background( tree, fs );
-  } */else {
+  } else if ( task_ == "ttbar") {
+    branchesEvtSel_jet_dijet_top( tree, fs );
+  } else {
     branchesEvtSel_jet_dijet( tree, fs );
   }
 
@@ -78,10 +78,10 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   }  else if ( task_ == "jet_ele_classification" ) {
     hasPassed = runEvtSel_jet_ele_classification( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED ELE SELECTION! " << std::endl;
-  } /* else if ( task_ == "jet_background" ) {
-    hasPassed = runEvtSel_jet_background( iEvent, iSetup );
+  }  else if ( task_ == "ttbar" ) {
+    hasPassed = runEvtSel_jet_dijet_top( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED ELE SELECTION! " << std::endl;
-  }*/ else {
+  } else {
     hasPassed = runEvtSel_jet_dijet( iEvent, iSetup );
   }
 
@@ -197,17 +197,17 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   // Remove jets that failed the Seed cuts 
   for(int failedJetIdx : vFailedJetIdx_){
     vJetIdxs.erase(std::remove(vJetIdxs.begin(),vJetIdxs.end(),failedJetIdx),vJetIdxs.end());
-    std::cout << "Failed jets ID:" << failedJetIdx << std::endl;
+    if(debug)std::cout << "Failed jets ID:" << failedJetIdx << std::endl;
   }
   if ( vJetIdxs.size() == 0){
     if ( debug ) std::cout << " No passing jets...  " << std::endl;
-    std::cout << " >> analyze failed: no passing jets" << std::endl;
+    if(debug) std::cout << " >> analyze failed: no passing jets" << std::endl;
     return false;
   }
 
   for (int passJetIdx : vJetIdxs){
     passedJetIdxs.push_back(passJetIdx); 
-    std::cout << "passed jet index is :" << passJetIdx << std::endl;
+    if(debug)std::cout << "passed jet index is :" << passJetIdx << std::endl;
  }
 
   if ((nJets_ > 0) && nJet == nJets_) std::cout << " >> analyze failed: " << nJets_ << " passing jets" << std::endl;
@@ -227,11 +227,11 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   } else if ( task_ == "dijet_ele_massregression" ) {
     fillEvtSel_jet_dijet_ele_massregression( iEvent, iSetup );
   } else if ( task_ == "jet_ele_classification" ) {
-    //fillEvtSel_jet_ele_classification( iEvent, iSetup, vJetIdxs );
-    fillEvtSel_jet_ele_classification( iEvent, iSetup, passedJetIdxs, vFailedJetIdx_ );
-  } /*else if ( task_ == "jet_background" ) {
-    fillEvtSel_jet_background( iEvent, iSetup );
-  }*/ else {
+    fillEvtSel_jet_ele_classification( iEvent, iSetup );
+    //fillEvtSel_jet_ele_classification( iEvent, iSetup, passedJetIdxs, vFailedJetIdx_ );
+  } else if ( task_ == "ttbar") {
+    fillEvtSel_jet_dijet_top( iEvent, iSetup );
+  }else {
     fillEvtSel_jet_dijet( iEvent, iSetup );
   }
 

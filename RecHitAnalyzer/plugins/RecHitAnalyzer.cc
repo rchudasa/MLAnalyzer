@@ -76,7 +76,7 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   metSigAlgo_               = new metsig::METSignificance(iConfig);
 
   //johnda add configuration
-  debug      = iConfig.getParameter<bool>("isDebug");
+  //debug      = iConfig.getParameter<bool>("isDebug");
   mode_      = iConfig.getParameter<std::string>("mode");
   task_      = iConfig.getParameter<std::string>("task");
   isSignal_  = iConfig.getParameter<bool>("isSignal");
@@ -184,8 +184,7 @@ RecHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   nTotal++;
   using namespace edm;
-
-  // ----- Apply event selection cuts ----- //
+ // ----- Apply event selection cuts ----- //
 
   bool passedSelection = false;
   if ( doJets_ ) {
