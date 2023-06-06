@@ -11,7 +11,8 @@ from numpy.lib.stride_tricks import as_strided
 import argparse
 parser = argparse.ArgumentParser(description='Process some integers.')
 #parser.add_argument('-i', '--infile', default=['output.root'], nargs='+', type=str, help='Input root file.')
-parser.add_argument('-i', '--infile', default='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples/230327_062100/0000/output_474.root', type=str, help='Input root file.')
+#parser.add_argument('-i', '--infile', default='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples/230327_062100/0000/output_474.root', type=str, help='Input root file.')
+parser.add_argument('-i', '--infile', default='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToEE_M-50_13TeV-powheg_pythia8/DYToEE_ntuples/230604_131840/0000/output_474.root', type=str, help='Input root file.')
 #parser.add_argument('-i', '--infile', default='/eos/cms/store/group/phys_heavyions/rchudasa/e2e/eventGenerationChecks/DYTauTau_output_474.root', type=str, help='Input root file.')
 parser.add_argument('-o', '--outdir', default='.', type=str, help='Output pq file dir.')
 parser.add_argument('-d', '--decay', default='test', type=str, help='Decay name.')
@@ -122,7 +123,8 @@ for iEvt in range(iEvtStart,iEvtEnd):
     #data['X_CMSII'] = np.stack([TracksAtECAL_pt, TracksAtECAL_dz, TracksAtECAL_d0, ECAL_energy, HBHE_energy, PixAtEcal_1, PixAtEcal_2, PixAtEcal_3, PixAtEcal_4], axis=0) # (9, 280, 360)
 
     # Jet attributes 
-    ys      = rhTree.jet_IsTau
+    #ys      = rhTree.jet_IsTau
+    ys      = rhTree.jet_IsEle
     jetMs   = rhTree.jet_M
     jetPts  = rhTree.jet_Pt
     #dRs    = rhTree.jet_dR

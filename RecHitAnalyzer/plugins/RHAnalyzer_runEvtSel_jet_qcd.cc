@@ -6,6 +6,7 @@ const unsigned nJets = 4; //TODO: use cfg level nJets_
 
 vector<float> v_goodvertices_;
 vector<float> v_qcdJetIsEle_;
+vector<float> v_qcdJetIsTau_;
 vector<float> v_jet_pt_;
 vector<float> v_jet_eta_;
 vector<float> v_jet_e_;
@@ -21,6 +22,7 @@ void RecHitAnalyzer::branchesEvtSel_jet_qcd ( TTree* tree, edm::Service<TFileSer
 
   tree->Branch("goodvertices",  &v_goodvertices_);
   tree->Branch("jet_IsEle",     &v_qcdJetIsEle_);
+  tree->Branch("jet_IsTau",     &v_qcdJetIsTau_);
   tree->Branch("jet_Pt",        &v_jet_pt_);
   tree->Branch("jet_Eta",       &v_jet_eta_);
   tree->Branch("jet_Energy",    &v_jet_e_);
@@ -60,7 +62,7 @@ bool RecHitAnalyzer::runEvtSel_jet_qcd( const edm::Event& iEvent, const edm::Eve
     
     reco::GenParticleRef iGen( genParticles, iG );
     if (!isSignal_ && !( iGen->status() == 23 ) ) continue;     
-    
+    if (abs(iGen->pdgId()) ==11 || abs(iGen->pdgId()) == 13  )continue; 
     vGenIdxs.push_back( iG );
     
   } // genParticles
@@ -83,8 +85,8 @@ bool RecHitAnalyzer::runEvtSel_jet_qcd( const edm::Event& iEvent, const edm::Eve
   // Loop over valid gen pho idxs
   for ( auto& iG : vGenIdxs ) {
     
-    reco::GenParticleRef iGenEle( genParticles, iG );
-    if ( debug ) std::cout << " >> genParton[" << iG << "]" << " pt:" << iGenEle->pt() << " eta:" << iGenEle->eta() << std::endl;
+    reco::GenParticleRef iGen( genParticles, iG );
+    if ( debug ) std::cout << " >> genParton[" << iG << "]" << " PDG ID: " << iGen->pdgId() << "  pt:" << iGen->pt() << " eta:" << iGen->eta() << std::endl;
     
     std::vector<unsigned int> vMatchedRecoJetIdxs;
     
@@ -100,28 +102,28 @@ bool RecHitAnalyzer::runEvtSel_jet_qcd( const edm::Event& iEvent, const edm::Eve
       if ( std::abs(iJet->eta()) > maxJetEta_ ) continue;
       
       
-      dR = reco::deltaR( iJet->eta(),iJet->phi(), iGenEle->eta(),iGenEle->phi() );
+      dR = reco::deltaR( iJet->eta(),iJet->phi(), iGen->eta(),iGen->phi() );
       if ( dR > minDR ) continue;
       
       minDR = dR;
       minDR_idx = iJ;
-      minDR_fpt = iJet->pt()/iGenEle->pt();      
+      minDR_fpt = iJet->pt()/iGen->pt();      
     } // reco jets
     
     
     // Require minimum dR to declare match
     // Protects against matching to PU
-    // minDR only needs to be generous enough so that one of the gen electrons match to a reco jets for analysis
+    // minDR only needs to be generous enough so that one of the gen partons match to a reco jets for analysis
     if ( minDR > 0.4 ) continue;
     
-    // Declare reco jet matching to gen electron: only store unique reco idxs
+    // Declare reco jet matching to gen parton: only store unique reco idxs
     if ( std::find(vMatchedRecoJetIdxs.begin(), vMatchedRecoJetIdxs.end(), minDR_idx) != vMatchedRecoJetIdxs.end() ) continue;
     vMatchedRecoJetIdxs.push_back( minDR_idx );
     if ( debug ) std::cout << "   >> !minDR_idx:" << minDR_idx << " f_pt(reco/gen):" << minDR_fpt << std::endl;
 
 
      
-    // Check if matched reco jets also matches to electron:
+    // Check if matched reco jets also matches to parton:
     for ( auto& iJ : vMatchedRecoJetIdxs ) {
       
       reco::PFJetRef iJet( jets, iJ );      
@@ -132,10 +134,10 @@ bool RecHitAnalyzer::runEvtSel_jet_qcd( const edm::Event& iEvent, const edm::Eve
     
    // Store this mapping
    if(vMatchedRecoJetIdxs.empty()) continue;
-   jet_gen_map iEle_obj = { iG, vMatchedRecoJetIdxs };
-   vGens.push_back( iEle_obj );
+   jet_gen_map iJet_obj = { iG, vMatchedRecoJetIdxs };
+   vGens.push_back( iJet_obj );
    
-  } //gen electrons
+  } //gen partons
   //}
 
   
@@ -163,6 +165,7 @@ void RecHitAnalyzer::fillEvtSel_jet_qcd ( const edm::Event& iEvent, const edm::E
   
   v_goodvertices_.clear();
   v_qcdJetIsEle_.clear();
+  v_qcdJetIsTau_.clear();
   v_jet_pt_.clear();
   v_jet_eta_.clear();
   v_jet_e_.clear();
@@ -187,7 +190,7 @@ void RecHitAnalyzer::fillEvtSel_jet_qcd ( const edm::Event& iEvent, const edm::E
   
   for ( auto const& ii: vGens ) {
     
-    // Skip electrons which fails HE edge cut
+    // Skip jets which fails HE edge cut
     if(ii.matchedRecoJetIdxs.empty())continue;
     if ( std::find(vJetIdxs.begin(), vJetIdxs.end(), ii.matchedRecoJetIdxs[0]) == vJetIdxs.end()) continue;
     
@@ -195,10 +198,11 @@ void RecHitAnalyzer::fillEvtSel_jet_qcd ( const edm::Event& iEvent, const edm::E
     reco::PFJetRef iJet( jets, ii.matchedRecoJetIdxs[0] );
     
     if ( debug )  std::cout << " --------------------------------- Filling branches --------------------------------- " << std::endl;
-    if ( debug )  std::cout << " Gen pt: "<< iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << std::endl;       
+    if ( debug )  std::cout << " Gen pdgId: "<< iGen->pdgId() << " pt " << iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << std::endl;       
     if ( debug )  std::cout << " Jet pt: "<< iJet->pt() << " eta: " <<iJet->eta() << " phi: " <<iJet->phi() << std::endl;       
     
     v_qcdJetIsEle_.push_back(0);
+    v_qcdJetIsTau_.push_back(0);
     v_jet_pt_.push_back( iJet->pt() );
     v_jet_eta_.push_back( iJet->eta() );
     v_jet_e_.push_back( iJet->energy() );
