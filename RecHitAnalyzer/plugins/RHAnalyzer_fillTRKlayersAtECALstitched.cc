@@ -24,10 +24,20 @@ TH2F *hEvt_EE_TID[nTID][nEE];
 
 TH2F *hBPIX_ECAL[nBPIX][Nhitproj];
 std::vector<float> vBPIX_ECAL_[nBPIX][Nhitproj];
+std::vector<float> vBPIX_X_[nBPIX];
+std::vector<float> vBPIX_Y_[nBPIX];
+std::vector<float> vBPIX_Z_[nBPIX];
+std::vector<float> vBPIX_Eta_[nBPIX];
+std::vector<float> vBPIX_Phi_[nBPIX];
 TH2F *hEvt_EE_BPIX[nBPIX][nEE];
 
 TH2F *hFPIX_ECAL[nFPIX][Nhitproj];
 std::vector<float> vFPIX_ECAL_[nFPIX][Nhitproj];
+std::vector<float> vFPIX_X_[nFPIX];
+std::vector<float> vFPIX_Y_[nFPIX];
+std::vector<float> vFPIX_Z_[nFPIX];
+std::vector<float> vFPIX_Eta_[nFPIX];
+std::vector<float> vFPIX_Phi_[nFPIX];
 TH2F *hEvt_EE_FPIX[nFPIX][nEE];
 
 // Initialize branches ____________________________________________________________//
@@ -37,6 +47,8 @@ void RecHitAnalyzer::branchesTRKlayersAtECALstitched ( TTree* tree, edm::Service
 
   int layer;
   char hname[50], htitle[50];
+  char bpix_X[50], bpix_Y[50], bpix_Z[50], bpix_eta[50], bpix_phi[50];
+  char fpix_X[50], fpix_Y[50], fpix_Z[50], fpix_eta[50], fpix_phi[50];
   const double * eta_bins_EE[2] = {eta_bins_EEm,eta_bins_EEp};
 
   for ( unsigned int proj=0; proj < Nhitproj; proj++ ) {
@@ -136,6 +148,19 @@ void RecHitAnalyzer::branchesTRKlayersAtECALstitched ( TTree* tree, edm::Service
       layer = iL + 1;
       sprintf(hname, "BPIX_layer%d_ECAL%s",layer,hit_projections[proj].c_str());
       tree->Branch(hname,        &vBPIX_ECAL_[iL][proj]);
+      
+      sprintf(bpix_X, "BPIX_layer_X_%d",layer);
+      tree->Branch(bpix_X,        &vBPIX_X_[iL]);
+      sprintf(bpix_Y, "BPIX_layer_Y_%d",layer);
+      tree->Branch(bpix_Y,        &vBPIX_Y_[iL]);
+      sprintf(bpix_Z, "BPIX_layer_Z_%d",layer);
+      tree->Branch(bpix_Z,        &vBPIX_Z_[iL]);
+      sprintf(bpix_eta, "BPIX_layer_Eta_%d",layer);
+      tree->Branch(bpix_eta,        &vBPIX_Eta_[iL]);
+      sprintf(bpix_phi, "BPIX_layer_Phi_%d",layer);
+      tree->Branch(bpix_phi,        &vBPIX_Phi_[iL]);
+
+
       // Histograms for monitoring
       sprintf(htitle,"N(i#phi,i#eta);i#phi;i#eta");
       hBPIX_ECAL[iL][proj] = fs->make<TH2F>(hname, htitle,
@@ -158,6 +183,18 @@ void RecHitAnalyzer::branchesTRKlayersAtECALstitched ( TTree* tree, edm::Service
       layer = iL + 1;
       sprintf(hname, "FPIX_layer%d_ECAL%s",layer,hit_projections[proj].c_str());
       tree->Branch(hname,        &vFPIX_ECAL_[iL][proj]);
+
+      sprintf(fpix_X, "FPIX_layer_X_%d",layer);
+      tree->Branch(fpix_X,        &vFPIX_X_[iL]);
+      sprintf(fpix_Y, "FPIX_layer_Y_%d",layer);
+      tree->Branch(fpix_Y,        &vFPIX_Y_[iL]);
+      sprintf(fpix_Z, "FPIX_layer_Z_%d",layer);
+      tree->Branch(fpix_Z,        &vFPIX_Z_[iL]);
+      sprintf(fpix_eta, "FPIX_layer_Eta_%d",layer);
+      tree->Branch(fpix_eta,        &vFPIX_Eta_[iL]);
+      sprintf(fpix_phi, "FPIX_layer_Phi_%d",layer);
+      tree->Branch(fpix_phi,        &vFPIX_Phi_[iL]);
+
       // Histograms for monitoring
       sprintf(htitle,"N(i#phi,i#eta);i#phi;i#eta");
       hFPIX_ECAL[iL][proj] = fs->make<TH2F>(hname, htitle,
@@ -334,10 +371,20 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
     for ( int iz(0); iz < nEE; ++iz ) hEvt_EE_TID[iL][iz]->Reset();
   }
   for ( int iL(0); iL < nBPIX; iL++ ) {
+    vBPIX_X_[iL].clear();
+    vBPIX_Y_[iL].clear();
+    vBPIX_Z_[iL].clear();
+    vBPIX_Eta_[iL].clear();
+    vBPIX_Phi_[iL].clear();
     vBPIX_ECAL_[iL][proj].assign( 2*ECAL_IETA_MAX_EXT*EB_IPHI_MAX, 0. );
     for ( int iz(0); iz < nEE; ++iz ) hEvt_EE_BPIX[iL][iz]->Reset();
   }
   for ( int iL(0); iL < nFPIX; iL++ ) {
+    vFPIX_X_[iL].clear();
+    vFPIX_Y_[iL].clear();
+    vFPIX_Z_[iL].clear();
+    vFPIX_Eta_[iL].clear();
+    vFPIX_Phi_[iL].clear();
     vFPIX_ECAL_[iL][proj].assign( 2*ECAL_IETA_MAX_EXT*EB_IPHI_MAX, 0. );
     for ( int iz(0); iz < nEE; ++iz ) hEvt_EE_FPIX[iL][iz]->Reset();
   }
@@ -411,7 +458,32 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
         GlobalPoint GP = theGeomDet->surface().toGlobal(Local3DPoint(lp));
         phi=0.;
         eta=0.;
-        switch (proj)
+        //std::cout << " " << iPixelHit << " | global position: x = " << GP.x() << " , y = "<< GP.y() << " , z = " << GP.z() <<std::endl;
+        
+        TVector3 GP_v(GP.x(),GP.y(),GP.z());
+        //std::cout << " " << iPixelHit << " | P.V correction global position: x = " << GP_v.x() << " , y = "<< GP_v.y() << " , z = " << GP_v.z() <<std::endl;
+        GP_v=GP_v-pv_v;
+        phi=GP_v.Phi();
+        eta=GP_v.Eta();
+
+        if(subid==1){
+	vBPIX_X_[layer].push_back(GP_v.x());
+	vBPIX_Y_[layer].push_back(GP_v.y());
+	vBPIX_Z_[layer].push_back(GP_v.z());
+	vBPIX_Eta_[layer].push_back(GP_v.Eta());
+	vBPIX_Phi_[layer].push_back(GP_v.Phi());
+ 	}
+
+        if(subid==2){
+        vFPIX_X_[layer].push_back(GP_v.x());
+        vFPIX_Y_[layer].push_back(GP_v.y());
+        vFPIX_Z_[layer].push_back(GP_v.z());
+        vFPIX_Eta_[layer].push_back(GP_v.Eta());
+        vFPIX_Phi_[layer].push_back(GP_v.Phi());
+
+        }
+
+        /*switch (proj)
         {
           case 1:
           {
@@ -433,7 +505,7 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
             eta=0.;
             break;
           }
-        }
+        }*/
         //if ( std::abs(eta) > 3. ) continue;
         DetId ecalId( spr::findDetIdECAL( caloGeom, eta, phi, false ) );
         if ( subid == PixelSubdetector::PixelBarrel ){
@@ -489,12 +561,17 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
         LocalPoint lp = rechit.localPosition();
         GlobalPoint GP = stripDet->surface().toGlobal(Local3DPoint(lp));
         //std::cout << " " << iRecHit << " | global position: x = " << GP.x() << " , y = "<< GP.y() << " , z = " << GP.z() <<std::endl;
-        switch (proj)
+        TVector3 GP_v(GP.x(),GP.y(),GP.z());
+        GP_v=GP_v-pv_v;
+        phi=GP_v.Phi();
+        eta=GP_v.Eta();
+        /*switch (proj)
         {
           case 0:
           {
             phi = GP.phi();
             eta = GP.eta();
+            std::cout << "hits not corrected:" << std::endl;
             break;
           }
           case 1:
@@ -503,15 +580,17 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
             GP_v=GP_v-pv_v;
             phi=GP_v.Phi();
             eta=GP_v.Eta();
+            std::cout << "hit position corrected:" << std::endl;
             break;
           }
           default:
           {
             phi=0.;
             eta=0.;
+            std::cout << "hit position default:" << std::endl;
             break;
           }
-        }
+        }*/
         //if ( std::abs(eta) > 3. ) continue;
         DetId ecalId( spr::findDetIdECAL( caloGeom, eta, phi, false ) );
         if ( subid == StripSubdetector::TOB ) {
@@ -579,7 +658,11 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
         LocalPoint lp = rechit.localPosition();
         GlobalPoint GP = stripDet->surface().toGlobal(Local3DPoint(lp));
         //std::cout << " " << iRecHit << " | global position: x = " << GP.x() << " , y = "<< GP.y() << " , z = " << GP.z() <<std::endl;
-        switch (proj)
+        TVector3 GP_v(GP.x(),GP.y(),GP.z());
+        GP_v=GP_v-pv_v;
+        phi=GP_v.Phi();
+        eta=GP_v.Eta();
+        /*switch (proj)
         {
           case 0:
           {
@@ -601,7 +684,7 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
             eta=0.;
             break;
           }
-        }
+        }*/
         //if ( std::abs(eta) > 3. ) continue;
         DetId ecalId( spr::findDetIdECAL( caloGeom, eta, phi, false ) );
         if ( subid == StripSubdetector::TOB ) {
@@ -669,7 +752,12 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
         LocalPoint lp = rechit.localPosition();
         GlobalPoint GP = stripDet->surface().toGlobal(Local3DPoint(lp));
         //std::cout << " " << iRecHit << " | global position: x = " << GP.x() << " , y = "<< GP.y() << " , z = " << GP.z() <<std::endl;
-        switch (proj)
+        TVector3 GP_v(GP.x(),GP.y(),GP.z());
+        GP_v=GP_v-pv_v;
+        phi=GP_v.Phi();
+        eta=GP_v.Eta();
+        
+        /*switch (proj)
         {
           case 0:
           {
@@ -691,7 +779,7 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
             eta=0.;
             break;
           }
-        }
+        }*/
         //if ( std::abs(eta) > 3. ) continue;
         DetId ecalId( spr::findDetIdECAL( caloGeom, eta, phi, false ) );
         if ( subid == StripSubdetector::TOB ) {

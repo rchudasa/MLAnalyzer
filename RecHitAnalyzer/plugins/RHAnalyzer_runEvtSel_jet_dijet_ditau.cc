@@ -251,7 +251,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   */
 
   bool IsSignal             = true;
-  bool IsMC                 = true;
+  bool IsMC                 = false;
   if (iEvent.isRealData()) IsMC = false;
   //TAU SELECTION
   float tau_sel_mvaID       = -2;

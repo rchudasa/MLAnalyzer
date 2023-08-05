@@ -52,7 +52,9 @@ void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService
     branchesEvtSel_jet_dijet_top( tree, fs );
   } else if ( task_ == "qcd") {
     branchesEvtSel_jet_qcd( tree, fs );
-  }else {
+  } else if ( task_ == "gammaJet"){
+    branchesEvtSel_jet_photonSel( tree, fs);
+  } else {
     branchesEvtSel_jet_dijet( tree, fs );
   }
 
@@ -86,6 +88,8 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   } else if ( task_ == "qcd"){
     hasPassed = runEvtSel_jet_qcd( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED QCD SELECTION! " << std::endl;
+  } else if ( task_ == "gammaJet")  {
+    hasPassed = runEvtSel_jet_photonSel( iEvent, iSetup );
   } else {
     hasPassed = runEvtSel_jet_dijet( iEvent, iSetup );
   }
@@ -238,6 +242,8 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
     fillEvtSel_jet_dijet_top( iEvent, iSetup );
   } else if ( task_ == "qcd") {
     fillEvtSel_jet_qcd( iEvent, iSetup );
+  } else if ( task_ == "gammaJet") { 
+    fillEvtSel_jet_photonSel( iEvent, iSetup );
   } else {
     fillEvtSel_jet_dijet( iEvent, iSetup );
   }

@@ -13,11 +13,21 @@ inputFiles_='file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/gen_HToAATo4Ta
 #inputFiles_='file:/eos/uscms/store/group/lpcml/rchudasa/MCGeneration/DYToEE_M-50_13TeV-powheg_pythia8/DYToEE_M-50_13TeV-powheg_pythia8_DIGI-RECO/230211_163838/0000/digiToReco_withPileup_621.root'#DYToee
 #inputFiles_='file:/eos/uscms/store/group/lpcml/rchudasa/MCGeneration/QCD_Pt-30to50_EMEnriched_TuneCP5_13TeV_pythia8/QCD_Pt-30to50_EMEnriched_DIGI-RECO/230210_122831/0000/digiToReco_withPileup_908.root'#QCDEmEnriched
 #inputFiles_='file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/eventGenerationChecks/QCD_Pt-30to50_EMEnriched_digiToReco_withPileup_908.rooot'#QCDEmEnriched
+#inputFiles_='file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/eventGenerationChecks/GJet_Pt-20to40_DoubleEMEnriched_digiToReco_withPU_617.root'#GJet
+#inputFiles_='file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/Tau_Run2018A_UL/C69BBD7C-DC9B-3849-89CB-444AF555A078.root'#Data
+inputFiles_='file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/officialMC_DYJetsToLL_M-50_TuneCP5_13Tev_RECO/61F13245-CF73-9946-8321-B18051BB8659.root'#official MC
 
+<<<<<<< Updated upstream
 maxEvents_=100
 #maxEvents_=-1
 skipEvents_=0#
 outputFile_='hToAATo4Tau.root'
+=======
+#maxEvents_=6
+maxEvents_=-1
+skipEvents_=0#
+outputFile_='DYLL_officialMC.root'
+>>>>>>> Stashed changes
 #outputFile_='qcd.root'
 #outputFile_='GJet.root'
 #outputFile_='ttbar_qcdCode.root'
