@@ -57,9 +57,10 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     # Jet level cfg
     #, isDebug                        = cms.bool(True)
     #, isDebug                        = cms.bool(False)
+    , task                           = cms.string("dijet_ditau")
     #, task                           = cms.string("tau_classification")
     #, task                           = cms.string("jet_ele_classification")
-    , task                           = cms.string("qcd")
+    #, task                           = cms.string("qcd")
     #, task                           = cms.string("ttbar")
     , isSignal                       = cms.bool(False)
     #, isSignal                       = cms.bool(True)
