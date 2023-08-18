@@ -58,135 +58,135 @@ void RecHitAnalyzer::branchesEvtSel ( TTree* tree, edm::Service<TFileService> &f
 // Run event selection _______________________________________________________________//
 bool RecHitAnalyzer::runEvtSel ( const edm::Event& iEvent, const edm::EventSetup& iSetup ) {
 
-  edm::Handle<reco::PhotonCollection> photons;
-  //edm::Handle<pat::PhotonCollection> photons;
-  iEvent.getByToken( photonCollectionT_, photons );
+  // edm::Handle<reco::PhotonCollection> photons;
+  // //edm::Handle<pat::PhotonCollection> photons;
+  // iEvent.getByToken( photonCollectionT_, photons );
 
-  int nPhoTrg = 0;
+  // int nPhoTrg = 0;
 
-  // Perform photon pre-selection
-  float dR, m0;
-  float leadPhoPt = 0.;
-  math::PtEtaPhiELorentzVectorD vDiPho;
-  std::vector<int> vPhoIdxs;
-  for ( unsigned int iP = 0; iP < photons->size(); iP++ ) {
-    reco::PhotonRef iPho( photons, iP );
-    //pat::PhotonRef iPho( photons, iP );
-    if ( std::abs(iPho->pt()) < 18. ) continue;
-    //std::cout << iPho->full5x5_sigmaIetaIeta() << std::endl;
-    if ( std::abs(iPho->eta()) > 1.44 ) continue;
-    if ( iPho->r9() < 0.5 ) continue;
-    if ( iPho->hadTowOverEm() > 0.07 ) continue;
-    if ( iPho->full5x5_sigmaIetaIeta() > 0.0105 ) continue;
-    if ( iPho->hasPixelSeed() == true ) continue;
-    //if ( std::abs(iPho->eta()) > 2.1 ) continue;
-    //if ( std::abs(iPho->eta()) > 1.44 && std::abs(iPho->eta()) < 1.57 ) continue;
-    if (debug) std::cout << " >> pT:" << iPho->pt() << " eta:" << iPho->eta() << " phi: " << iPho->phi() << " E:" << iPho->energy() << std::endl;
-    nPhoTrg++;
-    if ( std::abs(iPho->pt()) > leadPhoPt ) leadPhoPt = std::abs(iPho->pt()); 
-    vDiPho += iPho->p4();
-    vPhoIdxs.push_back( iP );
+  // // Perform photon pre-selection
+  // float dR, m0;
+  // float leadPhoPt = 0.;
+  // math::PtEtaPhiELorentzVectorD vDiPho;
+  // std::vector<int> vPhoIdxs;
+  // for ( unsigned int iP = 0; iP < photons->size(); iP++ ) {
+  //   reco::PhotonRef iPho( photons, iP );
+  //   //pat::PhotonRef iPho( photons, iP );
+  //   if ( std::abs(iPho->pt()) < 18. ) continue;
+  //   //std::cout << iPho->full5x5_sigmaIetaIeta() << std::endl;
+  //   if ( std::abs(iPho->eta()) > 1.44 ) continue;
+  //   if ( iPho->r9() < 0.5 ) continue;
+  //   if ( iPho->hadTowOverEm() > 0.07 ) continue;
+  //   if ( iPho->full5x5_sigmaIetaIeta() > 0.0105 ) continue;
+  //   if ( iPho->hasPixelSeed() == true ) continue;
+  //   //if ( std::abs(iPho->eta()) > 2.1 ) continue;
+  //   //if ( std::abs(iPho->eta()) > 1.44 && std::abs(iPho->eta()) < 1.57 ) continue;
+  //   if (debug) std::cout << " >> pT:" << iPho->pt() << " eta:" << iPho->eta() << " phi: " << iPho->phi() << " E:" << iPho->energy() << std::endl;
+  //   nPhoTrg++;
+  //   if ( std::abs(iPho->pt()) > leadPhoPt ) leadPhoPt = std::abs(iPho->pt()); 
+  //   vDiPho += iPho->p4();
+  //   vPhoIdxs.push_back( iP );
 
-  } // reco photons 
-  m0 = vDiPho.mass();
-  if ( m0 < m0cut ) return false;
-  if ( nPhoTrg != 2 ) return false;
-  if ( leadPhoPt < 30. ) return false;
+  // } // reco photons 
+  // m0 = vDiPho.mass();
+  // if ( m0 < m0cut ) return false;
+  // if ( nPhoTrg != 2 ) return false;
+  // if ( leadPhoPt < 30. ) return false;
 
-  // Apply selection
-  int nPho = 0;
-  int leadPho = -1;
-  leadPhoPt = 0.;
-  for ( int iP = 0; iP < nPhoTrg; iP++ ) {
-    reco::PhotonRef iPho( photons, vPhoIdxs[iP] );
-    //pat::PhotonRef iPho( photons, vPhoIdxs[iP] );
-    // Get leading photon pt
-    if ( std::abs(iPho->pt()) > leadPhoPt ) {
-      leadPhoPt = std::abs(iPho->pt()); 
-      leadPho = iP;
-    }
-    // Minimum pt/m0 cut
-    if ( std::abs(iPho->pt()) < m0/4. ) continue;
-    nPho++;
-  }
-  if ( nPho != 2 ) return false;
-  if ( leadPhoPt < m0/3 ) return false;
-  nPho = nPhoTrg;
-  //std::cout << " n:" << nPho << " m0:" << m0 << std::endl;
+  // // Apply selection
+  // int nPho = 0;
+  // int leadPho = -1;
+  // leadPhoPt = 0.;
+  // for ( int iP = 0; iP < nPhoTrg; iP++ ) {
+  //   reco::PhotonRef iPho( photons, vPhoIdxs[iP] );
+  //   //pat::PhotonRef iPho( photons, vPhoIdxs[iP] );
+  //   // Get leading photon pt
+  //   if ( std::abs(iPho->pt()) > leadPhoPt ) {
+  //     leadPhoPt = std::abs(iPho->pt()); 
+  //     leadPho = iP;
+  //   }
+  //   // Minimum pt/m0 cut
+  //   if ( std::abs(iPho->pt()) < m0/4. ) continue;
+  //   nPho++;
+  // }
+  // if ( nPho != 2 ) return false;
+  // if ( leadPhoPt < m0/3 ) return false;
+  // nPho = nPhoTrg;
+  // //std::cout << " n:" << nPho << " m0:" << m0 << std::endl;
 
-  /*
-  // Count number of jets
-  edm::Handle<reco::PFJetCollection> jets;
-  iEvent.getByToken( jetCollectionT_, jets );
-  bool isDRIsolated;
-  int nJet = 0;
-  std::vector<int> vJetIdxs;
-  for ( unsigned int iJ = 0; iJ < jets->size(); iJ++ ) {
-    reco::PFJetRef iJet( jets, iJ );
-    if ( std::abs(iJet->pt()) < 30. ) continue;
-    if ( std::abs(iJet->eta()) > 2.5 ) continue;
-    // deltaR check
-    isDRIsolated = true;
-    for ( int iP = 0; iP < nPho; iP++ ) {
-      reco::PhotonRef iPho( photons, vPhoIdxs[iP] );
-      dR = reco::deltaR( iJet->eta(),iJet->phi(), iPho->eta(),iPho->phi() );
-      if ( dR < 0.4 ) {
-        isDRIsolated = false;
-        break;
-      }
-    }
-    if ( !isDRIsolated ) continue;
-    //std::cout << " >> pT:" << iJet->pt() << " eta:" << iJet->eta() << " phi: " << iJet->phi() << " E:" << iJet->energy() << std::endl;
-    nJet++;
-    vJetIdxs.push_back( iJ );
-  }
-  //if ( nJet != 2 ) return false;
-  */
+  // /*
+  // // Count number of jets
+  // edm::Handle<reco::PFJetCollection> jets;
+  // iEvent.getByToken( jetCollectionT_, jets );
+  // bool isDRIsolated;
+  // int nJet = 0;
+  // std::vector<int> vJetIdxs;
+  // for ( unsigned int iJ = 0; iJ < jets->size(); iJ++ ) {
+  //   reco::PFJetRef iJet( jets, iJ );
+  //   if ( std::abs(iJet->pt()) < 30. ) continue;
+  //   if ( std::abs(iJet->eta()) > 2.5 ) continue;
+  //   // deltaR check
+  //   isDRIsolated = true;
+  //   for ( int iP = 0; iP < nPho; iP++ ) {
+  //     reco::PhotonRef iPho( photons, vPhoIdxs[iP] );
+  //     dR = reco::deltaR( iJet->eta(),iJet->phi(), iPho->eta(),iPho->phi() );
+  //     if ( dR < 0.4 ) {
+  //       isDRIsolated = false;
+  //       break;
+  //     }
+  //   }
+  //   if ( !isDRIsolated ) continue;
+  //   //std::cout << " >> pT:" << iJet->pt() << " eta:" << iJet->eta() << " phi: " << iJet->phi() << " E:" << iJet->energy() << std::endl;
+  //   nJet++;
+  //   vJetIdxs.push_back( iJ );
+  // }
+  // //if ( nJet != 2 ) return false;
+  // */
 
-  // Get photon order
-  int ptOrder[2] = {0, 1};
-  if ( leadPho == 1 ) {
-    ptOrder[0] = 1;
-    ptOrder[1] = 0;
-  }
-  //std::cout << " ptOrder[:]: " << ptOrder[0] << " " << ptOrder[1] << std::endl;
+  // // Get photon order
+  // int ptOrder[2] = {0, 1};
+  // if ( leadPho == 1 ) {
+  //   ptOrder[0] = 1;
+  //   ptOrder[1] = 0;
+  // }
+  // //std::cout << " ptOrder[:]: " << ptOrder[0] << " " << ptOrder[1] << std::endl;
 
-  // Fill kinematic variables
-  //h_nJet->Fill( nJet );
-  h_m0->Fill( m0 );
-  diPhoE_  = 0.;
-  diPhoPt_ = 0.;
-  float dphi[2] = {0., 0.};
-  vFC_inputs_.clear();
-  for ( int iP = 0; iP < nPho; iP++ ) {
-    reco::PhotonRef iPho( photons, vPhoIdxs[ptOrder[iP]] );
-    //pat::PhotonRef iPho( photons, vPhoIdxs[ptOrder[iP]] );
-    h_phoPt->Fill( iPho->pt() ); 
-    h_phoE->Fill( iPho->energy() );
-    h_phoEta->Fill( iPho->eta() ); 
-    h_phoR9->Fill( iPho->r9() ); 
-    h_phoSieie->Fill( iPho->full5x5_sigmaIetaIeta() ); 
-    //h_phoMva->Fill( iPho->pfMVA() ); 
-    //std::cout << iPho->pfMVA() << std::endl;
-    diPhoE_  += std::abs( iPho->energy() );
-    diPhoPt_ += std::abs( iPho->pt() );
-    vFC_inputs_.push_back( iPho->pt()/m0 );
-    vFC_inputs_.push_back( iPho->eta() );
-    dphi[iP] = iPho->phi();
-  }
-  vFC_inputs_.push_back( TMath::Cos(reco::deltaPhi(dphi[0], dphi[1])) );
+  // // Fill kinematic variables
+  // //h_nJet->Fill( nJet );
+  // h_m0->Fill( m0 );
+  // diPhoE_  = 0.;
+  // diPhoPt_ = 0.;
+  // float dphi[2] = {0., 0.};
+  // vFC_inputs_.clear();
+  // for ( int iP = 0; iP < nPho; iP++ ) {
+  //   reco::PhotonRef iPho( photons, vPhoIdxs[ptOrder[iP]] );
+  //   //pat::PhotonRef iPho( photons, vPhoIdxs[ptOrder[iP]] );
+  //   h_phoPt->Fill( iPho->pt() ); 
+  //   h_phoE->Fill( iPho->energy() );
+  //   h_phoEta->Fill( iPho->eta() ); 
+  //   h_phoR9->Fill( iPho->r9() ); 
+  //   h_phoSieie->Fill( iPho->full5x5_sigmaIetaIeta() ); 
+  //   //h_phoMva->Fill( iPho->pfMVA() ); 
+  //   //std::cout << iPho->pfMVA() << std::endl;
+  //   diPhoE_  += std::abs( iPho->energy() );
+  //   diPhoPt_ += std::abs( iPho->pt() );
+  //   vFC_inputs_.push_back( iPho->pt()/m0 );
+  //   vFC_inputs_.push_back( iPho->eta() );
+  //   dphi[iP] = iPho->phi();
+  // }
+  // vFC_inputs_.push_back( TMath::Cos(reco::deltaPhi(dphi[0], dphi[1])) );
 
-  /*
-  for ( int iJ = 0; iJ < nJet; iJ++ ) {
-    reco::PFJetRef iJet( jets, vJetIdxs[iJ] );
-    h_jetPt->Fill( iJet->pt() ); 
-    h_jetE->Fill( iJet->energy() );
-    h_jetEta->Fill( iJet->eta() ); 
-  }
-  */
+  // /*
+  // for ( int iJ = 0; iJ < nJet; iJ++ ) {
+  //   reco::PFJetRef iJet( jets, vJetIdxs[iJ] );
+  //   h_jetPt->Fill( iJet->pt() ); 
+  //   h_jetE->Fill( iJet->energy() );
+  //   h_jetEta->Fill( iJet->eta() ); 
+  // }
+  // */
 
-  // Write out event
-  m0_ = m0;
+  // // Write out event
+  // m0_ = m0;
   //nJet_ = nJet;
   eventId_ = iEvent.id().event();
   runId_ = iEvent.id().run();
