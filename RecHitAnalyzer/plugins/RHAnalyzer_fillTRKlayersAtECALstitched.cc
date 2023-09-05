@@ -444,14 +444,14 @@ void RecHitAnalyzer::fillTRKlayersAtECALstitched ( const edm::Event& iEvent, con
   edm::Handle<SiStripRecHit2DCollection>  stripRPhiRecHitColl;
   iEvent.getByToken(siStripRPhiRecHitCollectionT_, stripRPhiRecHitColl);
 
-  edm::Handle<SiStripRecHit2DCollection>  stripUnmatchedRPhiRecHitColl;
-  iEvent.getByToken(siStripUnmatchedRPhiRecHitCollectionT_, stripUnmatchedRPhiRecHitColl);
+  //edm::Handle<SiStripRecHit2DCollection>  stripUnmatchedRPhiRecHitColl;
+  //iEvent.getByToken(siStripUnmatchedRPhiRecHitCollectionT_, stripUnmatchedRPhiRecHitColl);
   
   edm::Handle<SiStripRecHit2DCollection>  stripStereoRecHitColl;
   iEvent.getByToken(siStripStereoRecHitCollectionT_, stripStereoRecHitColl);
   
-  edm::Handle<SiStripRecHit2DCollection>  stripUnmatchedStereoRecHitColl;
-  iEvent.getByToken(siStripUnmatchedStereoRecHitCollectionT_, stripUnmatchedStereoRecHitColl);
+  //edm::Handle<SiStripRecHit2DCollection>  stripUnmatchedStereoRecHitColl;
+  //iEvent.getByToken(siStripUnmatchedStereoRecHitCollectionT_, stripUnmatchedStereoRecHitColl);
 
   edm::ESHandle<TrackerGeometry> geom;
   iSetup.get<TrackerDigiGeometryRecord>().get( geom );
