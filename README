@@ -6,6 +6,6 @@ git cms-addpkg Configuration/Generator
 #git clone https://github.com/svfit/ClassicSVfit TauAnalysis/ClassicSVfit
 git clone https://github.com/svfit/ClassicSVfit TauAnalysis/ClassicSVfit -b fastMTT_21_06_2018
 git clone https://github.com/svfit/SVfitTF TauAnalysis/SVfitTF
-git clone https://github.com/davidedicroce/MLAnalyzer.git -b E2E_miniAOD
+git clone https://github.com/rchudasa/MLAnalyzer.git -b E2E_miniAOD
 scram b
 source /cvmfs/sft.cern.ch/lcg/views/LCG_97/x86_64-centos7-gcc8-opt/setup.sh #For plotting
