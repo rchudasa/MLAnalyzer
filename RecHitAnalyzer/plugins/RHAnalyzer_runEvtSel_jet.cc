@@ -17,17 +17,6 @@ vector<float> vJetSeed_iphi_;
 vector<float> vJetSeed_ieta_;
 vector<int>   vFailedJetIdx_;
 
-
-//const std::string task_ = ""; // TODO: put switch at cfg level 
-//const std::string task_ = "dijet_gg_qq"; // TODO: put switch at cfg level 
-//const std::string task_ = "jet_tau"; //for GluGluHToTauTau
-//const std::string task_ = "dijet_ditau";
-//const std::string task_ = "dijet_tau_massregression";
-//const std::string task_ = "dijet_ele_massregression";
-//const std::string task_ = "jet_ele_classification";
-//const std::string task_ = "jet_background";
-
-
 // Initialize branches _____________________________________________________//
 void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService> &fs ) {
 
@@ -40,23 +29,7 @@ void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService
   // Fill branches in explicit jet selection
   if ( task_ == "tau_classification" ) {
     branchesEvtSel_jet_dijet_tau( tree, fs );
-  } else if ( task_ == "dijet_ditau" ) {
-    branchesEvtSel_jet_dijet_ditau( tree, fs );
-  } else if ( task_ == "dijet_tau_massregression" ) {
-    branchesEvtSel_jet_dijet_tau_massregression( tree, fs );
-  } else if ( task_ == "dijet_ele_massregression" ) {
-    branchesEvtSel_jet_dijet_ele_massregression( tree, fs );
-  } else if ( task_ == "jet_ele_classification" ) {
-    branchesEvtSel_jet_ele_classification( tree, fs );
-  } else if ( task_ == "ttbar") {
-    branchesEvtSel_jet_dijet_top( tree, fs );
-  } else if ( task_ == "qcd") {
-    branchesEvtSel_jet_qcd( tree, fs );
-  } else if ( task_ == "gammaJet"){
-    branchesEvtSel_jet_photonSel( tree, fs);
-  } else {
-    branchesEvtSel_jet_dijet( tree, fs );
-  }
+  } 
 
 } // branchesEvtSel_jet()
 
@@ -66,33 +39,11 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   // Each jet selection must fill vJetIdxs with good jet indices
 
   // Run explicit jet selection
-  bool hasPassed;
+  bool hasPassed = false;
   if ( task_ == "tau_classification" ) {
     hasPassed = runEvtSel_jet_dijet_tau( iEvent, iSetup );
     if ( debug && hasPassed ) std::cout << "!!!!!!   JET SELECTION HAS PASSED! " << std::endl; 
-  } else if ( task_ == "dijet_ditau" ) {
-    hasPassed = runEvtSel_jet_dijet_ditau( iEvent, iSetup );
-    if ( debug && hasPassed ) std::cout << "!!!!!!   JET SELECTION HAS PASSED! " << std::endl;
-  } else if ( task_ == "dijet_tau_massregression" ) {
-    hasPassed = runEvtSel_jet_dijet_tau_massregression( iEvent, iSetup );
-    if ( debug && hasPassed ) std::cout << "!!!!!!   JET SELECTION HAS PASSED! " << std::endl;
-  } else if ( task_ == "dijet_ele_massregression" ) {
-    hasPassed = runEvtSel_jet_dijet_ele_massregression( iEvent, iSetup );
-    if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED ELE SELECTION! " << std::endl;
-  }  else if ( task_ == "jet_ele_classification" ) {
-    hasPassed = runEvtSel_jet_ele_classification( iEvent, iSetup );
-    if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED ELE SELECTION! " << std::endl;
-  }  else if ( task_ == "ttbar" ) {
-    hasPassed = runEvtSel_jet_dijet_top( iEvent, iSetup );
-    if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED TOP SELECTION! " << std::endl;
-  } else if ( task_ == "qcd"){
-    hasPassed = runEvtSel_jet_qcd( iEvent, iSetup );
-    if ( debug && hasPassed ) std::cout << "!!!!!!   JET PASSED QCD SELECTION! " << std::endl;
-  } else if ( task_ == "gammaJet")  {
-    hasPassed = runEvtSel_jet_photonSel( iEvent, iSetup );
-  } else {
-    hasPassed = runEvtSel_jet_dijet( iEvent, iSetup );
-  }
+  } 
 
   if ( !hasPassed ) return false; 
   std::sort(vJetIdxs.begin(), vJetIdxs.end());
@@ -109,9 +60,9 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   edm::Handle<HBHERecHitCollection> HBHERecHitsH_;
   iEvent.getByToken( HBHERecHitCollectionT_, HBHERecHitsH_ );
 
-  edm::Handle<reco::PFJetCollection> jets;
+  edm::Handle<pat::JetCollection> jets;
   iEvent.getByToken(jetCollectionT_, jets);
-  if ( debug ) std::cout << " >> PFJetCol.size: " << jets->size() << std::endl;
+  if ( debug ) std::cout << " >> PATJetCol.size: " << jets->size() << std::endl;
 
   float seedE;
   int iphi_, ieta_, ietaAbs_;
@@ -120,19 +71,18 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   vJetSeed_iphi_.clear();
   vJetSeed_ieta_.clear();
   vFailedJetIdx_.clear();
-  passedJetIdxs.clear();
 
   // Loop over jets
   for ( int thisJetIdx : vJetIdxs ) {
 
-    reco::PFJetRef iJet( jets, thisJetIdx );
+    pat::Jet iJet = (*jets)[thisJetIdx];
 
-    if ( debug ) std::cout << " >> jet[" << thisJetIdx << "]Pt:" << iJet->pt()  << " Eta:" << iJet->eta()  << " Phi:" << iJet->phi() 
-			   << " jetE:" << iJet->energy() << " jetM:" << iJet->mass() << std::endl;
+    if ( debug ) std::cout << " >> jet[" << thisJetIdx << "]Pt:" << iJet.pt()  << " Eta:" << iJet.eta()  << " Phi:" << iJet.phi() 
+			   << " jetE:" << iJet.energy() << " jetM:" << iJet.mass() << std::endl;
     
     // Get closest HBHE tower to jet position
     // This will not always be the most energetic deposit
-    HcalDetId hId( spr::findDetIdHCAL( caloGeom, iJet->eta(), iJet->phi(), false ) );
+    HcalDetId hId( spr::findDetIdHCAL( caloGeom, iJet.eta(), iJet.phi(), false ) );
     if ( hId.subdet() != HcalBarrel && hId.subdet() != HcalEndcap ){
       vFailedJetIdx_.push_back(thisJetIdx);
       std::cout << "Fail getting HBHE tower to jet position" << std::endl;
@@ -166,7 +116,7 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
 
         // Skip non-existent and lower energy towers 
         HcalDetId hId_( subdet_, ieta_, iphi_, 1 );
-        HBHERecHitCollection::const_iterator iRHit( HBHERecHitsH_->find(hId_) );
+	HBHERecHitCollection::const_iterator iRHit( HBHERecHitsH_->find(hId_) );
         if ( iRHit == HBHERecHitsH_->end() ) continue;
         if ( iRHit->energy() <= seedE ) continue;
         if ( debug ) std::cout << " !! hId.ieta:" << hId_.ieta() << " hId.iphi:" << hId_.iphi() << " E:" << iRHit->energy() << std::endl;
@@ -190,6 +140,7 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
     // Required to keep the seed at the image center
     if ( HBHE_IETA_MAX_HE-1 - ietaAbs_ < image_padding ) { 
       if ( debug ) std::cout << " Fail HE edge cut " << std::endl;
+      std::cout << " Fail HE edge cut " << std::endl;
       vFailedJetIdx_.push_back(thisJetIdx);
       continue;
     }
@@ -204,20 +155,14 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   } // good jets 
 
   // Remove jets that failed the Seed cuts 
-  for(int failedJetIdx : vFailedJetIdx_){
+  for(int failedJetIdx : vFailedJetIdx_)
     vJetIdxs.erase(std::remove(vJetIdxs.begin(),vJetIdxs.end(),failedJetIdx),vJetIdxs.end());
-    if(debug)std::cout << "Failed jets ID:" << failedJetIdx << std::endl;
-  }
+
   if ( vJetIdxs.size() == 0){
     if ( debug ) std::cout << " No passing jets...  " << std::endl;
-    if(debug) std::cout << " >> analyze failed: no passing jets" << std::endl;
+    std::cout << " >> analyze failed: no passing jets" << std::endl;
     return false;
   }
-
-  for (int passJetIdx : vJetIdxs){
-    passedJetIdxs.push_back(passJetIdx); 
-    if(debug)std::cout << "passed jet index is :" << passJetIdx << std::endl;
- }
 
   if ((nJets_ > 0) && nJet == nJets_) std::cout << " >> analyze failed: " << nJets_ << " passing jets" << std::endl;
   if ( (nJets_ > 0) && nJet != nJets_ ) return false;
@@ -229,24 +174,7 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
 
   if ( task_ == "tau_classification" ) {
     fillEvtSel_jet_dijet_tau( iEvent, iSetup );
-  } else if ( task_ == "dijet_ditau" ) {
-    fillEvtSel_jet_dijet_ditau( iEvent, iSetup );
-  } else if ( task_ == "dijet_tau_massregression" ) {
-    fillEvtSel_jet_dijet_tau_massregression( iEvent, iSetup );
-  } else if ( task_ == "dijet_ele_massregression" ) {
-    fillEvtSel_jet_dijet_ele_massregression( iEvent, iSetup );
-  } else if ( task_ == "jet_ele_classification" ) {
-    fillEvtSel_jet_ele_classification( iEvent, iSetup );
-    //fillEvtSel_jet_ele_classification( iEvent, iSetup, passedJetIdxs, vFailedJetIdx_ );
-  } else if ( task_ == "ttbar") {
-    fillEvtSel_jet_dijet_top( iEvent, iSetup );
-  } else if ( task_ == "qcd") {
-    fillEvtSel_jet_qcd( iEvent, iSetup );
-  } else if ( task_ == "gammaJet") { 
-    fillEvtSel_jet_photonSel( iEvent, iSetup );
-  } else {
-    fillEvtSel_jet_dijet( iEvent, iSetup );
-  }
+  } 
 
   return true;
 

@@ -6,10 +6,6 @@
 // Class:      RecHitAnalyzer
 //
 //
-// Original Author:  Michael Andrews
-//         Created:  Sat, 14 Jan 2017 17:45:54 GMT
-//
-//
 
 // system include files
 #include <memory>
@@ -19,12 +15,9 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
-//#include "FWCore/Framework/interface/EDAnalyzer.h"
 
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "DataFormats/EcalDigi/interface/EcalDigiCollections.h"
-//#include "DataFormats/EcalDetId/interface/EcalTrigTowerDetId.h"
-//#include "Geometry/CaloTopology/interface/EcalBarrelTopology.h"
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
@@ -34,17 +27,10 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
-//#include "DataFormats/SiStripDetId/interface/TOBDetId.h"
-//#include "DataFormats/SiStripDetId/interface/TECDetId.h"
-//#include "DataFormats/SiStripDetId/interface/TIBDetId.h"
-//#include "DataFormats/SiStripDetId/interface/TIDDetId.h"
-
 #include "DataFormats/SiStripDetId/interface/SiStripDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
 #include "DataFormats/SiStripDetId/interface/StripSubdetector.h"
-
 #include "DQM/SiPixelMonitorRecHit/interface/SiPixelRecHitModule.h"
-//#include "DQM/SiPixelMonitorRecHit/interface/SiPixelClusterModule.h"
 
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
@@ -59,8 +45,6 @@
 #include "Calibration/IsolatedParticles/interface/DetIdFromEtaPhi.h"
 
 #include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
-//#include "DataFormats/HcalDetId/interface/HcalDetId.h"
-//#include "DataFormats/HcalDetId/interface/HcalElectronicsId.h"
 #include "DQM/HcalCommon/interface/Constants.h"
 
 #include "FWCore/Framework/interface/Event.h"
@@ -68,8 +52,6 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
-//#include "DataFormats/TrackReco/interface/Track.h"
-//#include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/TrackingRecHit/interface/TrackingRecHit.h"
 #include "DataFormats/TrackingRecHit/interface/TrackingRecHitFwd.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -147,26 +129,28 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Photon.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/GenericParticle.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/Lepton.h"
+#include "DataFormats/PatCandidates/interface/Isolation.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+
 using namespace classic_svFit;
 
 //
 // class declaration
 //
 
-// If the analyzer does not use TFileService, please remove
-// the template argument to the base class so the class inherits
-// from  edm::one::EDAnalyzer<> and also remove the line from
-// constructor "usesResource("TFileService");"
-// This will improve performance in multithreaded jobs.
-
-//static const unsigned int Nproj = 5;
 static const unsigned int Nproj = 1;
 static const unsigned int Nhitproj = 1;
-//static const unsigned int Nhitproj = 2;
 static const unsigned int Nadjproj = 2;
 
 class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
-//class RecHitAnalyzer : public edm::EDAnalyzer  {
   public:
     explicit RecHitAnalyzer(const edm::ParameterSet&);
     ~RecHitAnalyzer();
@@ -184,70 +168,36 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<EBDigiCollection>     EBDigiCollectionT_;
     edm::EDGetTokenT<EcalRecHitCollection> EERecHitCollectionT_;
     edm::EDGetTokenT<HBHERecHitCollection> HBHERecHitCollectionT_;
+
     edm::EDGetTokenT<TrackingRecHitCollection> TRKRecHitCollectionT_;
-    edm::EDGetTokenT<reco::GenParticleCollection> genParticleCollectionT_;
-    edm::EDGetTokenT<reco::PhotonCollection> photonCollectionT_;
-    edm::EDGetTokenT<reco::PFJetCollection> jetCollectionT_;
-    edm::EDGetTokenT<edm::View<reco::Jet> > pfjetsToken_;
-    edm::EDGetTokenT<reco::GenJetCollection> genJetCollectionT_;
+    edm::ESInputTag transientTrackBuilderT_;
     edm::EDGetTokenT<reco::TrackCollection> trackCollectionT_;
     edm::EDGetTokenT<reco::VertexCollection> vertexCollectionT_;
-    edm::ESInputTag transientTrackBuilderT_;
-    edm::EDGetTokenT<edm::View<reco::Jet> > recoJetsT_;
-    edm::EDGetTokenT<reco::JetTagCollection> jetTagCollectionT_;
-    edm::EDGetTokenT<std::vector<reco::CandIPTagInfo> >    ipTagInfoCollectionT_;
-    edm::EDGetTokenT<reco::PFMETCollection> metCollectionT_;
-    edm::EDGetTokenT<reco::GsfElectronCollection> eleCollectionT_;
 
-    edm::EDGetTokenT<reco::PFTauCollection> tauCollectionT_;
-    edm::EDGetTokenT<reco::PFTauDiscriminator> tauDiscriminatorT_;
-    edm::EDGetTokenT<reco::PFTauDiscriminator> tauDecayMode_;
-    edm::EDGetTokenT<reco::PFTauDiscriminator> tauMVAIsolation_;
-    edm::EDGetTokenT<reco::PFTauDiscriminator> tauMuonRejection_;
-    edm::EDGetTokenT<reco::PFTauDiscriminator> tauElectronRejectionMVA6_;
+    edm::EDGetTokenT<SiPixelRecHitCollection> siPixelRecHitCollectionT_;
+    edm::EDGetTokenT<SiStripMatchedRecHit2DCollection> siStripMatchedRecHitCollectionT_;
+    edm::EDGetTokenT<SiStripRecHit2DCollection> siStripRPhiRecHitCollectionT_;
+    edm::EDGetTokenT<SiStripRecHit2DCollection> siStripStereoRecHitCollectionT_;
+ 
+    edm::EDGetTokenT<pat::JetCollection> jetCollectionT_;
+    edm::EDGetTokenT<reco::GenParticleCollection> genParticleCollectionT_;
+    edm::EDGetTokenT<pat::METCollection> metCollectionT_;
+    edm::EDGetTokenT<pat::METCollection> metPuppiCollectionT_;
+    edm::EDGetTokenT<pat::ElectronCollection> eleCollectionT_;
+    edm::EDGetTokenT<pat::TauCollection> tauCollectionT_;
 
     std::string   processName_;
     edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
     HLTConfigProvider hltConfig_;
 
     edm::EDGetTokenT<double> rhoLabel_;
-    std::string jetSFType_;      //to set
-    std::string jetResPtType_;   //to set
-    std::string jetResPhiType_;  //to set
  
-    std::vector<edm::EDGetTokenT<edm::View<reco::Candidate> > > lepTokens_;
- 
-    typedef std::vector<reco::PFCandidate>  PFCollection;
-    edm::EDGetTokenT<PFCollection> pfCollectionT_;
+    //metsig::METSignificance* metSigAlgo_;
 
-    edm::EDGetTokenT<edm::View<reco::Candidate> > pfCandidatesToken_;
-    
-    metsig::METSignificance* metSigAlgo_;
-
-    edm::EDGetTokenT<SiPixelRecHitCollection> siPixelRecHitCollectionT_;
-    edm::EDGetTokenT<SiStripMatchedRecHit2DCollection> siStripMatchedRecHitCollectionT_;
-    edm::EDGetTokenT<SiStripRecHit2DCollection> siStripRPhiRecHitCollectionT_;
-    edm::EDGetTokenT<SiStripRecHit2DCollection> siStripUnmatchedRPhiRecHitCollectionT_;
-    edm::EDGetTokenT<SiStripRecHit2DCollection> siStripStereoRecHitCollectionT_;
-    edm::EDGetTokenT<SiStripRecHit2DCollection> siStripUnmatchedStereoRecHitCollectionT_;
-
-    //edm::InputTag trackTags_; //used to select what tracks to read from configuration file
-
-    // Diagnostic histograms
-    //TH2D * hEB_adc[EcalDataFrame::MAXSAMPLES]; 
-    //TH1D * hHBHE_depth; 
     TH1F *h_sel;
-
-    // Main TTree
     TTree* RHTree;
 
-    // Objects used to fill RHTree branches
-    //std::vector<float> vEB_adc_[EcalDataFrame::MAXSAMPLES];
-    //std::vector<float> vFC_inputs_;
-    //math::PtEtaPhiELorentzVectorD vPho_[2];
-  
     // Selection and filling functions
-    void branchesEvtSel         ( TTree*, edm::Service<TFileService>& );
     void branchesEvtSel_jet     ( TTree*, edm::Service<TFileService>& );
     void branchesEB             ( TTree*, edm::Service<TFileService>& );
     void branchesEE             ( TTree*, edm::Service<TFileService>& );
@@ -260,14 +210,10 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void branchesPFCandsAtEBEE   ( TTree*, edm::Service<TFileService>& );
     void branchesPFCandsAtECALstitched   ( TTree*, edm::Service<TFileService>& );
     void branchesTRKlayersAtEBEE( TTree*, edm::Service<TFileService>& );
-    //void branchesTRKlayersAtECAL( TTree*, edm::Service<TFileService>& );
     void branchesTRKvolumeAtEBEE( TTree*, edm::Service<TFileService>& );
-    //void branchesTRKvolumeAtECAL( TTree*, edm::Service<TFileService>& );
     void branchesJetInfoAtECALstitched   ( TTree*, edm::Service<TFileService>& );
     void branchesTRKlayersAtECALstitched( TTree*, edm::Service<TFileService>& );
-    void branchesScalarInfo( TTree*, edm::Service<TFileService>& );
 
-    bool runEvtSel          ( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet      ( const edm::Event&, const edm::EventSetup& );
     void fillEB             ( const edm::Event&, const edm::EventSetup& );
     void fillEE             ( const edm::Event&, const edm::EventSetup& );
@@ -277,76 +223,34 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void fillHCALatEBEE     ( const edm::Event&, const edm::EventSetup& );
     void fillTracksAtEBEE   ( const edm::Event&, const edm::EventSetup& );
     void fillTracksAtECALstitched   ( const edm::Event&, const edm::EventSetup&, unsigned int proj );
-    //void fillTracksAtECALstitched   ( const edm::Event&, const edm::EventSetup& );
     void fillPFCandsAtEBEE   ( const edm::Event&, const edm::EventSetup& );
     void fillPFCandsAtECALstitched   ( const edm::Event&, const edm::EventSetup& );
     void fillTRKlayersAtEBEE( const edm::Event&, const edm::EventSetup& );
-    //void fillTRKlayersAtECAL( const edm::Event&, const edm::EventSetup& );
     void fillTRKvolumeAtEBEE( const edm::Event&, const edm::EventSetup& );
-    //void fillTRKvolumeAtECAL( const edm::Event&, const edm::EventSetup& );
     void fillJetInfoAtECALstitched   ( const edm::Event&, const edm::EventSetup& );
-    //void fillTRKlayersAtECALstitched( TTree*, edm::Service<TFileService>& );
     void fillTRKlayersAtECALstitched( const edm::Event&, const edm::EventSetup&, unsigned int proj );
-    void fillScalarInfo( const edm::Event&, const edm::EventSetup& );
-
-    //bool debug;
-    const reco::PFCandidate* getPFCand(edm::Handle<PFCollection> pfCands, float eta, float phi, float& minDr, bool debug = false);
-    const reco::Track* getTrackCand(edm::Handle<reco::TrackCollection> trackCands, float eta, float phi, float& minDr, bool debug = false);
-    int   getTruthLabel(const reco::PFJetRef& recJet, edm::Handle<reco::GenParticleCollection> genParticles, float dRMatch = 0.4, bool debug = false);
-    float getBTaggingValue(const reco::PFJetRef& recJet, edm::Handle<edm::View<reco::Jet> >& recoJetCollection, edm::Handle<reco::JetTagCollection>& btagCollection, float dRMatch = 0.1, bool debug= false );
 
     unsigned int getLayer(const DetId& detid, const TrackerTopology* tTopo);
 
     // Jet level functions
     std::string mode_;  // EventLevel / JetLevel
-    std::string task_;
+    std::string task_;  
+    bool debug;  
+    bool isData_;  
     bool isSignal_;  
+    bool isTrain_;  
     bool isW_;  
-    bool isttbar_;  
     bool doJets_;
     int  nJets_;
     double minJetPt_;
     double maxJetEta_;
     double z0PVCut_;
     std::vector<int> vJetIdxs;
-    std::vector<int> passedJetIdxs;
-    void branchesEvtSel_jet_dijet      ( TTree*, edm::Service<TFileService>& );
     void branchesEvtSel_jet_dijet_tau( TTree*, edm::Service<TFileService>& );
-    void branchesEvtSel_jet_dijet_top( TTree*, edm::Service<TFileService>& );
-    void branchesEvtSel_jet_dijet_ditau( TTree*, edm::Service<TFileService>& );
-    void branchesEvtSel_jet_dijet_tau_massregression( TTree*, edm::Service<TFileService>& );
-    void branchesEvtSel_jet_dijet_ele_massregression( TTree*, edm::Service<TFileService>& );
-    void branchesEvtSel_jet_ele_classification( TTree*, edm::Service<TFileService>& );
-    void branchesEvtSel_jet_background( TTree*, edm::Service<TFileService>& );
-    void branchesEvtSel_jet_dijet_gg_qq( TTree*, edm::Service<TFileService>& );
-    void branchesEvtSel_jet_qcd( TTree*, edm::Service<TFileService>& );
-    void branchesEvtSel_jet_photonSel( TTree*, edm::Service<TFileService>& );
-    bool runEvtSel_jet_dijet      ( const edm::Event&, const edm::EventSetup& );
     bool runEvtSel_jet_dijet_tau( const edm::Event&, const edm::EventSetup& );
-    bool runEvtSel_jet_dijet_top( const edm::Event&, const edm::EventSetup& );
-    bool runEvtSel_jet_dijet_ditau( const edm::Event&, const edm::EventSetup& );
-    bool runEvtSel_jet_dijet_tau_massregression( const edm::Event&, const edm::EventSetup& );
-    bool runEvtSel_jet_dijet_ele_massregression( const edm::Event&, const edm::EventSetup& );
-    bool runEvtSel_jet_ele_classification( const edm::Event&, const edm::EventSetup& );
-    bool runEvtSel_jet_background( const edm::Event&, const edm::EventSetup& );
-    bool runEvtSel_jet_dijet_gg_qq( const edm::Event&, const edm::EventSetup& );
-    bool runEvtSel_jet_qcd( const edm::Event&, const edm::EventSetup& );
-    bool runEvtSel_jet_photonSel( const edm::Event&, const edm::EventSetup& );
-    void fillEvtSel_jet_dijet      ( const edm::Event&, const edm::EventSetup& );
     void fillEvtSel_jet_dijet_tau( const edm::Event&, const edm::EventSetup& );
-    void fillEvtSel_jet_dijet_top( const edm::Event&, const edm::EventSetup& );
-    void fillEvtSel_jet_dijet_ditau( const edm::Event&, const edm::EventSetup& );
-    void fillEvtSel_jet_dijet_tau_massregression( const edm::Event&, const edm::EventSetup& );
-    void fillEvtSel_jet_dijet_ele_massregression( const edm::Event&, const edm::EventSetup& );
-    void fillEvtSel_jet_ele_classification( const edm::Event&, const edm::EventSetup& );
-    //void fillEvtSel_jet_ele_classification( const edm::Event&, const edm::EventSetup&, std::vector<int>, std::vector<int> );
-    void fillEvtSel_jet_background( const edm::Event&, const edm::EventSetup& );
-    void fillEvtSel_jet_dijet_gg_qq( const edm::Event&, const edm::EventSetup& );
-    void fillEvtSel_jet_qcd( const edm::Event&, const edm::EventSetup& );
-    void fillEvtSel_jet_photonSel( const edm::Event&, const edm::EventSetup& );
 
     int nTotal, nPassed;
-    //bool debug;
 
     std::map<uint32_t,SiPixelRecHitModule*> thePixelStructure;
 
@@ -368,8 +272,6 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //
 // constants, enums and typedefs
 //
-static const bool debug = true;
-//static const bool debug = false;
 
 static const int nEE = 2;
 static const int nTOB = 6;
