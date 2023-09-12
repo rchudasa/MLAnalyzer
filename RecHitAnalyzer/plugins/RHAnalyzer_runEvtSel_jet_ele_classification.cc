@@ -39,13 +39,9 @@ void RecHitAnalyzer::branchesEvtSel_jet_ele_classification ( TTree* tree, edm::S
   tree->Branch("NrecoEle",      &v_ele_NrecoEle_);
   tree->Branch("gen_EledR",     &v_ele_genRecoEledR_);
 
-
-
-
-
 } // branchesEvtSel_jet_ele_classification()
 
-// Define struct to handle mapping for gen pho<->matched reco photons<->matched presel photons
+// Define struct to handle mapping for gen ele<->matched reco electrons<->matched presel photons
 struct jet_ele_map {
   unsigned int idx;
   std::vector<unsigned int> matchedRecoJetIdxs;
@@ -74,7 +70,7 @@ bool RecHitAnalyzer::runEvtSel_jet_ele_classification( const edm::Event& iEvent,
   float recoele1dR = -99.;
   float recoele2dR = -99.;
     
-  // Identify particle gun gen electrons from the event
+  // Identify gen electrons from the event
   float dR;
   std::vector<unsigned int> vGenEleIdxs;
   for ( unsigned int iG = 0; iG < genParticles->size(); iG++ ) {
