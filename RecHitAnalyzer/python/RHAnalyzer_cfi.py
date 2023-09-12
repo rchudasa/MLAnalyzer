@@ -8,7 +8,8 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     , transTrackBuilder              = cms.ESInputTag("TransientTrackBuilder")
     , reducedEBRecHitCollection      = cms.InputTag("reducedEcalRecHitsEB")
     , reducedEERecHitCollection      = cms.InputTag("reducedEcalRecHitsEE")
-    , reducedHBHERecHitCollection    = cms.InputTag("reducedHcalRecHits:hbhereco")
+    #, reducedHBHERecHitCollection    = cms.InputTag("reducedHcalRecHits:hbhereco")
+    , reducedHBHERecHitCollection    = cms.InputTag("hbhereco")
     , JetCollection                  = cms.InputTag("slimmedJets")
     , genParticleCollection          = cms.InputTag("prunedGenParticles")
     , PhotonCollection               = cms.InputTag("slimmedPhotons")
@@ -19,7 +20,7 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     , siStripMatchedRecHitCollection = cms.InputTag("siStripMatchedRecHits", "matchedRecHit")
     , siStripRphiRecHits             = cms.InputTag("siStripMatchedRecHits", "rphiRecHit")
     , siStripStereoRecHits           = cms.InputTag("siStripMatchedRecHits", "stereoRecHit")
-    #, metCollection                  = cms.InputTag("slimmedMETs")
+    , metCollection                  = cms.InputTag("slimmedMETs")
     #, metPuppiCollection             = cms.InputTag("slimmedMETsPuppi")
     #, eleCollection                  = cms.InputTag("slimmedElectrons")
     , tauCollection                  = cms.InputTag("slimmedTaus")
@@ -36,7 +37,7 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
 
     # Jet level cfg
     , nJets     = cms.int32(-1)
-    , minJetPt  = cms.double(20.)
+    , minJetPt  = cms.double(15.)
     , maxJetEta = cms.double(2.4)
     , z0PVCut   = cms.double(0.1)
 

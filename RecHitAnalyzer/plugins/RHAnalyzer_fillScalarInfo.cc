@@ -37,7 +37,8 @@ void RecHitAnalyzer::branchesScalarInfo ( TTree* tree, edm::Service<TFileService
 // Fill Scalar information _________________________________________________________________//
 void RecHitAnalyzer::fillScalarInfo ( const edm::Event& iEvent, const edm::EventSetup& iSetup ) {
 
-  edm::Handle<reco::PFMETCollection> pfmet;
+  //edm::Handle<reco::PFMETCollection> pfmet;
+  edm::Handle<pat::METCollection> pfmet;
   iEvent.getByToken(metCollectionT_, pfmet);
 
   edm::Handle<reco::VertexCollection> vertices;

@@ -213,6 +213,8 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void branchesTRKvolumeAtEBEE( TTree*, edm::Service<TFileService>& );
     void branchesJetInfoAtECALstitched   ( TTree*, edm::Service<TFileService>& );
     void branchesTRKlayersAtECALstitched( TTree*, edm::Service<TFileService>& );
+    void branchesScalarInfo( TTree*, edm::Service<TFileService>& );
+
 
     bool runEvtSel_jet      ( const edm::Event&, const edm::EventSetup& );
     void fillEB             ( const edm::Event&, const edm::EventSetup& );
@@ -229,6 +231,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void fillTRKvolumeAtEBEE( const edm::Event&, const edm::EventSetup& );
     void fillJetInfoAtECALstitched   ( const edm::Event&, const edm::EventSetup& );
     void fillTRKlayersAtECALstitched( const edm::Event&, const edm::EventSetup&, unsigned int proj );
+    void fillScalarInfo( const edm::Event&, const edm::EventSetup& );
 
     unsigned int getLayer(const DetId& detid, const TrackerTopology* tTopo);
 

@@ -35,7 +35,7 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
  
 
   //MET, JETS and PARTICLES
-  //metCollectionT_         = consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metCollection"));
+  metCollectionT_         = consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metCollection"));
   //metPuppiCollectionT_    = consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("slimmedMETsPuppi"));
   jetCollectionT_         = consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("JetCollection"));
 
@@ -126,7 +126,7 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   branchesTracksAtEBEE(RHTree, fs);
   branchesTracksAtECALstitched( RHTree, fs);
   branchesTRKlayersAtECALstitched(RHTree, fs);
-
+  branchesScalarInfo( RHTree, fs);  
 } // constructor
 //
 RecHitAnalyzer::~RecHitAnalyzer()
@@ -163,6 +163,7 @@ RecHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   fillECALstitched( iEvent, iSetup );
   fillHCALatEBEE( iEvent, iSetup );
   fillTracksAtEBEE( iEvent, iSetup );
+  fillScalarInfo( iEvent, iSetup );
   for (unsigned int i=0;i<Nproj;i++)
   {
     fillTracksAtECALstitched( iEvent, iSetup, i );

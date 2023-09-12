@@ -158,7 +158,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
     pat::Jet iJet = (*jets)[iJ];
     if ( std::abs(iJet.pt())  < minJetPt_ ) continue;
     if ( std::abs(iJet.eta()) > maxJetEta_ ) continue;
-    if (debug ) std::cout << "  >>>>>> Jet [" << iJ << "] ->  Pt: " << iJet.pt() << ", Eta: " << iJet.eta() << ", Phi: " << iJet.phi() << std::endl;
+    //if (debug ) std::cout << "  >>>>>> Jet [" << iJ << "] ->  Pt: " << iJet.pt() << ", Eta: " << iJet.eta() << ", Phi: " << iJet.phi() << std::endl;
     if (!isData_) {
       bool passedGenSel = false;
       unsigned int iGenParticle = 0;
@@ -173,6 +173,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
         if ( !isSignal_ && !isW_ && !( iGen->status() == 23 ) ) continue;                         //for QCD background
         if ( !isSignal_ &&  isW_ && !( iGen->status() == 71 ) ) continue;                         //only for W + jet background
 
+        if (debug ) std::cout << "  >>>>>> Jet [" << iJ << "] ->  Pt: " << iJet.pt() << ", Eta: " << iJet.eta() << ", Phi: " << iJet.phi() << std::endl;
         if ( debug ) std::cout << "   GEN particle " << iGenParticle << " -> status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << " nMoms: " <<iGen->numberOfMothers() << " | pt: "<< iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << " | dR: " << dR << std::endl;
 
         bool isHadronic = true;
@@ -212,7 +213,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
 
       } // primary gen particles
 
-      if ( !isTrain_ || isSignal_ ){
+     /* if ( !isTrain_ || isSignal_ ){
         float recoTaudR = 0.4;
         for (const pat::Tau &tau : *taus) {
           if(tau.pt() < 18.0) continue;
@@ -227,7 +228,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
         }
         if ( debug ) std::cout << "   DeepTau  = " << DeepTau << std::endl;
         if (recoTaudR >= 0.4) passedGenSel = false; 
-      }
+      }*/
 
       if (passedGenSel) { 
         ++nMatchedJets;
