@@ -19,10 +19,16 @@ vector<float> v_tau_gen_eta_;
 vector<float> v_tau_gen_pdgId_;
 vector<float> v_tau_gen_prongs_;
 
-vector<float> v_tau_subJetE_[nJets];
-vector<float> v_tau_subJetPx_[nJets];
-vector<float> v_tau_subJetPy_[nJets];
-vector<float> v_tau_subJetPz_[nJets];
+//vector<float> v_tau_jetPFCandE_[nJets];
+//vector<float> v_tau_jetPFCandPx_[nJets];
+//vector<float> v_tau_jetPFCandPy_[nJets];
+//vector<float> v_tau_jetPFCandPz_[nJets];
+
+vector<vector<float>> v_tau_jetPFCandE_;
+vector<vector<float>> v_tau_jetPFCandPx_;
+vector<vector<float>> v_tau_jetPFCandPy_;
+vector<vector<float>> v_tau_jetPFCandPz_;
+vector<vector<int>> v_tau_jetPFCandType_;
 
 
 // Initialize branches _____________________________________________________//
@@ -43,17 +49,23 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_tau ( TTree* tree, edm::Service<TF
   tree->Branch("gen_pdgId",     &v_tau_gen_pdgId_);
   tree->Branch("gen_Prongs",    &v_tau_gen_prongs_);  
   
-  char hname[50];
+  tree->Branch("jetPFCandE",        &v_tau_jetPFCandE_);
+  tree->Branch("jetPFCandPx",       &v_tau_jetPFCandPx_);
+  tree->Branch("jetPFCandPy",       &v_tau_jetPFCandPy_);
+  tree->Branch("jetPFCandPz",       &v_tau_jetPFCandPz_);
+  tree->Branch("jetPFCandType",     &v_tau_jetPFCandType_);
+
+ /* char hname[50];
   for ( unsigned iJ = 0; iJ != nJets; iJ++ ) {
-    sprintf(hname, "subJet%d_E", iJ);
-    tree->Branch(hname,            &v_tau_subJetE_[iJ]);
-    sprintf(hname, "subJet%d_Px", iJ);
-    tree->Branch(hname,            &v_tau_subJetPx_[iJ]);
-    sprintf(hname, "subJet%d_Py", iJ);
-    tree->Branch(hname,            &v_tau_subJetPy_[iJ]);
-    sprintf(hname, "subJet%d_Pz", iJ);
-    tree->Branch(hname,            &v_tau_subJetPz_[iJ]);
-  }
+    sprintf(hname, "jetPFCand%d_E", iJ);
+    tree->Branch(hname,            &v_tau_jetPFCandE_[iJ]);
+    sprintf(hname, "jetPFCand%d_Px", iJ);
+    tree->Branch(hname,            &v_tau_jetPFCandPx_[iJ]);
+    sprintf(hname, "jetPFCand%d_Py", iJ);
+    tree->Branch(hname,            &v_tau_jetPFCandPy_[iJ]);
+    sprintf(hname, "jetPFCand%d_Pz", iJ);
+    tree->Branch(hname,            &v_tau_jetPFCandPz_[iJ]);
+  }*/
 
 
 } // branchesEvtSel_jet_dijet_tau()
@@ -224,7 +236,13 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
   v_tau_gen_pdgId_.clear();
   v_tau_gen_prongs_.clear();
   
-  
+  v_tau_jetPFCandE_.clear();
+  v_tau_jetPFCandPx_.clear();
+  v_tau_jetPFCandPy_.clear();
+  v_tau_jetPFCandPz_.clear();
+  v_tau_jetPFCandType_.clear();
+
+
   unsigned int goodVertices = 0;
 
   if ( debug ) std::cout << " >>>>>>>>>>>>>>>>>>>> evt:" << std::endl;
@@ -240,7 +258,7 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
   
   v_tau_goodvertices_.push_back(goodVertices);
  
- 
+  int iJ = 0; 
   for ( auto const& ii: vTauJets ) {
     
     // Skip electrons which fails HE edge cut
@@ -249,7 +267,8 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
     
     reco::GenParticleRef iGen( genParticles, ii.idx );
     reco::PFJetRef iJet( jets, ii.matchedRecoJetIdxs[0] );
-
+    
+    iJ  = ii.matchedRecoJetIdxs[0];
     
     if ( debug )  std::cout << " --------------------------------- Filling branches --------------------------------- " << std::endl;
     if ( debug )  std::cout << " Gen pt: "<< iGen->pt() << " eta: " <<iGen->eta() << " phi: " <<iGen->phi() << std::endl;       
@@ -291,24 +310,36 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
     if ( debug ) std::cout << "\t\t\t"<<" Tau prongs = " << tauDaughters << " + Tau pi0 = " << tauPi0 << std::endl;      
     v_tau_gen_prongs_.push_back(tauDaughters);
     
-    // Gen jet constituents
-    /*v_tau_subJetE_[iJ].clear();
-      v_tau_subJetPx_[iJ].clear();
-      v_tau_subJetPy_[iJ].clear();
-      v_tau_subJetPz_[iJ].clear();
-    
-      //std::vector<reco::PFCandidatePtr> jetConstituents = iJet->getPFConstituents();
-      unsigned int nConstituents = iJet->getPFConstituents().size();
-      if ( debug ) std::cout << " >>>>>> Jet " << iJ << " has "<< nConstituents << " constituents" << std::endl;
-      for ( unsigned int j = 0; j < nConstituents; j++ ) {
-      const reco::PFCandidatePtr subJet = iJet->getPFConstituent( j );
-      //if ( debug ) std::cout << " >>>>>>>>>>>  Jet constituent " << j << "-> E:" << subJet->energy() << " px:" << subJet->px() << " py:" << subJet->py() << " pz:" << subJet->pz() << std::endl;
-      v_tau_subJetE_[iJ].push_back( subJet->energy() );
-      v_tau_subJetPx_[iJ].push_back( subJet->px() );
-      v_tau_subJetPy_[iJ].push_back( subJet->py() );
-      v_tau_subJetPz_[iJ].push_back( subJet->pz() );
-      }*/
-    
-  }
+    // jet constituents
+    vector<float> pfcand_px;
+    vector<float> pfcand_py;
+    vector<float> pfcand_pz;
+    vector<float> pfcand_energy;
+    vector<int> pfcand_type;
+ 
+    //std::vector<reco::PFCandidatePtr> jetConstituents = iJet->getPFConstituents();
+    unsigned int nConstituents = iJet->getPFConstituents().size();
+    std::cout << " >>>>>> Jet " << iJ << " has "<< nConstituents << " constituents" << std::endl;
+    if ( debug ) std::cout << " >>>>>> Jet " << iJ << " has "<< nConstituents << " constituents" << std::endl;
+    for ( unsigned int j = 0; j < nConstituents; j++ ) {
+      const reco::PFCandidatePtr jetPFCand = iJet->getPFConstituent( j );
+      //if ( debug ) std::cout << " >>>>>>>>>>>  Jet constituent " << j << "-> E:" << jetPFCand->energy() << " px:" << jetPFCand->px() << " py:" << jetPFCand->py() << " pz:" << jetPFCand->pz() << std::endl;
+      std::cout << " >>>>>>>>>>>  Jet constituent " << j << "-> E:" << jetPFCand->energy() << " px:" << jetPFCand->px() << " py:" << jetPFCand->py() << " pz:" << jetPFCand->pz() << std::endl;
+
+      pfcand_px.push_back(jetPFCand->px());
+      pfcand_py.push_back(jetPFCand->py());
+      pfcand_pz.push_back(jetPFCand->pz());
+      pfcand_energy.push_back(jetPFCand->energy());
+      pfcand_type.push_back((int)jetPFCand->particleId());
+    }//jet constituents loop
+    iJ++;
    
+      v_tau_jetPFCandE_.push_back( pfcand_energy );
+      v_tau_jetPFCandPx_.push_back( pfcand_px );
+      v_tau_jetPFCandPy_.push_back( pfcand_py );
+      v_tau_jetPFCandPz_.push_back( pfcand_pz );
+      v_tau_jetPFCandType_.push_back( pfcand_type );
+
+  }//taujets loop
+  
 } // fillEvtSel_jet_dijet_tau()
