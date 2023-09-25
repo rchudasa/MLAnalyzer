@@ -30,6 +30,34 @@ vector<vector<float>> v_tau_jetPFCandPy_;
 vector<vector<float>> v_tau_jetPFCandPz_;
 vector<vector<int>> v_tau_jetPFCandType_;
 
+vector<vector<float>> v_tau_jetSV_PtRel_;
+vector<vector<float>> v_tau_jetSV_ERel_;
+vector<vector<float>> v_tau_jetSV_PhiRel_;
+vector<vector<float>> v_tau_jetSV_EtaRel_;
+vector<vector<float>> v_tau_jetSV_DeltaR_;
+vector<vector<float>> v_tau_jetSV_Pt_;
+vector<vector<float>> v_tau_jetSV_Eta_;
+vector<vector<float>> v_tau_jetSV_Phi_;
+vector<vector<float>> v_tau_jetSV_Mass_;
+
+vector<vector<float>> v_tau_jetSV_PtRel_log_;
+vector<vector<float>> v_tau_jetSV_ERel_log_;
+vector<vector<float>> v_tau_jetSV_Pt_log_;
+
+vector<vector<float>> v_tau_jetSV_ntracks_;
+vector<vector<float>> v_tau_jetSV_chi2_;
+vector<vector<float>> v_tau_jetSV_ndf_;
+vector<vector<float>> v_tau_jetSV_normchi2_;
+
+vector<vector<float>> v_tau_jetSV_dxy_;
+vector<vector<float>> v_tau_jetSV_dxyerr_;
+vector<vector<float>> v_tau_jetSV_dxysig_;
+
+vector<vector<float>> v_tau_jetSV_d3d_;
+vector<vector<float>> v_tau_jetSV_d3derr_;
+vector<vector<float>> v_tau_jetSV_d3dsig_;
+vector<vector<float>> v_tau_jetSV_costhetasvpv_;
+
 
 // Initialize branches _____________________________________________________//
 void RecHitAnalyzer::branchesEvtSel_jet_dijet_tau ( TTree* tree, edm::Service<TFileService> &fs ) {
@@ -54,6 +82,35 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_tau ( TTree* tree, edm::Service<TF
   tree->Branch("jetPFCandPy",       &v_tau_jetPFCandPy_);
   tree->Branch("jetPFCandPz",       &v_tau_jetPFCandPz_);
   tree->Branch("jetPFCandType",     &v_tau_jetPFCandType_);
+
+  tree->Branch("jetSV_PtRel",     &v_tau_jetSV_PtRel_);
+  tree->Branch("jetSV_ERel",      &v_tau_jetSV_ERel_);
+  tree->Branch("jetSV_PhiRel",    &v_tau_jetSV_PhiRel_);
+  tree->Branch("jetSV_EtaRel",  &v_tau_jetSV_EtaRel_);
+  tree->Branch("jetSV_DeltaR",  &v_tau_jetSV_DeltaR_);
+  tree->Branch("jetSV_Pt",      &v_tau_jetSV_Pt_);
+  tree->Branch("jetSV_Eta",     &v_tau_jetSV_Eta_);
+  tree->Branch("jetSV_Phi",     &v_tau_jetSV_Phi_);
+  tree->Branch("jetSV_Mass",    &v_tau_jetSV_Mass_);
+
+  tree->Branch("jetSV_PtRel_log",  &v_tau_jetSV_PtRel_log_);
+  tree->Branch("jetSV_ERel_log",   &v_tau_jetSV_ERel_log_);
+  tree->Branch("jetSV_Pt_log",     &v_tau_jetSV_Pt_log_);
+
+  tree->Branch("jetSV_ntracks",   &v_tau_jetSV_ntracks_);
+  tree->Branch("jetSV_chi2",      &v_tau_jetSV_chi2_);
+  tree->Branch("jetSV_ndf",       &v_tau_jetSV_ndf_);
+  tree->Branch("jetSV_normchi2",  &v_tau_jetSV_normchi2_);
+ 
+  tree->Branch("jetSV_dxy",       &v_tau_jetSV_dxy_);
+  tree->Branch("jetSV_dxyerr",    &v_tau_jetSV_dxyerr_);
+  tree->Branch("jetSV_dxysig",    &v_tau_jetSV_dxysig_);
+
+  tree->Branch("jetSV_d3d",       &v_tau_jetSV_d3d_);
+  tree->Branch("jetSV_d3derr",    &v_tau_jetSV_d3derr_);
+  tree->Branch("jetSV_d3dsig",    &v_tau_jetSV_d3dsig_);
+  tree->Branch("jetSV_costhetasvpv",  &v_tau_jetSV_costhetasvpv_);
+
 
  /* char hname[50];
   for ( unsigned iJ = 0; iJ != nJets; iJ++ ) {
@@ -220,6 +277,10 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
   edm::Handle<reco::VertexCollection> vertices;
   iEvent.getByToken(vertexCollectionT_, vertices);
 
+  //edm::Handle<std::vector<reco::VertexCompositePtrCandidate> > secVertices;
+  edm::Handle<reco::VertexCompositePtrCandidateCollection> secVertices;
+  iEvent.getByToken(secVertexCollectionT_, secVertices);
+
   v_tau_goodvertices_.clear();
   v_tau_jetIsTau_.clear();
   
@@ -242,6 +303,9 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
   v_tau_jetPFCandPz_.clear();
   v_tau_jetPFCandType_.clear();
 
+  v_tau_jetSV_Pt_.clear();
+  v_tau_jetSV_Eta_.clear();
+  v_tau_jetSV_Phi_.clear();
 
   unsigned int goodVertices = 0;
 
@@ -324,7 +388,7 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
     for ( unsigned int j = 0; j < nConstituents; j++ ) {
       const reco::PFCandidatePtr jetPFCand = iJet->getPFConstituent( j );
       //if ( debug ) std::cout << " >>>>>>>>>>>  Jet constituent " << j << "-> E:" << jetPFCand->energy() << " px:" << jetPFCand->px() << " py:" << jetPFCand->py() << " pz:" << jetPFCand->pz() << std::endl;
-      std::cout << " >>>>>>>>>>>  Jet constituent " << j << "-> E:" << jetPFCand->energy() << " px:" << jetPFCand->px() << " py:" << jetPFCand->py() << " pz:" << jetPFCand->pz() << std::endl;
+      //std::cout << " >>>>>>>>>>>  Jet constituent " << j << "-> E:" << jetPFCand->energy() << " px:" << jetPFCand->px() << " py:" << jetPFCand->py() << " pz:" << jetPFCand->pz() << std::endl;
 
       pfcand_px.push_back(jetPFCand->px());
       pfcand_py.push_back(jetPFCand->py());
@@ -340,6 +404,56 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
       v_tau_jetPFCandPz_.push_back( pfcand_pz );
       v_tau_jetPFCandType_.push_back( pfcand_type );
 
+  std::vector<const reco::VertexCompositePtrCandidate*> jetSVs;
+  for (const auto &sv : *secVertices){
+    if (reco::deltaR(sv, *iJet) < 0.4) {
+      jetSVs.push_back(&sv);
+    }
+  }
+
+  // sort by dxy significance
+  const auto &pv = vertices->at(0);
+  std::sort(jetSVs.begin(), jetSVs.end(), [&](const reco::VertexCompositePtrCandidate *sv1, const reco::VertexCompositePtrCandidate *sv2){
+    return vertexDxy(*sv1, pv).significance() > vertexDxy(*sv2, pv).significance();
+  });
+
+    vector<float> sv_pt;
+    vector<float> sv_eta;
+    vector<float> sv_phi;
+
+
+  for (const auto *sv : jetSVs){
+
+         std::cout << "=================================================Secondary vertex pt:" << sv->pt() << " eta:" << sv->eta() << "  phi:" << sv->phi() << std::endl;
+            sv_pt.push_back(sv->pt());
+            sv_eta.push_back(sv->eta());
+            sv_phi.push_back(sv->phi());
+      }
+
+    v_tau_jetSV_Pt_.push_back(sv_pt);
+    v_tau_jetSV_Eta_.push_back(sv_eta);
+    v_tau_jetSV_Phi_.push_back(sv_phi);
+
   }//taujets loop
   
 } // fillEvtSel_jet_dijet_tau()
+
+Measurement1D RecHitAnalyzer::vertexDxy(const reco::VertexCompositePtrCandidate &svcand, const reco::Vertex &pv)  {
+    VertexDistanceXY dist;
+    reco::Vertex::CovarianceMatrix csv; svcand.fillVertexCovariance(csv);
+    reco::Vertex svtx(svcand.vertex(), csv);
+    return dist.distance(svtx, pv);
+}
+
+Measurement1D RecHitAnalyzer::vertexD3d(const reco::VertexCompositePtrCandidate &svcand, const reco::Vertex &pv)  {
+    VertexDistance3D dist;
+    reco::Vertex::CovarianceMatrix csv; svcand.fillVertexCovariance(csv);
+    reco::Vertex svtx(svcand.vertex(), csv);
+    return dist.distance(svtx, pv);
+}
+
+float RecHitAnalyzer::vertexDdotP(const reco::VertexCompositePtrCandidate &sv, const reco::Vertex &pv)  {
+    reco::Candidate::Vector p = sv.momentum();
+    reco::Candidate::Vector d(sv.vx() - pv.x(), sv.vy() - pv.y(), sv.vz() - pv.z());
+    return p.Unit().Dot(d.Unit());
+}

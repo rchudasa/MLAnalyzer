@@ -22,6 +22,7 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     , trackCollection                = cms.InputTag("generalTracks")
     , transTrackBuilder              = cms.ESInputTag("TransientTrackBuilder")
     , vertexCollection               = cms.InputTag("offlinePrimaryVertices")
+    , secVertexCollection            = cms.InputTag("inclusiveCandidateSecondaryVertices")
     , siPixelRecHitCollection        = cms.InputTag("siPixelRecHits")
     , siStripMatchedRecHitCollection = cms.InputTag("siStripMatchedRecHits", "matchedRecHit")
     , siStripRphiRecHits             = cms.InputTag("siStripMatchedRecHits", "rphiRecHit")

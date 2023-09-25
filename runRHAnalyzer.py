@@ -20,12 +20,12 @@ inputFiles_='file:/eos/uscms/store/group/lpcml/rchudasa/MCGeneration/DYToTauTau_
 #inputFiles_='file:../PhaseI_TTbar_13TeV_NoPu_RECO_newGT.root'#pixel checks
 
 #maxEvents_=100
-maxEvents_=10
+maxEvents_=20
 #maxEvents_=-1
 skipEvents_=0#
 #outputFile_='MLAnal_PhaseI_TTbar_13TeVu_trackRefitter.root'
 #outputFile_='GJet.root'
-#outputFile_='ttbar_qcdCode.root'
+#outputFile_='ttbar_secVertex.root'
 outputFile_='DYToTauTau_subJet.root'
 #outputFile_='WJets_erroredPixelStripLayers.root'
 #outputFile_='dyToEE.root'
