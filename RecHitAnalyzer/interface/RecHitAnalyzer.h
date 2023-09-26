@@ -140,6 +140,13 @@
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/Candidate/interface/VertexCompositePtrCandidate.h"
+#include "DataFormats/GeometryCommonDetAlgo/interface/Measurement1D.h"
+#include "RecoVertex/VertexTools/interface/VertexDistanceXY.h"
+#include "RecoVertex/VertexTools/interface/VertexDistance3D.h"
+
 using namespace classic_svFit;
 
 //
@@ -173,6 +180,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::ESInputTag transientTrackBuilderT_;
     edm::EDGetTokenT<reco::TrackCollection> trackCollectionT_;
     edm::EDGetTokenT<reco::VertexCollection> vertexCollectionT_;
+    edm::EDGetTokenT<reco::VertexCompositePtrCandidateCollection> secVertexCollectionT_;
 
     edm::EDGetTokenT<SiPixelRecHitCollection> siPixelRecHitCollectionT_;
     edm::EDGetTokenT<SiStripMatchedRecHit2DCollection> siStripMatchedRecHitCollectionT_;
@@ -234,6 +242,11 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void fillScalarInfo( const edm::Event&, const edm::EventSetup& );
 
     unsigned int getLayer(const DetId& detid, const TrackerTopology* tTopo);
+
+    //functions for secondary vertices
+    static Measurement1D vertexDxy(const reco::VertexCompositePtrCandidate &svcand, const reco::Vertex &pv);
+    static Measurement1D vertexD3d(const reco::VertexCompositePtrCandidate &svcand, const reco::Vertex &pv);
+    static float vertexDdotP(const reco::VertexCompositePtrCandidate &sv, const reco::Vertex &pv);
 
     // Jet level functions
     std::string mode_;  // EventLevel / JetLevel

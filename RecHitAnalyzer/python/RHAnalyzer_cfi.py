@@ -16,6 +16,7 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     , PFJetCollection                = cms.InputTag("slimmedJets")
     , trackCollection                = cms.InputTag("generalTracks")
     , vertexCollection               = cms.InputTag("offlineSlimmedPrimaryVertices")
+    , secVertexCollection            = cms.InputTag("slimmedSecondaryVertices")
     , siPixelRecHitCollection        = cms.InputTag("siPixelRecHits")
     , siStripMatchedRecHitCollection = cms.InputTag("siStripMatchedRecHits", "matchedRecHit")
     , siStripRphiRecHits             = cms.InputTag("siStripMatchedRecHits", "rphiRecHit")

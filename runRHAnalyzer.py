@@ -7,10 +7,10 @@ cfg='RecHitAnalyzer/python/ConfFile_cfg.py'
 #inputFiles_='file:/eos/uscms/store/group/lpcml/ddicroce/Samples/HTauTau_13TeV-RunIISummer20UL18MiniAOD_validation/0000/HTauTau_Hadronic_Tune4C_13TeV_LHE_pythia8_Tauola_PU2018-RunIISummer20UL18MiniAOD_99.root'
 inputFiles_='file:/uscms/home/rchudasa/nobackup/miniAOD_checks/CMSSW_10_6_25/src/miniAOD_production/DYToTauTau_MiniAOD.root'
 
-maxEvents_=10
+maxEvents_=100
 skipEvents_=0#
 processTask_='tau_classification'
-processIsDebug_=True
+processIsDebug_=False
 processIsData_=False
 processIsSignal_=True
 outputFile_="DYToTauTau_myProduction.root"
