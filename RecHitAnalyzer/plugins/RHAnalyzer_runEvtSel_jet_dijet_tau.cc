@@ -40,10 +40,6 @@ vector<vector<float>> v_tau_jetSV_Eta_;
 vector<vector<float>> v_tau_jetSV_Phi_;
 vector<vector<float>> v_tau_jetSV_Mass_;
 
-vector<vector<float>> v_tau_jetSV_PtRel_log_;
-vector<vector<float>> v_tau_jetSV_ERel_log_;
-vector<vector<float>> v_tau_jetSV_Pt_log_;
-
 vector<vector<float>> v_tau_jetSV_ntracks_;
 vector<vector<float>> v_tau_jetSV_chi2_;
 vector<vector<float>> v_tau_jetSV_ndf_;
@@ -92,10 +88,6 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_tau ( TTree* tree, edm::Service<TF
   tree->Branch("jetSV_Eta",     &v_tau_jetSV_Eta_);
   tree->Branch("jetSV_Phi",     &v_tau_jetSV_Phi_);
   tree->Branch("jetSV_Mass",    &v_tau_jetSV_Mass_);
-
-  tree->Branch("jetSV_PtRel_log",  &v_tau_jetSV_PtRel_log_);
-  tree->Branch("jetSV_ERel_log",   &v_tau_jetSV_ERel_log_);
-  tree->Branch("jetSV_Pt_log",     &v_tau_jetSV_Pt_log_);
 
   tree->Branch("jetSV_ntracks",   &v_tau_jetSV_ntracks_);
   tree->Branch("jetSV_chi2",      &v_tau_jetSV_chi2_);
@@ -303,12 +295,32 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
   v_tau_jetPFCandPz_.clear();
   v_tau_jetPFCandType_.clear();
 
+  v_tau_jetSV_PtRel_.clear();
+  v_tau_jetSV_ERel_.clear();
+  v_tau_jetSV_PhiRel_.clear();
+  v_tau_jetSV_EtaRel_.clear();
+  v_tau_jetSV_DeltaR_.clear();
   v_tau_jetSV_Pt_.clear();
   v_tau_jetSV_Eta_.clear();
   v_tau_jetSV_Phi_.clear();
-
+  v_tau_jetSV_Mass_.clear();
+  
+  v_tau_jetSV_ntracks_.clear();
+  v_tau_jetSV_chi2_.clear();
+  v_tau_jetSV_ndf_.clear();
+  v_tau_jetSV_normchi2_.clear();
+  
+  v_tau_jetSV_dxy_.clear();
+  v_tau_jetSV_dxyerr_.clear();
+  v_tau_jetSV_dxysig_.clear();
+  
+  v_tau_jetSV_d3d_.clear();
+  v_tau_jetSV_d3derr_.clear();
+  v_tau_jetSV_d3dsig_.clear();
+  v_tau_jetSV_costhetasvpv_.clear();
+  
   unsigned int goodVertices = 0;
-
+  
   if ( debug ) std::cout << " >>>>>>>>>>>>>>>>>>>> evt:" << std::endl;
  
   if (vertices.isValid())
@@ -317,7 +329,7 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
         if (v.ndof() >= 4 && !v.isFake())
           ++goodVertices;
   if ( debug ) std::cout << "\t" << " good vertices in the event (PU) = " << goodVertices << std::endl;
-
+  
   if ( debug ) std::cout << "\t" << " JETS IN THE EVENT = " << vTauJets.size() << " | Selection requires minpT = " << minJetPt_ << " and maxEta = "<< maxJetEta_ << std::endl;
   
   v_tau_goodvertices_.push_back(goodVertices);
@@ -417,23 +429,95 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
     return vertexDxy(*sv1, pv).significance() > vertexDxy(*sv2, pv).significance();
   });
 
-    vector<float> sv_pt;
-    vector<float> sv_eta;
-    vector<float> sv_phi;
 
-
+  vector<float> sv_PtRel;
+  vector<float> sv_ERel;
+  vector<float> sv_PhiRel;
+  vector<float> sv_EtaRel;
+  vector<float> sv_DeltaR;
+  vector<float> sv_Pt;
+  vector<float> sv_Eta;
+  vector<float> sv_Phi;
+  vector<float> sv_Mass;
+  
+  vector<float> sv_ntracks;
+  vector<float> sv_chi2;
+  vector<float> sv_ndf;
+  vector<float> sv_normchi2;
+  
+  vector<float> sv_dxy;
+  vector<float> sv_dxyerr;
+  vector<float> sv_dxysig;
+  
+  vector<float> sv_d3d;
+  vector<float> sv_d3derr;
+  vector<float> sv_d3dsig;
+  vector<float> sv_costhetasvpv;
+  
+  
+  float etasign = iJet->eta()>0 ? 1 : -1;
+  
   for (const auto *sv : jetSVs){
-
-         std::cout << "=================================================Secondary vertex pt:" << sv->pt() << " eta:" << sv->eta() << "  phi:" << sv->phi() << std::endl;
-            sv_pt.push_back(sv->pt());
-            sv_eta.push_back(sv->eta());
-            sv_phi.push_back(sv->phi());
-      }
-
-    v_tau_jetSV_Pt_.push_back(sv_pt);
-    v_tau_jetSV_Eta_.push_back(sv_eta);
-    v_tau_jetSV_Phi_.push_back(sv_phi);
-
+    
+    std::cout << "=================================================Secondary vertex pt:" << sv->pt() << " eta:" << sv->eta() << "  phi:" << sv->phi() << std::endl;
+    
+    sv_PtRel.push_back(sv->pt()/iJet->pt());
+    sv_ERel.push_back(sv->energy()/iJet->energy());
+    sv_PhiRel.push_back(reco::deltaPhi(*sv, *iJet));
+    sv_EtaRel.push_back(etasign * (sv->eta() - iJet->eta()));
+    sv_DeltaR.push_back(reco::deltaR(*sv, *iJet));
+    sv_Pt.push_back(sv->pt());
+    sv_Eta.push_back(sv->eta());
+    sv_Phi.push_back(sv->phi());
+    sv_Mass.push_back(sv->mass());
+    
+    //sv properties
+    sv_ntracks.push_back(sv->numberOfDaughters());	
+    sv_chi2.push_back(sv->vertexChi2());	
+    sv_ndf.push_back(sv->vertexNdof());
+    //sv_normchi2.push_back(catchInfs(sv->vertexNormalizedChi2()));		
+    
+    
+    const auto &dxy = vertexDxy(*sv, pv);
+    sv_dxy.push_back(dxy.value());
+    sv_dxyerr.push_back(dxy.error());
+    sv_dxysig.push_back(dxy.significance());	
+    
+    
+    const auto &d3d = vertexD3d(*sv, pv);
+    sv_d3d.push_back(d3d.value());
+    sv_d3derr.push_back(d3d.error());
+    sv_d3dsig.push_back(d3d.significance());
+    sv_costhetasvpv.push_back(vertexDdotP(*sv, pv));
+    
+  }
+  
+  v_tau_jetSV_PtRel_.push_back(sv_PtRel);
+  v_tau_jetSV_ERel_.push_back(sv_ERel);
+  v_tau_jetSV_PhiRel_.push_back(sv_PhiRel);
+  v_tau_jetSV_EtaRel_.push_back(sv_EtaRel);
+  v_tau_jetSV_DeltaR_.push_back(sv_DeltaR);
+  v_tau_jetSV_Pt_.push_back(sv_Pt);
+  v_tau_jetSV_Eta_.push_back(sv_Eta);
+  v_tau_jetSV_Phi_.push_back(sv_Phi);
+  v_tau_jetSV_Mass_.push_back(sv_Mass);
+  
+  v_tau_jetSV_ntracks_.push_back(sv_ntracks);
+  v_tau_jetSV_chi2_.push_back(sv_chi2);
+  v_tau_jetSV_ndf_.push_back(sv_ndf);
+  //v_tau_jetSV_normchi2_.push_back(sv_normchi2);
+  
+  v_tau_jetSV_dxy_.push_back(sv_dxy);
+  v_tau_jetSV_dxyerr_.push_back(sv_dxyerr);
+  v_tau_jetSV_dxysig_.push_back(sv_dxysig);
+  
+  v_tau_jetSV_d3d_.push_back(sv_d3d);
+  v_tau_jetSV_d3derr_.push_back(sv_d3derr);
+  v_tau_jetSV_d3dsig_.push_back(sv_d3dsig);
+  v_tau_jetSV_costhetasvpv_.push_back(sv_costhetasvpv);
+  
+  
+  
   }//taujets loop
   
 } // fillEvtSel_jet_dijet_tau()
