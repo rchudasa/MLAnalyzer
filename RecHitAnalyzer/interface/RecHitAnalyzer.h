@@ -357,6 +357,13 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     void fillEvtSel_jet_photonSel( const edm::Event&, const edm::EventSetup& );
 
     //functions for secondary vertices
+    inline float catchInfs(const float& in, float replace_value=0){
+      if(std::isinf(in) || std::isnan(in))
+	return replace_value;
+      else if(in < -1e32 || in > 1e32)
+	return replace_value;
+      return in;
+    }    
     static Measurement1D vertexDxy(const reco::VertexCompositePtrCandidate &svcand, const reco::Vertex &pv);
     static Measurement1D vertexD3d(const reco::VertexCompositePtrCandidate &svcand, const reco::Vertex &pv);
     static float vertexDdotP(const reco::VertexCompositePtrCandidate &sv, const reco::Vertex &pv);
@@ -384,8 +391,8 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //
 // constants, enums and typedefs
 //
-//static const bool debug = true;
-static const bool debug = false;
+static const bool debug = true;
+//static const bool debug = false;
 
 static const int nEE = 2;
 static const int nTOB = 6;
