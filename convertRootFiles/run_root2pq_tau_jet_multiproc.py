@@ -19,7 +19,7 @@ def run_process(process):
 
 decay='DYToTauTau_M-50_13TeV'
 
-cluster = 'CERN'
+cluster = 'FNAL'
 #xrootd='root://cmsxrootd.fnal.gov' # FNAL
 #xrootd='root://eoscms.cern.ch' # CERN
 #local='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples/230327_062100/0000'
@@ -29,8 +29,8 @@ if(cluster=='CERN'):
     local='/eos/cms/store/group/phys_heavyions/rchudasa/e2e/RHAnalyzer_Ntuples/DYToTauTau_M-50_13TeV-powheg_pythia8'
     outDir='/eos/user/r/rchudasa/e2e_project/ParquetFiles/DYToTauTau_M-50_13TeV-powheg_pythia8'
 if(cluster=='FNAL'):
-    local='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples/230327_062100/0000'
-    outDir='/eos/uscms/store/group/lpcml/rchudasa/ParquetFiles/DYToTauTau_M-50_13TeV-powheg_pythia8'
+    local='/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples_miniAOD/231005_120502/0000'
+    outDir='/eos/uscms/store/group/lpcml/rchudasa/ParquetFiles/DYToTauTau_M-50_13TeV-powheg_pythia8/miniAODJets'
 
 
 #Paths to input files
@@ -60,8 +60,11 @@ print ( file_idx_ )
 
 for irun_ in range( n_iter_ ):
     #to do run 10,42
-    if (irun_ < 8) : continue
-    #if (irun_ > 2) : continue
+    #if (irun_ < 8) : continue
+    if (irun_ > 2) : continue
+  
+    print("file idx[irun]", irun_, " ", file_idx_[irun_])
+    print("file idx[irun+1]", irun_+1, " ", file_idx_[irun_+1])
     files_ = rhFileList[ file_idx_[ irun_ ] : file_idx_[irun_+1] ]  
     for idx_, file_ in enumerate(files_):
         print(' >> Input File[%d]: %s' % ( idx_, file_ ) )
