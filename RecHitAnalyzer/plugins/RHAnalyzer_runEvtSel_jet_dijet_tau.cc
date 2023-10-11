@@ -171,7 +171,8 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_tau( const edm::Event& iEvent, const ed
     if ( !isSignal_ &&  isW_ && !( iGen->status() == 71 ) ) continue;                         //only for W + jet background
     
     vGenTauIdxs.push_back(iG);
-    
+   
+    if ( debug ) std::cout << "\t\t\t" << " GEN particle " <<  ", status: " << iGen->status() << ", id: " << iGen->pdgId() << ", nDaught: " << iGen->numberOfDaughters() << ", nMoms: " <<iGen->numberOfMothers() << ", mother ID: " << iGen->mother()->pdgId() << ", pt: "<< iGen->pt() << ", eta: " <<iGen->eta() << ", phi: " <<iGen->phi() << std::endl; 
   } //genparticles
   
   if ( debug ) std::cout << " >> vGenTauIdxs.size: " << vGenTauIdxs.size() << std::endl;
@@ -566,22 +567,3 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_tau ( const edm::Event& iEvent, const 
   
 } // fillEvtSel_jet_dijet_tau()
 
-Measurement1D RecHitAnalyzer::vertexDxy(const reco::VertexCompositePtrCandidate &svcand, const reco::Vertex &pv)  {
-  VertexDistanceXY dist;
-  reco::Vertex::CovarianceMatrix csv; svcand.fillVertexCovariance(csv);
-  reco::Vertex svtx(svcand.vertex(), csv);
-  return dist.distance(svtx, pv);
-}
-
-Measurement1D RecHitAnalyzer::vertexD3d(const reco::VertexCompositePtrCandidate &svcand, const reco::Vertex &pv)  {
-  VertexDistance3D dist;
-  reco::Vertex::CovarianceMatrix csv; svcand.fillVertexCovariance(csv);
-  reco::Vertex svtx(svcand.vertex(), csv);
-  return dist.distance(svtx, pv);
-}
-
-float RecHitAnalyzer::vertexDdotP(const reco::VertexCompositePtrCandidate &sv, const reco::Vertex &pv)  {
-  reco::Candidate::Vector p = sv.momentum();
-  reco::Candidate::Vector d(sv.vx() - pv.x(), sv.vy() - pv.y(), sv.vz() - pv.z());
-  return p.Unit().Dot(d.Unit());
-}

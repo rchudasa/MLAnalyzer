@@ -26,6 +26,8 @@ convertRootFiles/condor/condorScriptsDYTauTau
 convertRootFiles/condor/condorScriptsDYTauTau/*
 RecHitAnalyzer/plugins/RHAnalyzer_runEvtSel_jet_ele_classification.cc.working
 convertRootFiles/Untitled.ipynb
+convertRootFiles/condor/condorScriptsWJets/
+convertRootFiles/condor/condorScriptsWJets/*
 plottingMacros/croppedJetIMG
 plottingMacros/croppedJetIMG/*
 plottingMacros/event_images/

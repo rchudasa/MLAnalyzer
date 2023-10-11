@@ -1,17 +1,23 @@
 import os
 
 fileList = []
-for roots,dirs,files in os.walk('/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples_miniAOD/231005_120502/0000/'):
+xrootd='root://cmsxrootd.fnal.gov/' # FNAL
+#dirName = '/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples_miniAOD/231005_120502/0000/'
+dirName = '/eos/uscms/store/group/lpcml/rchudasa/NTuples/WJetsToLNu_TuneCP5_13TeV_madgraphMLM-pythia8/WJets_ntuples_miniAOD/231005_052057/0000/'
+for roots,dirs,files in os.walk(dirName):
     for name in files:
 	if name.endswith('root'):
-        	file = os.path.join(roots,name)
+		fnalDir = dirName[dirName.find('/store'):]
+        	file = os.path.join(xrootd+fnalDir,name)
         	fileList.append(file)
 
-for roots,dirs,files in os.walk('/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples_miniAOD/231005_120502/0001/'):
-    for name in files:
-        if name.endswith('root'):
-                file = os.path.join(roots,name)
-                fileList.append(file)
+#dirName2 = '/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples_miniAOD/231005_120502/0001/'
+#for roots,dirs,files in os.walk(dirName2):
+#    for name in files:
+#        if name.endswith('root'):
+#		fnalDir2 = dirName2[dirName2.find('/store'):]
+#                file = os.path.join(xrootd+fnalDir2,name)
+#                fileList.append(file)
 
 def divide_list(big_list, chunk_size):
     divided_lists = []
@@ -29,30 +35,35 @@ def generate_condor_scripts(numScripts, output_directory):
 
     for i in range(numScripts):
         #if i < 2:
-        #    continue
+        #   continue 
         # Generate a unique job name for each script
-        job_name = "jobMergeParquet_%d"%(i)
+        job_name = "jobConvertRootToPq_%d"%(i)
         inputFileList = ','.join(dividedFileList[i])
-        outputFile = "/eos/uscms/store/group/lpcml/rchudasa/ParquetFiles/DYToTauTau_M-50_13TeV-powheg_pythia8/miniAODJets/DYToTauTau_M-50_13TeV-powheg_pythia8_%d.parquet"%(i)
+        #outputFile = "/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles/DYToTauTau_M-50_13TeV-powheg_pythia8/miniAODJets/DYToTauTau_M-50_13TeV-powheg_pythia8_%d.parquet"%(i)
+        outputFile = "/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles/WJetsToLNu_TuneCP5_13TeV_madgraphMLM-pythia8/miniAODJets/WJetsToLNu_TuneCP5_13TeV_madgraphMLM-pythia8_%d.parquet"%(i)
         #print(type(outputFile))
         # Define the contents of the SLURM bash script
         script_contents = """#!/bin/bash
+export X509_USER_PROXY=$1
+voms-proxy-info -all
+voms-proxy-info -all -file $1
 source /cvmfs/sft.cern.ch/lcg/views/LCG_97a/x86_64-centos7-gcc8-opt/setup.sh
-source /uscms/home/rchudasa/nobackup/venv/bin/activate
-cd /uscms/home/rchudasa/nobackup/miniAOD_checks/CMSSW_10_6_25/src/MLAnalyzer/convertRootFiles/condor/
+source /afs/cern.ch/work/r/rchudasa/private/venv/bin/activate
+cd /afs/cern.ch/work/r/rchudasa/private/TauClassification/miniAOD_checks/MLAnalyzer/convertRootFiles/
 echo $PWD
-python /uscms/home/rchudasa/nobackup/miniAOD_checks/CMSSW_10_6_25/src/MLAnalyzer/convertRootFiles/convert_root2pq_tau_jet.py -i %s -o %s
+python /afs/cern.ch/work/r/rchudasa/private/TauClassification/miniAOD_checks/MLAnalyzer/convertRootFiles/convert_root2pq_tau_jet.py -i %s -o %s
 """%(inputFileList,outputFile)
 	
-	condor_contents = """Universe              = vanilla
+	condor_contents = """Proxy_path            = /afs/cern.ch/work/r/rchudasa/private/x509up_u43677 
+arguments             = $(Proxy_path) $(ProcId)
 executable            = %s.sh
-arguments             = $(ProcId)
+Universe              = vanilla
 GetEnv                = True
 output                = output/$(ClusterId).$(ProcId).out
 error                 = error/$(ClusterId).$(ProcId).err
+log                   = log/$(ClusterId).log
 requirements          = (OpSysAndVer =?= "CentOS7")
 +JobFlavour           = "tomorrow"
-
 queue 1
 """%(job_name)
 
@@ -73,8 +84,8 @@ queue 1
 
 # Example usage
 #output_directory = "condorScriptsQCD"
-#output_directory = "condorScriptsWJets"
-output_directory = "condorScriptsDYTauTau"
+output_directory = "condorScriptsWJets"
+#output_directory = "condorScriptsDYTauTau"
 #output_directory = "condorScriptsDYEE"
 #output_directory = "condorScriptsQCDEMEnriched"
 

@@ -3,7 +3,7 @@ config = config()
 # See parameter defintions here: https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile#CRAB_configuration_parameters
 
 #idx = '00000'
-CFG = 'QCD_Pt-15to7000_ntuples_miniAOD'
+CFG = 'QCD_Pt-15to7000_ntuples_miniAOD-v2'
 
 # To submit to crab:
 # crab submit -c crabConfig_data.py

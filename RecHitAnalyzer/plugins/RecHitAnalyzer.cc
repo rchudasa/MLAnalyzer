@@ -211,5 +211,25 @@ RecHitAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 
 }
 
+Measurement1D RecHitAnalyzer::vertexDxy(const reco::VertexCompositePtrCandidate &svcand, const reco::Vertex &pv)  {
+  VertexDistanceXY dist;
+  reco::Vertex::CovarianceMatrix csv; svcand.fillVertexCovariance(csv);
+  reco::Vertex svtx(svcand.vertex(), csv);
+  return dist.distance(svtx, pv);
+}
+
+Measurement1D RecHitAnalyzer::vertexD3d(const reco::VertexCompositePtrCandidate &svcand, const reco::Vertex &pv)  {
+  VertexDistance3D dist;
+  reco::Vertex::CovarianceMatrix csv; svcand.fillVertexCovariance(csv);
+  reco::Vertex svtx(svcand.vertex(), csv);
+  return dist.distance(svtx, pv);
+}
+
+float RecHitAnalyzer::vertexDdotP(const reco::VertexCompositePtrCandidate &sv, const reco::Vertex &pv)  {
+  reco::Candidate::Vector p = sv.momentum();
+  reco::Candidate::Vector d(sv.vx() - pv.x(), sv.vy() - pv.y(), sv.vz() - pv.z());
+  return p.Unit().Dot(d.Unit());
+}
+
 //define this as a plug-in
 DEFINE_FWK_MODULE(RecHitAnalyzer);
