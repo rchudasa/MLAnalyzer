@@ -32,7 +32,7 @@ process.es_prefer_GlobalTag = cms.ESPrefer('PoolDBESSource','GlobalTag')
 process.TrackRefitter.TTRHBuilder = 'WithAngleAndTemplate'
 
 process.maxEvents = cms.untracked.PSet( 
-    input = cms.untracked.int32(-1) 
+    input = cms.untracked.int32(10) 
     )
 
 process.source = cms.Source("PoolSource",
@@ -45,8 +45,8 @@ print (" >> Loaded",len(options.inputFiles),"input files from list.")
 
 #process.load("MLAnalyzer.RecHitAnalyzer.rechitAnalyzer_cfi")
 process.load("MLAnalyzer.RecHitAnalyzer.RHAnalyzer_cfi")
-process.fevt.task = cms.string("ttbar")
-process.fevt.isttbar = True
+process.fevt.task = cms.string("qcd")
+
 process.fevt.mode = cms.string(options.processMode)
 print (" >> Processing as:",(process.fevt.mode))
 

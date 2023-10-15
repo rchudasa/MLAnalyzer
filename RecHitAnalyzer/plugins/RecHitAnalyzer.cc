@@ -84,7 +84,7 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   task_      = iConfig.getParameter<std::string>("task");
   isSignal_  = iConfig.getParameter<bool>("isSignal");
   isW_       = iConfig.getParameter<bool>("isW");
-  isttbar_   = iConfig.getParameter<bool>("isttbar");
+  isBoostedTop_   = iConfig.getParameter<bool>("isBoostedTop");
   minJetPt_  = iConfig.getParameter<double>("minJetPt");
   maxJetEta_ = iConfig.getParameter<double>("maxJetEta");
   z0PVCut_   = iConfig.getParameter<double>("z0PVCut");

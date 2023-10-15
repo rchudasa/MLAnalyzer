@@ -313,7 +313,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     std::string task_;
     bool isSignal_;  
     bool isW_;  
-    bool isttbar_;  
+    bool isBoostedTop_;  
     bool doJets_;
     int  nJets_;
     double minJetPt_;
@@ -391,8 +391,8 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //
 // constants, enums and typedefs
 //
-//static const bool debug = true;
-static const bool debug = false;
+static const bool debug = true;
+//static const bool debug = false;
 
 static const int nEE = 2;
 static const int nTOB = 6;

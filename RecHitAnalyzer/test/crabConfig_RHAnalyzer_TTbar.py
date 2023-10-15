@@ -1,7 +1,7 @@
 from CRABClient.UserUtilities import config
 config = config()
 
-CFG = 'ttbar-ntuples'
+CFG = 'ttbar-ntuples-AOD'
 
 # Local job directory will be created in:
 config.General.workArea = 'crab_projects'
@@ -11,8 +11,8 @@ config.General.transferLogs = True
 
 # CMS cfg file goes here:
 config.JobType.pluginName = 'Analysis'
-config.JobType.psetName = 'RecHitAnalyzer/python/ConfFile_cfg.py' # analyzer cfg file
-config.JobType.maxMemoryMB = 5000
+config.JobType.psetName = 'runRHAnalyzer_TTbar.py' # analyzer cfg file
+config.JobType.maxMemoryMB = 4000
 
 # Define input and units per job here:
 config.Data.inputDBS = 'phys03'

@@ -134,7 +134,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_top( const edm::Event& iEvent, const ed
   int nJet = 0;
   
   std::vector<TLorentzVector> had_tops,bdau,wdau;
-  if (isttbar_) { //is a ttbar sample
+  if (isBoostedTop_) { //if its boosted top sample
   for (reco::GenParticleCollection::const_iterator iGen = genParticles->begin(); iGen != genParticles->end(); ++iGen) {
   
     int id = iGen->pdgId();
@@ -183,7 +183,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_top( const edm::Event& iEvent, const ed
       if (wdau[ihad].DeltaR(vjet)>0.8) continue;
       if (bdau[ihad].DeltaR(vjet)>0.8) continue;
 
-      //if ( debug ) std::cout << " >> jet[" << iJ << "]Pt:" << iJet->pt() << " jetE:" << iJet->energy() << " jetM:" << iJet->mass() << std::endl;
+      if ( debug ) std::cout << " >> jet[" << iJ << "]Pt:" << iJet->pt() << " jetE:" << iJet->energy() << " jetM:" << iJet->mass() << std::endl;
 
       vJetIdxs.push_back(iJ);
 
@@ -192,7 +192,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_top( const edm::Event& iEvent, const ed
     } // jets
     if ( (nJets_ > 0) && (nJet >= nJets_) ) break;
   } // hadronic tops
-  } // isTTbar
+  } // isBoostedTop
  
   if ( debug ) {
     for(int thisJetIdx : vJetIdxs)
