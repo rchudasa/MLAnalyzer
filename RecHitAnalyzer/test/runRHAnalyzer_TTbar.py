@@ -45,7 +45,7 @@ print (" >> Loaded",len(options.inputFiles),"input files from list.")
 
 #process.load("MLAnalyzer.RecHitAnalyzer.rechitAnalyzer_cfi")
 process.load("MLAnalyzer.RecHitAnalyzer.RHAnalyzer_cfi")
-process.fevt.task = cms.string("qcd")
+process.fevt.task = cms.string("tau_classification")
 
 process.fevt.mode = cms.string(options.processMode)
 print (" >> Processing as:",(process.fevt.mode))
