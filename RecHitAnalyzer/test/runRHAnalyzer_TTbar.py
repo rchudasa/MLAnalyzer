@@ -51,7 +51,8 @@ process.fevt.mode = cms.string(options.processMode)
 print (" >> Processing as:",(process.fevt.mode))
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string("file:ttbar_output.root")
+    fileName = cms.string(options.outputFile)
+    #fileName = cms.string("file:ttbar_output.root")
     )
 
 process.hltFilter = cms.EDFilter("HLTHighLevel",

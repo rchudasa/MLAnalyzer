@@ -1,7 +1,7 @@
 from CRABClient.UserUtilities import config
 config = config()
 
-CFG = 'ttbar-ntuples-AOD'
+CFG = 'ttbar-ntuples-AOD-v2'
 
 # Local job directory will be created in:
 config.General.workArea = 'crab_projects'
