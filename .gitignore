@@ -22,8 +22,8 @@ crab_projects/*
 dump_hbhereco_gluhtau.C
 */.ipynb_checkpoints
 */.ipynb_checkpoints/*
-convertRootFiles/condor/condorScriptsDYTauTau
-convertRootFiles/condor/condorScriptsDYTauTau/*
+convertRootFiles/condor/condorScripts*
+convertRootFiles/condor/condorScripts*/*
 RecHitAnalyzer/plugins/RHAnalyzer_runEvtSel_jet_ele_classification.cc.working
 RecHitAnalyzer/test/crab_projects
 RecHitAnalyzer/test/crab_projects/*

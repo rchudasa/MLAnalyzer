@@ -68,16 +68,18 @@ def crop_jet(imgECAL, iphi, ieta, jet_shape=125):
 
     return img_crop
 
-rhTreeStr = args.infile 
+rhTreeStr = args.infile.split(',') 
+print(type(rhTreeStr))
 rhTree = ROOT.TChain("fevt/RHTree")
-#for f in rhTreeStr:
-#  rhTree.Add(f)
-rhTree.Add(rhTreeStr)
+for f in rhTreeStr:
+  rhTree.Add(f)
+#rhTree.Add(rhTreeStr)
 nEvts = rhTree.GetEntries()
 assert nEvts > 0
 print " >> Input file:",rhTreeStr
 print " >> nEvts:",nEvts
-outStr = '%s/%s.parquet.%d'%(args.outdir, args.decay, args.idx) 
+outStr = '%s'%(args.outdir) 
+#outStr = '%s/%s.parquet.%d'%(args.outdir, args.decay, args.idx) 
 print " >> Output file:",outStr
 
 ##### MAIN #####
@@ -97,7 +99,7 @@ for iEvt in range(iEvtStart,iEvtEnd):
 
     # Initialize event
     rhTree.GetEntry(iEvt)
-
+    
     if iEvt % 100 == 0:
         print " .. Processing entry",iEvt
 
@@ -123,14 +125,16 @@ for iEvt in range(iEvtStart,iEvtEnd):
     #data['X_CMSII'] = np.stack([TracksAtECAL_pt, TracksAtECAL_dz, TracksAtECAL_d0, ECAL_energy, HBHE_energy, PixAtEcal_1, PixAtEcal_2, PixAtEcal_3, PixAtEcal_4], axis=0) # (9, 280, 360)
 
     # Jet attributes 
-    #ys      = rhTree.jet_IsTau
-    ys      = rhTree.jet_IsEle
+    ys      = rhTree.jet_IsTau
+    #ys      = rhTree.jet_IsEle
     jetMs   = rhTree.jet_M
     jetPts  = rhTree.jet_Pt
     #dRs    = rhTree.jet_dR
     iphis  = rhTree.jetSeed_iphi
     ietas  = rhTree.jetSeed_ieta
     #pdgIds = rhTree.jet_PdgIds
+    genPts = rhTree.gen_pt
+    genEtas = rhTree.gen_eta
     njets  = len(ys)
 
     for i in range(njets):
@@ -138,6 +142,8 @@ for iEvt in range(iEvtStart,iEvtEnd):
         data['y']       = ys[i]
         data['jetM']    = jetMs[i]
         data['jetPt']   = jetPts[i]
+        data['genPt']   = genPts[i]
+        data['genEta']  = genEtas[i]
         #data['dR']    = dRs[i]
         data['iphi']  = iphis[i]
         data['ieta']  = ietas[i]
@@ -150,7 +156,39 @@ for iEvt in range(iEvtStart,iEvtEnd):
         data['nPVtx_y']  = np.array(rhTree.Vtx_y)[0]
         data['nPVtx_z']  = np.array(rhTree.Vtx_z)[0]
         data['X_jet'] = crop_jet(X_CMSII, data['iphi'], data['ieta']) # (13, 125, 125)
+	
+    	numSecVtx = np.array(np.array(rhTree.jetSV_Pt)[i], dtype=float).size
+	#print("Event:",iEvt, " no of jets", njets)
 
+    	if njets > 1:
+    		numSecVtx = np.array(np.array(rhTree.jetSV_Pt)[i], dtype=float).size
+		#print("Secondary vertex pt", np.array(np.array(rhTree.jetSV_Pt)[i]).size)
+    		#numSecVtx = np.array(np.array(rhTree.jetSV_Pt)[i], dtype=float).size
+		
+    		data['nsecVtx'] = numSecVtx
+    		if numSecVtx == 0:
+                	data['secVtx_Pt'] = np.array([0.0])
+                	data['secVtx_jet_dR'] = np.array([0.0])
+                	data['secVtx_Mass'] = np.array([0.0])
+                	data['secVtx_NTracks'] = np.array([0.0])
+    		else:
+                	data['secVtx_Pt'] = np.array(np.array(rhTree.jetSV_Pt)[i], dtype=float)
+                	data['secVtx_jet_dR'] = np.array(np.array(rhTree.jetSV_DeltaR)[i], dtype=float)
+                	data['secVtx_Mass'] = np.array(np.array(rhTree.jetSV_Mass)[i], dtype=float)
+                	data['secVtx_NTracks'] = np.array(np.array(rhTree.jetSV_ntracks)[i], dtype=float)
+    	else:
+        	numSecVtx = np.array(rhTree.jetSV_Pt, dtype=float)[i].size
+    		data['nsecVtx'] = numSecVtx
+            	if numSecVtx == 0:
+                	data['secVtx_Pt'] = np.array([0.0])
+                	data['secVtx_jet_dR'] = np.array([0.0])
+                	data['secVtx_Mass'] = np.array([0.0])
+                	data['secVtx_NTracks'] = np.array([0.0])
+            	else:
+                	data['secVtx_Pt'] = np.array(rhTree.jetSV_Pt, dtype=float)[i]
+                	data['secVtx_jet_dR'] = np.array(rhTree.jetSV_DeltaR, dtype=float)[i]
+                	data['secVtx_Mass'] = np.array(rhTree.jetSV_Mass, dtype=float)[i]
+                	data['secVtx_NTracks'] = np.array(rhTree.jetSV_ntracks, dtype=float)[i]
         # Create pyarrow.Table
 
         pqdata = [pa.array([d]) if (np.isscalar(d) or type(d) == list) else pa.array([d.tolist()]) for d in data.values()]

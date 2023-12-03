@@ -10,6 +10,7 @@ for roots,dirs,files in os.walk(dirName):
 		fnalDir = dirName[dirName.find('/store'):]
         	file = os.path.join(xrootd+fnalDir,name)
         	fileList.append(file)
+		print(file)
 
 dirName2 = '/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples-AOD/231013_070551/0001/'
 for roots,dirs,files in os.walk(dirName2):
@@ -39,7 +40,7 @@ def generate_condor_scripts(numScripts, output_directory):
         # Generate a unique job name for each script
         job_name = "jobConvertRootToPq_%d"%(i)
         inputFileList = ','.join(dividedFileList[i])
-        outputFile = "/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles/DYToTauTau_M-50_13TeV-powheg_pythia8/AODJets/DYToTauTau_M-50_13TeV-powheg_pythia8_%d.parquet"%(i)
+        outputFile = "/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles/DYToTauTau_M-50_13TeV-powheg_pythia8/AODJets-inference/DYToTauTau_M-50_13TeV-powheg_pythia8_%d.parquet"%(i)
         #outputFile = "/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles/WJetsToLNu_TuneCP5_13TeV_madgraphMLM-pythia8/miniAODJets/WJetsToLNu_TuneCP5_13TeV_madgraphMLM-pythia8_%d.parquet"%(i)
         #print(type(outputFile))
         # Define the contents of the SLURM bash script
@@ -49,9 +50,9 @@ voms-proxy-info -all
 voms-proxy-info -all -file $1
 source /cvmfs/sft.cern.ch/lcg/views/LCG_97a/x86_64-centos7-gcc8-opt/setup.sh
 source /afs/cern.ch/work/r/rchudasa/private/venv/bin/activate
-cd /afs/cern.ch/work/r/rchudasa/private/TauClassification/miniAOD_checks/MLAnalyzer/convertRootFiles/
+cd /afs/cern.ch/work/r/rchudasa/private/TauClassification/CMSSW_10_6_20/src/MLAnalyzer/convertRootFiles/
 echo $PWD
-python /afs/cern.ch/work/r/rchudasa/private/TauClassification/miniAOD_checks/MLAnalyzer/convertRootFiles/convert_root2pq_tau_jet.py -i %s -o %s
+python /afs/cern.ch/work/r/rchudasa/private/TauClassification/CMSSW_10_6_20/src/MLAnalyzer/convertRootFiles/convert_root2pq_tau_jet.py -i %s -o %s
 """%(inputFileList,outputFile)
 	
 	condor_contents = """Proxy_path            = /afs/cern.ch/work/r/rchudasa/private/x509up_u43677 
@@ -85,7 +86,7 @@ queue 1
 # Example usage
 #output_directory = "condorScriptsQCD"
 #output_directory = "condorScriptsWJets"
-output_directory = "condorScriptsDYTauTau"
+output_directory = "condorScriptsDYTauTau_Inference"
 #output_directory = "condorScriptsDYEE"
 #output_directory = "condorScriptsQCDEMEnriched"
 
