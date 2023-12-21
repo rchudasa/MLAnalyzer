@@ -2,8 +2,8 @@ import os
 
 fileList = []
 xrootd='root://cmsxrootd.fnal.gov/' # FNAL
-dirName = '/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples-AOD/231013_070551/0000/'
-#dirName = '/eos/uscms/store/group/lpcml/rchudasa/NTuples/WJetsToLNu_TuneCP5_13TeV_madgraphMLM-pythia8/WJets_ntuples_AOD/231013_055218/0000'
+#dirName = '/eos/uscms/store/group/lpcml/rchudasa/NTuples/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_ntuples-AOD/231013_070551/0000/'
+dirName = '/eos/uscms/store/group/lpcml/rchudasa/NTuples/WJetsToLNu_TuneCP5_13TeV_madgraphMLM-pythia8/WJets_ntuples_AOD/231013_055218/0000'
 #dirName='/eos/uscms/store/group/lpcml/rchudasa/NTuples/QCD_Pt-15to7000_TuneCP5_Flat_13TeV_pythia8/QCD_Pt-15to7000_ntuples-AOD/231013_065542/0000/'
 #dirName='/eos/uscms/store/group/lpcml/rchudasa/NTuples/TTToHadronic_TuneCP5_13TeV_powheg-pythia8/ttbar-ntuples-AOD-v2/231016_163729/0000/'
 for roots,dirs,files in os.walk(dirName):
@@ -42,12 +42,12 @@ def generate_condor_scripts(numScripts, output_directory):
         # Generate a unique job name for each script
         job_name = "jobConvertRootToPq_%d"%(i)
         inputFileList = ','.join(dividedFileList[i])
-        outputFile = "/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles/DYToTauTau_M-50_13TeV-powheg_pythia8/AODJets-inference/DYToTauTau_M-50_13TeV-powheg_pythia8_%d.parquet"%(i)
-        #outputFile = "/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles/WJetsToLNu_TuneCP5_13TeV_madgraphMLM-pythia8/miniAODJets/WJetsToLNu_TuneCP5_13TeV_madgraphMLM-pythia8_%d.parquet"%(i)
+        #outputFile = "/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles_correctTrackerLayerHits_SecVtxInfoAdded/DYToTauTau_M-50_13TeV-powheg_pythia8/AODJets-inference/DYToTauTau_M-50_13TeV-powheg_pythia8_%d.parquet"%(i)
+        outputFile = "/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles_correctTrackerLayerHits_SecVtxInfoAdded/WJetsToLNu_TuneCP5_13TeV_madgraphMLM-pythia8/AODJets-Inference/WJetsToLNu_TuneCP5_13TeV_madgraphMLM-pythia8_%d.parquet"%(i)
         #outputFile = "/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles/DYToTauTau_M-50_13TeV-powheg_pythia8/AODJets/DYToTauTau_M-50_13TeV-powheg_pythia8_%d.parquet"%(i)
         #outputFile = "/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles/WJetsToLNu_TuneCP5_13TeV_madgraphMLM-pythia8/AODJets/WJetsToLNu_TuneCP5_13TeV_madgraphMLM-pythia8_%d.parquet"%(i)
-        #outputFile = "/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles/QCD_Pt-15to7000_TuneCP5_Flat_13TeV_pythia8/AODJets/QCD_Pt-15to7000_TuneCP5_Flat_13TeV_pythia8_%d.parquet"%(i)
-        #outputFile = "/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles/TTToHadronic_TuneCP5_13TeV_powheg-pythia8/AODJets/TTToHadronic_TuneCP5_13TeV_powheg-pythia8_%d.parquet"%(i)
+        #outputFile = "/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles_correctTrackerLayerHits_SecVtxInfoAdded/QCD_Pt-15to7000_TuneCP5_Flat_13TeV_pythia8/AODJets-Inference/QCD_Pt-15to7000_TuneCP5_Flat_13TeV_pythia8_%d.parquet"%(i)
+        #outputFile = "/eos/cms/store/group/phys_heavyions/rchudasa/e2e/ParquetFiles_correctTrackerLayerHits_SecVtxInfoAdded/TTToHadronic_TuneCP5_13TeV_powheg-pythia8/AODJets-Inference/TTToHadronic_TuneCP5_13TeV_powheg-pythia8_%d.parquet"%(i)
         #print(type(outputFile))
         # Define the contents of the SLURM bash script
         script_contents = """#!/bin/bash
@@ -56,9 +56,9 @@ voms-proxy-info -all
 voms-proxy-info -all -file $1
 source /cvmfs/sft.cern.ch/lcg/views/LCG_97a/x86_64-centos7-gcc8-opt/setup.sh
 source /afs/cern.ch/work/r/rchudasa/private/venv/bin/activate
-cd /afs/cern.ch/work/r/rchudasa/private/TauClassification/CMSSW_10_6_20/src/MLAnalyzer/convertRootFiles/
+cd /afs/cern.ch/work/r/rchudasa/private/TauClassification/miniAOD_checks/MLAnalyzer/convertRootFiles/
 echo $PWD
-python /afs/cern.ch/work/r/rchudasa/private/TauClassification/CMSSW_10_6_20/src/MLAnalyzer/convertRootFiles/convert_root2pq_tau_jet.py -i %s -o %s
+python /afs/cern.ch/work/r/rchudasa/private/TauClassification/miniAOD_checks/MLAnalyzer/convertRootFiles/convert_root2pq_tau_jet.py -i %s -o %s
 """%(inputFileList,outputFile)
 	
 	condor_contents = """Proxy_path            = /afs/cern.ch/work/r/rchudasa/private/x509up_u43677 
@@ -90,10 +90,10 @@ queue 1
         print("Generated condor sub script: %s"%(condor_path))
 
 # Example usage
-#output_directory = "condorScriptsTTbar"
-#output_directory = "condorScriptsQCD"
-#output_directory = "condorScriptsWJets"
-output_directory = "condorScriptsDYTauTau_Inference"
+#output_directory = "condorScriptsTTbar_Inference"
+#output_directory = "condorScriptsQCD_Inference"
+output_directory = "condorScriptsWJets_Inference"
+#output_directory = "condorScriptsDYTauTau_Inference"
 #output_directory = "condorScriptsDYTauTau"
 #output_directory = "condorScriptsDYEE"
 #output_directory = "condorScriptsQCDEMEnriched"

@@ -188,6 +188,16 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
     virtual void endJob() override;
 
+    //switches 
+    std::string mode_;  // EventLevel / JetLevel
+    std::string task_;
+    bool isMC_;
+    bool isSignal_;
+    bool isW_;
+    bool isBoostedTop_;
+    bool doJets_;
+
+
     // ----------member data ---------------------------
     // Tokens
     edm::EDGetTokenT<EcalRecHitCollection> EBRecHitCollectionT_;
@@ -309,12 +319,6 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     unsigned int getLayer(const DetId& detid, const TrackerTopology* tTopo);
 
     // Jet level functions
-    std::string mode_;  // EventLevel / JetLevel
-    std::string task_;
-    bool isSignal_;  
-    bool isW_;  
-    bool isBoostedTop_;  
-    bool doJets_;
     int  nJets_;
     double minJetPt_;
     double maxJetEta_;

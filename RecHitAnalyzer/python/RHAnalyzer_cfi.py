@@ -5,6 +5,18 @@ import FWCore.ParameterSet.Config as cms
 from RecoMET.METProducers.METSignificanceParams_cfi import METSignificanceParams
 
 fevt = cms.EDAnalyzer('RecHitAnalyzer'
+    #, isDebug                        = cms.bool(True)
+    #, isDebug                        = cms.bool(False)
+    , task                           = cms.string("dijet_ditau")
+    #, task                           = cms.string("tau_classification")
+    #, task                           = cms.string("jet_ele_classification")
+    #, task                           = cms.string("qcd")
+    #, task                           = cms.string("boostedTop")
+    , isMC                           = cms.bool(False)
+    , isSignal                       = cms.bool(False)
+    , isW                            = cms.bool(False)
+    , isBoostedTop                   = cms.bool(False)
+
     #, tracks = cms.untracked.InputTag('ctfWithMaterialTracks')
     #, EBRecHitCollection             = cms.InputTag('ecalRecHit:EcalRecHitsEB')
     , reducedEBRecHitCollection      = cms.InputTag('reducedEcalRecHitsEB')
@@ -58,16 +70,6 @@ fevt = cms.EDAnalyzer('RecHitAnalyzer'
     , srcLeptons                     = cms.VInputTag("gedGsfElectrons","muons","gedPhotons")
 
     # Jet level cfg
-    #, isDebug                        = cms.bool(True)
-    #, isDebug                        = cms.bool(False)
-    #, task                           = cms.string("dijet_ditau")
-    , task                           = cms.string("tau_classification")
-    #, task                           = cms.string("jet_ele_classification")
-    #, task                           = cms.string("qcd")
-    #, task                           = cms.string("boostedTop")
-    , isSignal                       = cms.bool(False)
-    , isW                            = cms.bool(False)
-    , isBoostedTop                   = cms.bool(False)
     , nJets     = cms.int32(-1)
     , minJetPt  = cms.double(15.)
     , maxJetEta = cms.double(2.4)

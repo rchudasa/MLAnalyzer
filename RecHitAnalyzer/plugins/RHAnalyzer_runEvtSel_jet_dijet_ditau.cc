@@ -170,10 +170,10 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_ditau ( TTree* tree, edm::Service<
 // Run jet selection _____________________________________________________//
 bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const edm::EventSetup& iSetup )
 {
-
+  if(isMC_){
   edm::Handle<reco::GenParticleCollection> genParticles;
   iEvent.getByToken( genParticleCollectionT_, genParticles );
-
+  }
   edm::Handle<reco::PFJetCollection> jets;
   iEvent.getByToken(jetCollectionT_, jets);
 
@@ -251,8 +251,8 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   */
 
   bool IsSignal             = true;
-  bool IsMC                 = false;
-  if (iEvent.isRealData()) IsMC = false;
+  //bool IsMC                 = false;
+  //if (iEvent.isRealData()) IsMC = false;
   //TAU SELECTION
   float tau_sel_mvaID       = -2;
   float tau_sel_pT          = 20;
@@ -276,7 +276,10 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
   float genTau2_pT = -1;
   float genTau3_pT = -1;
   float genTau4_pT = -1;
-  if ( IsMC ) {
+  if ( isMC_ ) {
+  edm::Handle<reco::GenParticleCollection> genParticles;
+  iEvent.getByToken( genParticleCollectionT_, genParticles );
+
     for (reco::GenParticleCollection::const_iterator iGen = genParticles->begin(); iGen != genParticles->end(); ++iGen) {
       if ( IsSignal ) {
         if ( abs(iGen->pdgId()) != 35 || iGen->numberOfDaughters() != 2 || iGen->daughter(0)->pdgId() != 25 || iGen->daughter(1)->pdgId() != 25 ) continue;
@@ -324,7 +327,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
     //if (!((*ElectronRejectionMVA6)[iTau1])) continue;
     if ( (*MVAIsolation)[iTau1] < tau_sel_mvaID ) continue;  
     if ( debug ) std::cout << " TAU PASSED SELECTION "<< std::endl;
-    if ( IsMC ) {
+    if ( isMC_ ) {
       bool skip_tau = true;
       edm::Handle<reco::GenParticleCollection> genParticles;
       iEvent.getByToken( genParticleCollectionT_, genParticles );
@@ -352,7 +355,7 @@ bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau( const edm::Event& iEvent, const 
       //if (!((*MuonRejection)[iTau2])) continue;
       //if (!((*ElectronRejectionMVA6)[iTau2])) continue;
       if ( (*MVAIsolation)[iTau2] < tau_sel_mvaID ) continue;  
-      if ( IsMC ) {
+      if ( isMC_ ) {
         bool skip_tau = true;
         edm::Handle<reco::GenParticleCollection> genParticles;
         iEvent.getByToken( genParticleCollectionT_, genParticles );

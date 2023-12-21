@@ -18,8 +18,14 @@ options.parseArguments()
 
 process = cms.Process("FEVTAnalyzer")
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.load("Configuration.StandardSequences.GeometryDB_cff")
+process.load('Configuration.Geometry.GeometryRecoDB_cff')
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.load("Configuration.StandardSequences.MagneticField_cff")
+process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
+process.load("RecoTracker.TrackProducer.TrackRefitters_cff")
+process.load("RecoLocalTracker.SiPixelRecHits.SiPixelRecHits_cfi")
+process.load("RecoLocalTracker.SiStripRecHitConverter.SiStripRecHitConverter_cfi")
+#process.load("Configuration.StandardSequences.GeometryDB_cff")
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 #process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 #process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi");
@@ -29,6 +35,8 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.GlobalTag.globaltag = cms.string('106X_dataRun2_v32')
 process.es_prefer_GlobalTag = cms.ESPrefer('PoolDBESSource','GlobalTag')
 
+
+process.TrackRefitter.TTRHBuilder = 'WithAngleAndTemplate'
 #process.load('PhysicsTools.PatAlgos.patSequences_cff')
 
 process.maxEvents = cms.untracked.PSet( 
@@ -66,6 +74,7 @@ process.hltFilter = cms.EDFilter("HLTHighLevel",
 
 #process.SimpleMemoryCheck = cms.Service( "SimpleMemoryCheck", ignoreTotal = cms.untracked.int32(1) )
 process.p = cms.Path(
+  process.siStripMatchedRecHits*process.siPixelRecHits*process.MeasurementTrackerEvent*process.TrackRefitter*
   process.hltFilter*
 #  process.patDefaultSequence*
   process.fevt

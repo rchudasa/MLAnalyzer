@@ -16,6 +16,14 @@
 //
 RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
 {
+  //debug      = iConfig.getParameter<bool>("isDebug");  
+  mode_      = iConfig.getParameter<std::string>("mode");
+  task_      = iConfig.getParameter<std::string>("task");
+  isMC_      = iConfig.getParameter<bool>("isMC");
+  isSignal_  = iConfig.getParameter<bool>("isSignal");
+  isW_       = iConfig.getParameter<bool>("isW");
+  isBoostedTop_   = iConfig.getParameter<bool>("isBoostedTop");
+
   //EBRecHitCollectionT_    = consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("EBRecHitCollection"));
   EBRecHitCollectionT_    = consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("reducedEBRecHitCollection"));
   //EBDigiCollectionT_      = consumes<EBDigiCollection>(iConfig.getParameter<edm::InputTag>("selectedEBDigiCollection"));
@@ -25,7 +33,10 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   HBHERecHitCollectionT_  = consumes<HBHERecHitCollection>(iConfig.getParameter<edm::InputTag>("reducedHBHERecHitCollection"));
   TRKRecHitCollectionT_   = consumes<TrackingRecHitCollection>(iConfig.getParameter<edm::InputTag>("trackRecHitCollection"));
 
-  genParticleCollectionT_ = consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticleCollection"));
+  if(isMC_){
+  	genParticleCollectionT_ = consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticleCollection"));
+  }  
+
   photonCollectionT_      = consumes<reco::PhotonCollection>(iConfig.getParameter<edm::InputTag>("gedPhotonCollection"));
   jetCollectionT_         = consumes<reco::PFJetCollection>(iConfig.getParameter<edm::InputTag>("ak4PFJetCollection"));
   pfjetsToken_            = consumes<edm::View<reco::Jet> >(iConfig.getParameter<edm::InputTag>("srcPfJets"));
@@ -79,12 +90,6 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   metSigAlgo_               = new metsig::METSignificance(iConfig);
 
   //johnda add configuration
-  //debug      = iConfig.getParameter<bool>("isDebug");
-  mode_      = iConfig.getParameter<std::string>("mode");
-  task_      = iConfig.getParameter<std::string>("task");
-  isSignal_  = iConfig.getParameter<bool>("isSignal");
-  isW_       = iConfig.getParameter<bool>("isW");
-  isBoostedTop_   = iConfig.getParameter<bool>("isBoostedTop");
   minJetPt_  = iConfig.getParameter<double>("minJetPt");
   maxJetEta_ = iConfig.getParameter<double>("maxJetEta");
   z0PVCut_   = iConfig.getParameter<double>("z0PVCut");
