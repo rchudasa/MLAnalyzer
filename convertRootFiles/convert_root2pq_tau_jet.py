@@ -96,7 +96,8 @@ data = {} # Arrays to be written to parquet should be saved to data dict
 sw = ROOT.TStopwatch()
 sw.Start()
 for iEvt in range(iEvtStart,iEvtEnd):
-
+    #if nJets == 7488:
+	#break
     # Initialize event
     rhTree.GetEntry(iEvt)
     
@@ -133,6 +134,8 @@ for iEvt in range(iEvtStart,iEvtEnd):
     iphis  = rhTree.jetSeed_iphi
     ietas  = rhTree.jetSeed_ieta
     #pdgIds = rhTree.jet_PdgIds
+    genPts = rhTree.gen_pt
+    genEtas = rhTree.gen_eta
     njets  = len(ys)
 
     for i in range(njets):
@@ -140,6 +143,8 @@ for iEvt in range(iEvtStart,iEvtEnd):
         data['y']       = ys[i]
         data['jetM']    = jetMs[i]
         data['jetPt']   = jetPts[i]
+        data['genPt']   = genPts[i]
+        data['genEta']  = genEtas[i]
         #data['dR']    = dRs[i]
         data['iphi']  = iphis[i]
         data['ieta']  = ietas[i]
