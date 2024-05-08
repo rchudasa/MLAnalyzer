@@ -16,7 +16,9 @@ unsigned long long jet_eventId_;
 vector<float> vJetSeed_iphi_;
 vector<float> vJetSeed_ieta_;
 vector<int>   vFailedJetIdx_;
+int hltAccept_;
 
+TH1F * hNpassed_hlt;
 
 //const std::string task_ = ""; // TODO: put switch at cfg level 
 //const std::string task_ = "dijet_gg_qq"; // TODO: put switch at cfg level 
@@ -31,12 +33,16 @@ vector<int>   vFailedJetIdx_;
 // Initialize branches _____________________________________________________//
 void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService> &fs ) {
 
+  tree->Branch("hltAccept",      &hltAccept_);
   tree->Branch("eventId",        &jet_eventId_);
   tree->Branch("runId",          &jet_runId_);
   tree->Branch("lumiId",         &jet_lumiId_);
   tree->Branch("jetSeed_iphi",   &vJetSeed_iphi_);
   tree->Branch("jetSeed_ieta",   &vJetSeed_ieta_);
 
+  hNpassed_hlt      = fs->make<TH1F>("hNpassed_hlt", "isPassed;isPassed;N", 2, 0., 2);
+
+  
   // Fill branches in explicit jet selection
   if ( task_ == "tau_classification" ) {
     branchesEvtSel_jet_dijet_tau( tree, fs );
@@ -63,6 +69,55 @@ void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService
 // Run event selection ___________________________________________________________________//
 bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventSetup& iSetup ) {
 
+
+  edm::Handle<edm::TriggerResults> hltresults;
+  iEvent.getByToken(triggerResultsToken_,hltresults);
+  
+  if (!hltresults.isValid()) {
+   std::cout << "!!! Error in getting TriggerResults product from Event !!!" << std::endl;
+   //triger_valid = false;
+  }
+  
+  int ntrigs = hltresults->size();
+  edm::TriggerNames const& triggerNames = iEvent.triggerNames(*hltresults);
+  
+  std::cout << " N triggers:" << ntrigs << std::endl;
+  
+  //int passTrigger = 0;
+  /*for (int itrig = 0; itrig != ntrigs; ++itrig)
+    {
+   std::string trigName = triggerNames.triggerName(itrig);
+   // std::cout << ">>>>>>>>>>>>>>>>Available Trigger: " << trigName << std::endl;
+   bool accept = hltresults->accept(itrig);
+   if (!(accept)) continue;
+   std::cout << " Accept >>>>>>>>>>>>>>>>>>>>" << trigName << std::endl;
+    }*/
+  
+  int hltAccept = -1;
+  std::string trgName = "HLT_Double*ChargedIsoPFTau*_Trk1_*";
+  std::vector< std::vector<std::string>::const_iterator > trgMatches = edm::regexMatch( triggerNames.triggerNames(), trgName );
+  std::cout << " N matches: " << trgMatches.size() << std::endl;
+  
+  if ( !trgMatches.empty() ) {
+    //std::vector<std::string>  HLTPathsByName_;
+    //    //std::vector<unsigned int> HLTPathsByIndex_;
+    hltAccept = 0;
+    for ( auto const& iT : trgMatches ) {
+      //HLTPathsByName_.push_back( *iT );
+      //HLTPathsByIndex_.push_back( triggerNames.triggerIndex(*iT) );
+      if ( hltresults->accept(triggerNames.triggerIndex(*iT)) ){
+	    hltAccept = 1;
+            std::cout << " name["<<triggerNames.triggerIndex(*iT)<<"]:"<< *iT << " -> " << hltresults->accept(triggerNames.triggerIndex(*iT)) << std::endl;
+      	  break;
+	}
+    }
+  }
+  std::cout << "*************** hltAccept:" << hltAccept << std::endl; 
+  hltAccept_ = hltAccept;
+  // Ensure trigger acceptance
+  hNpassed_hlt->Fill(hltAccept);
+  if ( hltAccept_ != 1 ) return false;
+  
   // Each jet selection must fill vJetIdxs with good jet indices
 
   // Run explicit jet selection

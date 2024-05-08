@@ -147,6 +147,7 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
 
   // These will be use to create the actual images
   RHTree = fs->make<TTree>("RHTree", "RecHit tree");
+
   if ( doJets_ ) {
     branchesEvtSel_jet( RHTree, fs );
   } else {
@@ -191,17 +192,21 @@ RecHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
   nTotal++;
+  std::cout << "nTotal:"<< nTotal << std::endl;
   using namespace edm;
  // ----- Apply event selection cuts ----- //
 
-  bool passedSelection = false;
-  if ( doJets_ ) {
-    passedSelection = runEvtSel_jet( iEvent, iSetup );
-  } else {
-    passedSelection = runEvtSel( iEvent, iSetup );
-  }
 
-  if ( !passedSelection ) {
+  
+  
+  bool passedSelection = false;
+    if ( doJets_ ) {
+    passedSelection = runEvtSel_jet( iEvent, iSetup );
+    } else {
+    passedSelection = runEvtSel( iEvent, iSetup );
+    }
+    
+    if ( !passedSelection ) {
     if ( debug ) std::cout << "!!!!!!!!!!! DID NOT PASS EVENT/JET SELECTION !!!!!!!!!!!" << std::endl;
     h_sel->Fill( 0. );;
     return;

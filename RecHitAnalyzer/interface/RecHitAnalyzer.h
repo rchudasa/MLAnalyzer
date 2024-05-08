@@ -156,6 +156,7 @@
 #include "DataFormats/GeometryCommonDetAlgo/interface/Measurement1D.h"
 #include "RecoVertex/VertexTools/interface/VertexDistanceXY.h"
 #include "RecoVertex/VertexTools/interface/VertexDistance3D.h"
+#include "FWCore/Utilities/interface/RegexMatch.h"
 
 using namespace classic_svFit;
 
