@@ -48,6 +48,7 @@ void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService
     branchesEvtSel_jet_dijet_tau( tree, fs );
   } else if ( task_ == "dijet_ditau" ) {
     branchesEvtSel_jet_dijet_ditau( tree, fs );
+    branchesEvtSel_jet_dijet_ditau_h2aa4Tau( tree, fs );
   } else if ( task_ == "dijet_tau_massregression" ) {
     branchesEvtSel_jet_dijet_tau_massregression( tree, fs );
   } else if ( task_ == "dijet_ele_massregression" ) {
@@ -73,6 +74,7 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   edm::Handle<edm::TriggerResults> hltresults;
   iEvent.getByToken(triggerResultsToken_,hltresults);
   
+ //if(iEvent.id().event()<21930)return false; 
   if (!hltresults.isValid()) {
    std::cout << "!!! Error in getting TriggerResults product from Event !!!" << std::endl;
    //triger_valid = false;
@@ -116,7 +118,7 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   hltAccept_ = hltAccept;
   // Ensure trigger acceptance
   hNpassed_hlt->Fill(hltAccept);
-  if ( hltAccept_ != 1 ) return false;
+ // if ( hltAccept_ != 1 ) return false;
   
   // Each jet selection must fill vJetIdxs with good jet indices
 
@@ -149,7 +151,9 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
     hasPassed = runEvtSel_jet_dijet( iEvent, iSetup );
   }
 
-  if ( !hasPassed ) return false; 
+  if ( !hasPassed ) return false;
+  if (task_ == "dijet_ditau") runEvtSel_jet_dijet_ditau_h2aa4Tau( iEvent, iSetup );
+ 
   std::sort(vJetIdxs.begin(), vJetIdxs.end());
   if ( debug ) {
     for ( int thisJetIdx : vJetIdxs ) {
@@ -286,6 +290,7 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
     fillEvtSel_jet_dijet_tau( iEvent, iSetup );
   } else if ( task_ == "dijet_ditau" ) {
     fillEvtSel_jet_dijet_ditau( iEvent, iSetup );
+    fillEvtSel_jet_dijet_ditau_h2aa4Tau( iEvent, iSetup );
   } else if ( task_ == "dijet_tau_massregression" ) {
     fillEvtSel_jet_dijet_tau_massregression( iEvent, iSetup );
   } else if ( task_ == "dijet_ele_massregression" ) {

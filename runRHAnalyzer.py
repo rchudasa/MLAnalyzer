@@ -1,7 +1,7 @@
 import os
 
-cfg='RecHitAnalyzer/python/ConfFile_data_cfg.py'
-#cfg='RecHitAnalyzer/python/ConfFile_cfg.py'
+#cfg='RecHitAnalyzer/python/ConfFile_data_cfg.py'
+cfg='RecHitAnalyzer/python/ConfFile_cfg.py'
 #inputFiles_='file:/eos/uscms/store/group/lpcml/rchudasa/MCGeneration/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_M-50_13TeV-powheg_pythia8_DIGI-RECO-v2/230718_043012/0000/digiToReco_GluGluHtoTauTau_100.root' #QCD
 #inputFiles_='file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/eventGenerationChecks/digiToRecoStep_753_QCD_Pt-15to7000.root' #QCD
 #inputFiles_='file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/eventGenerationChecks/digiToRecoStep_318_Wjets.root' #QCD
@@ -18,7 +18,8 @@ cfg='RecHitAnalyzer/python/ConfFile_data_cfg.py'
 #inputFiles_='file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/Tau_Run2018A_UL/C69BBD7C-DC9B-3849-89CB-444AF555A078.root'#Data
 #inputFiles_='file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/officialMC_DYJetsToLL_M-50_TuneCP5_13Tev_RECO/61F13245-CF73-9946-8321-B18051BB8659.root'#official MC
 #inputFiles_='file:../PhaseI_TTbar_13TeV_NoPu_RECO_newGT.root'#pixel checks
-inputFiles_='file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/Tau/Tau_Run2018D_RAW-AOD-multithread/240208_082349/0000/RAW2DIGI_L1Reco_RECO_trackRechitsAdded_2.root'#pixel checks
+#inputFiles_='file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/Tau/Tau_Run2018D_RAW-AOD-multithread/240208_082349/0000/RAW2DIGI_L1Reco_RECO_trackRechitsAdded_2.root'#pixel checks
+inputFiles_='root://cmseos.fnal.gov//store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_8_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_8/240606_182926/0000/AODSIM_HToAATo4Tau_46_6.root'#pixel checks
 
 maxEvents_=10
 #maxEvents_=20
