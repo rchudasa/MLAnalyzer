@@ -78,10 +78,6 @@ std::vector<jet_tau_allCut_obj> vJetTauFrameCropped;
 void RecHitAnalyzer::branchesEvtSel_jet_dijet_ditau ( TTree* tree, edm::Service<TFileService> &fs ) {
 
   tree->Branch("nKinTau",        &nKinTau_);
-  //gen variables
-  tree->Branch("GenHiggsM",        &v_att_genHiggs_M_);
-  tree->Branch("GenPSM",           &v_att_genPS_M_);
-  tree->Branch("GenTaupT",         &v_att_genTau_pT_);
   //tau variables
   tree->Branch("nJets",            &v_att_tau_njet_);
   tree->Branch("jetM",             &v_att_tau_jet_m0_);
@@ -620,6 +616,6 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_ditau ( const edm::Event& iEvent, cons
     } //tau loop inside
   } //tau loop outside
   //v_att_tau_combs_ = tauPairs;
-   
+
   
 } // fillEvtSel_jet_dijet_ditau()

@@ -48,26 +48,30 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_ditau_h2aa4Tau ( TTree* tree, edm:
 bool RecHitAnalyzer::runEvtSel_jet_dijet_ditau_h2aa4Tau ( const edm::Event& iEvent, const edm::EventSetup& iSetup ) {
 
   std::cout << "Coming in Gen loop" << std::endl;
+
   edm::Handle<reco::GenParticleCollection> genParticles;
   iEvent.getByToken(genParticleCollectionT_, genParticles);
 
   vATaus.clear();
   ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > vH;
-  
+
 for ( unsigned int iG = 0; iG < genParticles->size(); iG++ ) {
 
     reco::GenParticleRef iGen( genParticles, iG );
+    if ( std::abs(iGen->pdgId()) != 25 ) continue;
+    if ( iGen->numberOfDaughters() != 2 ) continue;
+    if ( abs(iGen->daughter(0)->pdgId()) != 15 || abs(iGen->daughter(1)->pdgId()) != 15 ) continue;
 
-
-    if ( abs(iGen->pdgId()) != 35 || iGen->numberOfDaughters() != 2 || iGen->daughter(0)->pdgId() != 25 || iGen->daughter(1)->pdgId() != 25 ) continue;
-    if ( abs(iGen->daughter(0)->daughter(0)->pdgId()) != 15 || abs(iGen->daughter(0)->daughter(1)->pdgId()) != 15 || abs(iGen->daughter(1)->daughter(0)->pdgId()) != 15 || abs(iGen->daughter(1)->daughter(1)->pdgId()) != 15 ) continue;
-
-    std::cout<< "iG:" << iG << " ID:" << iGen->pdgId()<< std::endl; 
+    std::cout<<"*****************************************************"<< std::endl;
+    std::cout<< "iG:" << iG << " ID:" << iGen->pdgId() << " A mass:" << iGen->mass() << std::endl;
     gen_obj Gen_obj = { iG, std::abs(iGen->pt()) };
     vATaus.push_back( Gen_obj );
     vH += iGen->p4();
 
-  } // gen particles
+  }
+
+  std::cout<< "********** Gen Higgs mass " << vH.mass() << std::endl;
+  
   if ( vATaus.size() != 2 ) return false;
   mHgen_ = vH.mass();
   std::cout << "*************************************** Higgs mass:" << mHgen_ << "**************************" << std::endl;
@@ -75,19 +79,11 @@ for ( unsigned int iG = 0; iG < genParticles->size(); iG++ ) {
   std::sort( vATaus.begin(), vATaus.end(), [](auto const &a, auto const &b) { return a.pt > b.pt; } );
 
   vGenATauIdxs.clear();
-  //vPreselPhoIdxs_.clear();
-  //bool keepEvt = true;
-  //float ptomcut[2] = { 125./3., 125./4. };
   for ( unsigned int iG = 0; iG < vATaus.size(); iG++ ) {
     reco::GenParticleRef iGen( genParticles, vATaus[iG].idx );
     if ( debug ) std::cout << " >> pT:" << iGen->pt() << " eta:" << iGen->eta() << " phi: " << iGen->phi() << " E:" << iGen->energy() << std::endl;
-    //if ( std::abs(iGen->eta()) > 1.21 ) keepEvt = false;
-    //if ( std::abs(iGen->pt()) < ptomcut[iG] ) keepEvt = false;
-    //if ( reco::deltaR(iGen->daughter(0)->eta(),iGen->daughter(0)->phi(), iGen->daughter(1)->eta(),iGen->daughter(1)->phi()) > 0.15 ) keepEvt = false;
-    //vPreselPhoIdxs_.push_back( vATaus[iG].idx );
     vGenATauIdxs.push_back( vATaus[iG].idx );
   }
-  //if (keepEvt == false) return false;
 
 
   return true;

@@ -21,9 +21,9 @@ cfg='RecHitAnalyzer/python/ConfFile_cfg.py'
 #inputFiles_='file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/Tau/Tau_Run2018D_RAW-AOD-multithread/240208_082349/0000/RAW2DIGI_L1Reco_RECO_trackRechitsAdded_2.root'#pixel checks
 inputFiles_='root://cmseos.fnal.gov//store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_8_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_8/240606_182926/0000/AODSIM_HToAATo4Tau_46_6.root'#pixel checks
 
-maxEvents_=10
+#maxEvents_=10
 #maxEvents_=20
-#maxEvents_=-1
+maxEvents_=-1
 skipEvents_=0#
 #outputFile_='MLAnal_PhaseI_TTbar_13TeVu_trackRefitter.root'
 #outputFile_='GJet.root'
