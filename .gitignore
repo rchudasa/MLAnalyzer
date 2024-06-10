@@ -1,5 +1,9 @@
+*.png
+*/*.png
+*/*/*.png
 *.root
 */*.root
+plottingMacros/croppedJetIMG_*
 *.npz
 *.log
 *.txt
