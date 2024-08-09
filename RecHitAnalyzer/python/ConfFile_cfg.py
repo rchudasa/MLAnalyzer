@@ -10,8 +10,8 @@ options.register('skipEvents',
     info = "skipEvents")
 # TODO: put this option in cmsRun scripts
 options.register('processMode', 
-    default='JetLevel', 
-    #default='EventLevel', 
+    #default='JetLevel', 
+    default='EventLevel', 
     mult=VarParsing.VarParsing.multiplicity.singleton,
     mytype=VarParsing.VarParsing.varType.string,
     info = "process mode: JetLevel or EventLevel")
@@ -43,6 +43,8 @@ process.source = cms.Source("PoolSource",
     )
 print (" >> Loaded",len(options.inputFiles),"input files from list.")
 
+process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
+
 process.load("MLAnalyzer.RecHitAnalyzer.RHAnalyzer_cfi")
 process.fevt.mode = cms.string(options.processMode)
 print (" >> Processing as:",(process.fevt.mode))
@@ -55,7 +57,8 @@ process.hltFilter = cms.EDFilter("HLTHighLevel",
                                           eventSetupPathsKey = cms.string(''),
                                           TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
                                           #HLTPaths = cms.vstring('HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg_v*','HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg_v*','HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg_v*'),
-					  HLTPaths = cms.vstring('HLT_Double*PFTau*'),
+					  HLTPaths = cms.vstring('HLT_DiPFJetAve*','HLT_AK8PFJet*'),
+					  #HLTPaths = cms.vstring('HLT_Double*PFTau*'),
                                           #HLTPaths = cms.vstring('*'),
                                           andOr = cms.bool(True),
                                           throw = cms.bool(False)

@@ -10,7 +10,8 @@ options.register('skipEvents',
     info = "skipEvents")
 # TODO: put this option in cmsRun scripts
 options.register('processMode', 
-    default='JetLevel', 
+    default='EventLevel', 
+    #default='JetLevel', 
     mult=VarParsing.VarParsing.multiplicity.singleton,
     mytype=VarParsing.VarParsing.varType.string,
     info = "process mode: JetLevel or EventLevel")
@@ -52,6 +53,7 @@ process.source = cms.Source("PoolSource",
 print " >> Loaded",len(options.inputFiles),"input files from list."
 
 process.load("MLAnalyzer.RecHitAnalyzer.RHAnalyzer_cfi")
+process.fevt.isMC =cms.bool(False) 
 process.fevt.mode = cms.string(options.processMode)
 #process.fevt.mode = cms.string("JetLevel") # for when using crab
 #process.fevt.mode = cms.string("EventLevel") # for when using crab
@@ -62,6 +64,15 @@ process.TFileService = cms.Service("TFileService",
     fileName = cms.string(options.outputFile)
     )
 
+############################
+# Event Analysis
+############################
+process.load('MLAnalyzer.RecHitAnalyzer.hltanalysis_cfi')
+process.load('MLAnalyzer.RecHitAnalyzer.hltobject_cfi')
+#process.load('MLAnalyzer.RecHitAnalyzer.l1object_cfi')
+
+from MLAnalyzer.RecHitAnalyzer.hltobject_cfi import trigger_list_data
+process.hltobject.triggerNames = trigger_list_data
 
 process.hltFilter = cms.EDFilter("HLTHighLevel",
                                           eventSetupPathsKey = cms.string(''),
@@ -79,6 +90,7 @@ process.p = cms.Path(
   #process.hltFilter*
   #process.hltanalysis*
 #  process.patDefaultSequence*
+  process.hltanalysis*
   process.fevt
 )
 

@@ -2,76 +2,61 @@
 
 // Run event selection ////////////////////////////////
 
-TH1F *h_m0;
-TH1F *h_nJet;
-TH1F *h_phoPt; 
-TH1F *h_phoE;
-TH1F *h_phoEta;
-TH1F *h_phoR9;
-TH1F *h_phoSieie;
-TH1F *h_phoMva;
-TH1F *h_jetPt;
-TH1F *h_jetE;
-TH1F *h_jetEta;
-
 unsigned long long eventId_;
 unsigned int runId_;
 unsigned int lumiId_;
-float m0_;
-//float nJet_;
-float diPhoE_;
-float diPhoPt_;
-std::vector<float> vFC_inputs_;
 
-float m0cut = 90.;
-//float m0cut = 80.;
+int nTau_;
+std::vector<float> tauPt_; 
+std::vector<float> tauE_;
+std::vector<float> tauEta_;
+std::vector<float> tauMva_;
+int nJet_;
+std::vector<float> jetPt_;
+std::vector<float> jetE_;
+std::vector<float> jetEta_;
 
-// Initialize branches _____________________________________________________//
+//add ntau, tau pt, eta phi, njet, tau jet, pt, eta and phi
+//This is for the trigger efficiency part only. 
+//this is to check which trigger has highest efficiency
+//the idea is to take the trigger tree and event tree, match the event number, lumi and run number
+//apply the trigger and see which one has highest efficiency
+//also apply the basic pt and eta cut while estimating the trigger efficiency 
+
 void RecHitAnalyzer::branchesEvtSel ( TTree* tree, edm::Service<TFileService> &fs ) {
-
-  h_m0     = fs->make<TH1F>("h_m0"    , "m0;m0;Events"         ,  50, m0cut, m0cut+150.);
-
-  h_phoPt  = fs->make<TH1F>("h_phoPt" , "p_{T};p_{T};Particles", 100,  0., 500.);
-  h_phoE   = fs->make<TH1F>("h_phoE"  , "E;E;Particles"        , 100,  0., 800.);
-  h_phoEta = fs->make<TH1F>("h_phoEta", "#eta;#eta;Particles"  , 100, -5., 5.);
-  h_phoR9  = fs->make<TH1F>("h_phoR9" , "R9;R9;Particles"  , 50, 0., 1.);
-  h_phoSieie  = fs->make<TH1F>("h_phoSieie" , "Sieie;Sieie;Particles"  , 50, 0., 0.1);
-  //h_phoMva = fs->make<TH1F>("h_phoMva", "#mva;#mva;Particles"  , 100, -1., 1.);
-  /*
-  h_jetPt  = fs->make<TH1F>("h_jetPt" , "p_{T};p_{T};Particles", 100,  0., 500.);
-  h_jetE   = fs->make<TH1F>("h_jetE"  , "E;E;Particles"        , 100,  0., 800.);
-  h_jetEta = fs->make<TH1F>("h_jetEta", "#eta;#eta;Particles"  , 100, -5., 5.);
-  h_nJet   = fs->make<TH1F>("h_nJet"  , "nJet;nJet;Events"     ,  10,  0.,  10.);
-  */
 
   tree->Branch("eventId",        &eventId_);
   tree->Branch("runId",          &runId_);
   tree->Branch("lumiId",         &lumiId_);
-  tree->Branch("m0",             &m0_);
-  //tree->Branch("nJet",           &nJet_);
-  tree->Branch("FC_inputs",      &vFC_inputs_);
-  tree->Branch("diPhoE",         &diPhoE_);
-  tree->Branch("diPhoPt",        &diPhoPt_);
+  tree->Branch("nTau",           &nTau_);
+  tree->Branch("tauPt",          &tauPt_);
+  tree->Branch("tauE",           &tauE_);
+  tree->Branch("tauEta",         &tauEta_);
+   
+  tree->Branch("nJet",           &nJet_);
+  tree->Branch("jetPt",          &jetPt_);
+  tree->Branch("jetE",           &jetE_);
+  tree->Branch("jetEta",         &jetEta_);
 
 } // branchesEvtSel()
 
 // Run event selection _______________________________________________________________//
 bool RecHitAnalyzer::runEvtSel ( const edm::Event& iEvent, const edm::EventSetup& iSetup ) {
-
-  // edm::Handle<reco::PhotonCollection> photons;
-  // //edm::Handle<pat::PhotonCollection> photons;
-  // iEvent.getByToken( photonCollectionT_, photons );
-
+  
+  // edm::Handle<reco::PhotonCollection> tautons;
+  // //edm::Handle<pat::PhotonCollection> tautons;
+  // iEvent.getByToken( tautonCollectionT_, tautons );
+  
   // int nPhoTrg = 0;
 
-  // // Perform photon pre-selection
+  // // Perform tauton pre-selection
   // float dR, m0;
   // float leadPhoPt = 0.;
   // math::PtEtaPhiELorentzVectorD vDiPho;
   // std::vector<int> vPhoIdxs;
-  // for ( unsigned int iP = 0; iP < photons->size(); iP++ ) {
-  //   reco::PhotonRef iPho( photons, iP );
-  //   //pat::PhotonRef iPho( photons, iP );
+  // for ( unsigned int iP = 0; iP < tautons->size(); iP++ ) {
+  //   reco::PhotonRef iPho( tautons, iP );
+  //   //pat::PhotonRef iPho( tautons, iP );
   //   if ( std::abs(iPho->pt()) < 18. ) continue;
   //   //std::cout << iPho->full5x5_sigmaIetaIeta() << std::endl;
   //   if ( std::abs(iPho->eta()) > 1.44 ) continue;
@@ -87,7 +72,7 @@ bool RecHitAnalyzer::runEvtSel ( const edm::Event& iEvent, const edm::EventSetup
   //   vDiPho += iPho->p4();
   //   vPhoIdxs.push_back( iP );
 
-  // } // reco photons 
+  // } // reco tautons 
   // m0 = vDiPho.mass();
   // if ( m0 < m0cut ) return false;
   // if ( nPhoTrg != 2 ) return false;
@@ -98,9 +83,9 @@ bool RecHitAnalyzer::runEvtSel ( const edm::Event& iEvent, const edm::EventSetup
   // int leadPho = -1;
   // leadPhoPt = 0.;
   // for ( int iP = 0; iP < nPhoTrg; iP++ ) {
-  //   reco::PhotonRef iPho( photons, vPhoIdxs[iP] );
-  //   //pat::PhotonRef iPho( photons, vPhoIdxs[iP] );
-  //   // Get leading photon pt
+  //   reco::PhotonRef iPho( tautons, vPhoIdxs[iP] );
+  //   //pat::PhotonRef iPho( tautons, vPhoIdxs[iP] );
+  //   // Get leading tauton pt
   //   if ( std::abs(iPho->pt()) > leadPhoPt ) {
   //     leadPhoPt = std::abs(iPho->pt()); 
   //     leadPho = iP;
@@ -128,7 +113,7 @@ bool RecHitAnalyzer::runEvtSel ( const edm::Event& iEvent, const edm::EventSetup
   //   // deltaR check
   //   isDRIsolated = true;
   //   for ( int iP = 0; iP < nPho; iP++ ) {
-  //     reco::PhotonRef iPho( photons, vPhoIdxs[iP] );
+  //     reco::PhotonRef iPho( tautons, vPhoIdxs[iP] );
   //     dR = reco::deltaR( iJet->eta(),iJet->phi(), iPho->eta(),iPho->phi() );
   //     if ( dR < 0.4 ) {
   //       isDRIsolated = false;
@@ -143,7 +128,7 @@ bool RecHitAnalyzer::runEvtSel ( const edm::Event& iEvent, const edm::EventSetup
   // //if ( nJet != 2 ) return false;
   // */
 
-  // // Get photon order
+  // // Get tauton order
   // int ptOrder[2] = {0, 1};
   // if ( leadPho == 1 ) {
   //   ptOrder[0] = 1;
@@ -159,14 +144,14 @@ bool RecHitAnalyzer::runEvtSel ( const edm::Event& iEvent, const edm::EventSetup
   // float dphi[2] = {0., 0.};
   // vFC_inputs_.clear();
   // for ( int iP = 0; iP < nPho; iP++ ) {
-  //   reco::PhotonRef iPho( photons, vPhoIdxs[ptOrder[iP]] );
-  //   //pat::PhotonRef iPho( photons, vPhoIdxs[ptOrder[iP]] );
-  //   h_phoPt->Fill( iPho->pt() ); 
-  //   h_phoE->Fill( iPho->energy() );
-  //   h_phoEta->Fill( iPho->eta() ); 
-  //   h_phoR9->Fill( iPho->r9() ); 
-  //   h_phoSieie->Fill( iPho->full5x5_sigmaIetaIeta() ); 
-  //   //h_phoMva->Fill( iPho->pfMVA() ); 
+  //   reco::PhotonRef iPho( tautons, vPhoIdxs[ptOrder[iP]] );
+  //   //pat::PhotonRef iPho( tautons, vPhoIdxs[ptOrder[iP]] );
+  //   h_tauPt->Fill( iPho->pt() ); 
+  //   h_tauE->Fill( iPho->energy() );
+  //   h_tauEta->Fill( iPho->eta() ); 
+  //   h_tauR9->Fill( iPho->r9() ); 
+  //   h_tauSieie->Fill( iPho->full5x5_sigmaIetaIeta() ); 
+  //   //h_tauMva->Fill( iPho->pfMVA() ); 
   //   //std::cout << iPho->pfMVA() << std::endl;
   //   diPhoE_  += std::abs( iPho->energy() );
   //   diPhoPt_ += std::abs( iPho->pt() );
@@ -192,6 +177,45 @@ bool RecHitAnalyzer::runEvtSel ( const edm::Event& iEvent, const edm::EventSetup
   runId_ = iEvent.id().run();
   lumiId_ = iEvent.id().luminosityBlock();
 
+  edm::Handle<reco::PFTauCollection> taus;
+  iEvent.getByToken(tauCollectionT_, taus);
+  
+  edm::Handle<reco::PFJetCollection> jets;
+  iEvent.getByToken(jetCollectionT_, jets);
+
+  
+  // Loop over jets
+  if ( debug ) std::cout << " JETS IN THE EVENT = " << jets->size() << " | Selection requires minpT = " << minJetPt_ << " and maxEta = "<< maxJetEta_ << std::endl;
+
+ 
+  for ( unsigned iJ(0); iJ != jets->size(); ++iJ ) {
+    reco::PFJetRef iJet( jets, iJ );
+    
+    if ( iJet->pt() < minJetPt_ ) continue;
+    if ( std::abs(iJet->eta()) > maxJetEta_ ) continue;
+
+    jetPt_.push_back(iJet->pt());
+    jetE_.push_back(iJet->energy());
+    jetEta_.push_back(iJet->eta());
+    nJets_++;
+    
+  }
+
+
+  //Lookin at RecoTaus passing pt, eta cut and ateast 2 taus
+  for ( unsigned iT1(0); iT1 != taus->size(); ++iT1 ) {
+    reco::PFTauRef iTau1( taus, iT1 );
+    if ( iTau1->pt() < 15 ) continue;
+    if ( abs(iTau1->eta()) >= 2.4 ) continue;
+
+    tauPt_.push_back(iTau1->pt());
+    tauEta_.push_back(iTau1->eta());
+    tauE_.push_back(iTau1->energy());
+    
+    nTau_++;
+    
+  }
+  
   return true;
 
 } // runEvtSel()
@@ -199,13 +223,13 @@ bool RecHitAnalyzer::runEvtSel ( const edm::Event& iEvent, const edm::EventSetup
 /*
 bool RecHitAnalyzer::runEvtSel ( const edm::Event& iEvent, const edm::EventSetup& iSetup ) {
 
-  edm::Handle<reco::PhotonCollection> photons;
-  iEvent.getByToken(photonCollectionT_, photons);
+  edm::Handle<reco::PhotonCollection> tautons;
+  iEvent.getByToken(tautonCollectionT_, tautons);
   edm::Handle<reco::GenParticleCollection> genParticles;
   iEvent.getByToken(genParticleCollectionT_, genParticles);
 
   int nPho = 0;
-  std::cout << "PhoCol.size: " << photons->size() << std::endl;
+  std::cout << "PhoCol.size: " << tautons->size() << std::endl;
   math::XYZTLorentzVector vDiPho;
 
   for (reco::GenParticleCollection::const_iterator iGen = genParticles->begin();
@@ -221,10 +245,10 @@ bool RecHitAnalyzer::runEvtSel ( const edm::Event& iEvent, const edm::EventSetup
     nPho++;
     vDiPho += iGen->p4();
 
-  } // genParticle loop: count good photons
+  } // genParticle loop: count good tautons
 
-  // Require exactly 2 gen-level photons
-  // Indifferent about photons of status != 1
+  // Require exactly 2 gen-level tautons
+  // Indifferent about tautons of status != 1
   std::cout << "nPho:" << nPho << std::endl;
   if ( nPho != 4 ) return false;
   //if ( vDiPho.mass() < 80. ) return false;
@@ -262,8 +286,8 @@ bool RecHitAnalyzer::runEvtSel ( const edm::Event& iEvent, const edm::EventSetup
 //____ Apply event selection cuts _____//
 bool RecHitAnalyzer::runSelections_H24G ( const edm::Event& iEvent, const edm::EventSetup& iSetup ) {
 
-  edm::Handle<reco::PhotonCollection> photons;
-  iEvent.getByToken(photonCollectionT_, photons);
+  edm::Handle<reco::PhotonCollection> tautons;
+  iEvent.getByToken(tautonCollectionT_, tautons);
   edm::Handle<reco::GenParticleCollection> genParticles;
   iEvent.getByToken(genParticleCollectionT_, genParticles);
 
@@ -276,15 +300,15 @@ bool RecHitAnalyzer::runSelections_H24G ( const edm::Event& iEvent, const edm::E
   float ptCut = 18.;
   //float dRCut = 0.4;
   //float dR, dEta, dPhi;
-  std::cout << " >> recoPhoCol.size: " << photons->size() << std::endl;
+  std::cout << " >> recoPhoCol.size: " << tautons->size() << std::endl;
   math::PtEtaPhiELorentzVectorD vDiPho;
   //math::XYZTLorentzVector vDiPho;
   std::vector<float> vE, vPt, vEta, vPhi;
   float leadPhoPt = 0;
 
-  // Apply diphoton trigger-like selection
-  for(reco::PhotonCollection::const_iterator iPho = photons->begin();
-      iPho != photons->end();
+  // Apply ditauton trigger-like selection
+  for(reco::PhotonCollection::const_iterator iPho = tautons->begin();
+      iPho != tautons->end();
       ++iPho) {
 
     // Kinematic cuts
@@ -303,7 +327,7 @@ bool RecHitAnalyzer::runSelections_H24G ( const edm::Event& iEvent, const edm::E
 
   } // recoPhotons
 
-  // Apply diphoton trigger-like selection
+  // Apply ditauton trigger-like selection
   if ( nPho != 2 ) return false;
   if ( leadPhoPt < 30. ) return false;
   m0_ = vDiPho.mass();
@@ -316,12 +340,12 @@ bool RecHitAnalyzer::runSelections_H24G ( const edm::Event& iEvent, const edm::E
   //if ( dR < dRCut ) return false;
   std::cout << " >> passed trigger" << std::endl;
 
-  // Apply good photon selection
+  // Apply good tauton selection
   int i = 0;
   nPho = 0;
   leadPhoPt = 0.;
-  for(reco::PhotonCollection::const_iterator iPho = photons->begin();
-      iPho != photons->end();
+  for(reco::PhotonCollection::const_iterator iPho = tautons->begin();
+      iPho != tautons->end();
       ++iPho) {
 
     // Kinematic cuts
@@ -374,10 +398,10 @@ bool RecHitAnalyzer::runSelections_H24G ( const edm::Event& iEvent, const edm::E
   //  vDiPho += iGen->p4();
   //  if ( std::abs(iGen->pt()) > leadPt ) leadPt = std::abs(iGen->pt());
 
-  //} // genParticle loop: count good photons
+  //} // genParticle loop: count good tautons
 
-  //// Require exactly 2 gen-level photons
-  //// Indifferent about photons of status != 1
+  //// Require exactly 2 gen-level tautons
+  //// Indifferent about tautons of status != 1
   //std::cout << "GenCollection: " << nPho << std::endl;
   //if ( nPho != 4 ) return false;
   ////if ( vDiPho.mass() < 80. ) return false;
@@ -408,9 +432,9 @@ bool RecHitAnalyzer::runSelections_H24G ( const edm::Event& iEvent, const edm::E
   //std::cout << " m0: " << vDiPho.mass() <<" (" << vDiPho.T() << ")" << std::endl;
 
   //m0_ = vDiPho.mass();
-  //std::cout << "PhoCol.size: " << photons->size() << std::endl;
-  //for(reco::PhotonCollection::const_iterator iPho = photons->begin();
-  //    iPho != photons->end();
+  //std::cout << "PhoCol.size: " << tautons->size() << std::endl;
+  //for(reco::PhotonCollection::const_iterator iPho = tautons->begin();
+  //    iPho != tautons->end();
   //    ++iPho) {
   //  if ( std::abs(iPho->eta()) > etaCut ) continue;
   //  //if ( std::abs(iPho->pt()) < ptCut-2. ) continue;
@@ -448,8 +472,8 @@ bool RecHitAnalyzer::runSelections_H24G ( const edm::Event& iEvent, const edm::E
 //____ Apply event selection cuts _____//
 bool RecHitAnalyzer::runSelections_H2GG ( const edm::Event& iEvent, const edm::EventSetup& iSetup ) {
 
-  edm::Handle<reco::PhotonCollection> photons;
-  iEvent.getByToken(photonCollectionT_, photons);
+  edm::Handle<reco::PhotonCollection> tautons;
+  iEvent.getByToken(tautonCollectionT_, tautons);
   edm::Handle<reco::GenParticleCollection> genParticles;
   iEvent.getByToken(genParticleCollectionT_, genParticles);
 
@@ -462,7 +486,7 @@ bool RecHitAnalyzer::runSelections_H2GG ( const edm::Event& iEvent, const edm::E
   //float ptCut = 0.;
   //float dRCut = 0.4;
   //float dR, dEta, dPhi;
-  std::cout << "PhoCol.size: " << photons->size() << std::endl;
+  std::cout << "PhoCol.size: " << tautons->size() << std::endl;
   math::XYZTLorentzVector vDiPho;
 
   for (reco::GenParticleCollection::const_iterator iGen = genParticles->begin();
@@ -478,10 +502,10 @@ bool RecHitAnalyzer::runSelections_H2GG ( const edm::Event& iEvent, const edm::E
     nPho++;
     vDiPho += iGen->p4();
 
-  } // genParticle loop: count good photons
+  } // genParticle loop: count good tautons
 
-  // Require exactly 2 gen-level photons
-  // Indifferent about photons of status != 1
+  // Require exactly 2 gen-level tautons
+  // Indifferent about tautons of status != 1
   std::cout << nPho << std::endl;
   if ( nPho != 2 ) return false;
   //if ( vDiPho.mass() < 80. ) return false;
@@ -515,8 +539,8 @@ bool RecHitAnalyzer::runSelections_H2GG ( const edm::Event& iEvent, const edm::E
 bool RecHitAnalyzer::runSelections ( const edm::Event& iEvent, const edm::EventSetup& iSetup ) {
 
   // Initialize data collection pointers
-  edm::Handle<reco::PhotonCollection> photons;
-  iEvent.getByToken(photonCollectionT_, photons);
+  edm::Handle<reco::PhotonCollection> tautons;
+  iEvent.getByToken(tautonCollectionT_, tautons);
   edm::Handle<reco::GenParticleCollection> genParticles;
   iEvent.getByToken(genParticleCollectionT_, genParticles);
 
@@ -524,9 +548,9 @@ bool RecHitAnalyzer::runSelections ( const edm::Event& iEvent, const edm::EventS
   //float etaCut = 1.4;
   float etaCut = 2.3;
   float ptCut = 25.;
-  std::cout << "PhoCol.size: " << photons->size() << std::endl;
-  for(reco::PhotonCollection::const_iterator iPho = photons->begin();
-      iPho != photons->end();
+  std::cout << "PhoCol.size: " << tautons->size() << std::endl;
+  for(reco::PhotonCollection::const_iterator iPho = tautons->begin();
+      iPho != tautons->end();
       ++iPho) {
 
     // Kinematic cuts
@@ -537,14 +561,14 @@ bool RecHitAnalyzer::runSelections ( const edm::Event& iEvent, const edm::EventS
 
   } // recoPhotons
 
-  // Require at least 2 passed reco photons
-  // Will also include PU photons
+  // Require at least 2 passed reco tautons
+  // Will also include PU tautons
   if ( nPho < 2 ) return false;
 
   float dRCut = 0.4;
   float dEta, dPhi, dR;
-  for(reco::PhotonCollection::const_iterator iPho = photons->begin();
-      iPho != photons->end();
+  for(reco::PhotonCollection::const_iterator iPho = tautons->begin();
+      iPho != tautons->end();
       ++iPho) {
 
     // Kinematic cuts
@@ -575,7 +599,7 @@ bool RecHitAnalyzer::runSelections ( const edm::Event& iEvent, const edm::EventS
         break;
       }
 
-    } // genParticle loop: count good photons
+    } // genParticle loop: count good tautons
 
   } // recoPhotons
 

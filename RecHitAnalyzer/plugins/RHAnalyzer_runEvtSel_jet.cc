@@ -48,7 +48,7 @@ void RecHitAnalyzer::branchesEvtSel_jet ( TTree* tree, edm::Service<TFileService
     branchesEvtSel_jet_dijet_tau( tree, fs );
   } else if ( task_ == "dijet_ditau" ) {
     branchesEvtSel_jet_dijet_ditau( tree, fs );
-    branchesEvtSel_jet_dijet_ditau_h2aa4Tau( tree, fs );
+    if(isMC_)branchesEvtSel_jet_dijet_ditau_h2aa4Tau( tree, fs );
   } else if ( task_ == "dijet_tau_massregression" ) {
     branchesEvtSel_jet_dijet_tau_massregression( tree, fs );
   } else if ( task_ == "dijet_ele_massregression" ) {
@@ -73,7 +73,10 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
 
   edm::Handle<edm::TriggerResults> hltresults;
   iEvent.getByToken(triggerResultsToken_,hltresults);
-  
+ 
+   edm::Handle<trigger::TriggerEvent> triggerEvent;
+   iEvent.getByToken(triggerSummaryToken_, triggerEvent);
+
  //if(iEvent.id().event()<21930)return false; 
   if (!hltresults.isValid()) {
    std::cout << "!!! Error in getting TriggerResults product from Event !!!" << std::endl;
@@ -92,11 +95,14 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
    // std::cout << ">>>>>>>>>>>>>>>>Available Trigger: " << trigName << std::endl;
    bool accept = hltresults->accept(itrig);
    if (!(accept)) continue;
+   hltAccept_ = 1;
    std::cout << " Accept >>>>>>>>>>>>>>>>>>>>" << trigName << std::endl;
-    }*/
-  
+    }
+ */
   int hltAccept = -1;
-  std::string trgName = "HLT_Double*ChargedIsoPFTau*_Trk1_*";
+  std::string trgName = "HLT_DiPFJetAve*";
+  //std::string trgName = "HLT_AK8PFJet*";
+  //std::string trgName = "HLT_Double*ChargedIsoPFTau*_Trk1_*";
   std::vector< std::vector<std::string>::const_iterator > trgMatches = edm::regexMatch( triggerNames.triggerNames(), trgName );
   std::cout << " N matches: " << trgMatches.size() << std::endl;
   
@@ -110,7 +116,19 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
       if ( hltresults->accept(triggerNames.triggerIndex(*iT)) ){
 	    hltAccept = 1;
             std::cout << " name["<<triggerNames.triggerIndex(*iT)<<"]:"<< *iT << " -> " << hltresults->accept(triggerNames.triggerIndex(*iT)) << std::endl;
-      	  break;
+  	   // Analyze the individual filters for this trigger
+	    size_t filterCount = triggerEvent->sizeFilters();
+
+	    /*for (size_t j = 0; j < filterCount; ++j) {
+                std::string filterLabel = triggerEvent->filterTag(j).label();
+
+                // Check if the filter is part of the trigger path
+                // This requires knowledge of the trigger path structure
+                std::cout << " name["<<triggerNames.triggerIndex(*iT)<<"]:"<< *iT << " -> " << " passed filter " << filterLabel << std::endl;
+
+                // Add more detailed analysis here if needed
+            }*/
+  	    break;
 	}
     }
   }
@@ -118,8 +136,9 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   hltAccept_ = hltAccept;
   // Ensure trigger acceptance
   hNpassed_hlt->Fill(hltAccept);
- // if ( hltAccept_ != 1 ) return false;
-  
+  //if ( hltAccept_ != 1 ) return false;
+ 
+
   // Each jet selection must fill vJetIdxs with good jet indices
 
   // Run explicit jet selection
@@ -152,7 +171,7 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
   }
 
   if ( !hasPassed ) return false;
-  if (task_ == "dijet_ditau") runEvtSel_jet_dijet_ditau_h2aa4Tau( iEvent, iSetup );
+  if (task_ == "dijet_ditau" && isMC_) runEvtSel_jet_dijet_ditau_h2aa4Tau( iEvent, iSetup );
  
   std::sort(vJetIdxs.begin(), vJetIdxs.end());
   if ( debug ) {
@@ -290,7 +309,7 @@ bool RecHitAnalyzer::runEvtSel_jet ( const edm::Event& iEvent, const edm::EventS
     fillEvtSel_jet_dijet_tau( iEvent, iSetup );
   } else if ( task_ == "dijet_ditau" ) {
     fillEvtSel_jet_dijet_ditau( iEvent, iSetup );
-    fillEvtSel_jet_dijet_ditau_h2aa4Tau( iEvent, iSetup );
+    if(isMC_)fillEvtSel_jet_dijet_ditau_h2aa4Tau( iEvent, iSetup );
   } else if ( task_ == "dijet_tau_massregression" ) {
     fillEvtSel_jet_dijet_tau_massregression( iEvent, iSetup );
   } else if ( task_ == "dijet_ele_massregression" ) {

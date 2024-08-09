@@ -76,7 +76,7 @@ RecHitAnalyzer::RecHitAnalyzer(const edm::ParameterSet& iConfig)
   processName_              = iConfig.getUntrackedParameter<std::string>("processName","HLT");
   //triggerResultsToken_      = consumes<edm::TriggerResults> (iConfig.getUntrackedParameter<edm::InputTag>("triggerResultsTag", edm::InputTag("TriggerResults", "", "HLT")));
   triggerResultsToken_      = consumes<edm::TriggerResults> (iConfig.getParameter<edm::InputTag>("triggerResultsTag"));
-  
+  triggerSummaryToken_      = consumes<trigger::TriggerEvent>(iConfig.getParameter<edm::InputTag>("triggerSummaryTag"));  
   jetSFType_                = iConfig.getParameter<std::string>("srcJetSF");
   jetResPtType_             = iConfig.getParameter<std::string>("srcJetResPt");
   jetResPhiType_            = iConfig.getParameter<std::string>("srcJetResPhi");

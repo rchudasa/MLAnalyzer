@@ -17,6 +17,8 @@ std::vector<float> vA_eta_;
 std::vector<float> vA_phi_;
 std::vector<float> vA_mass_;
 std::vector<float> vA_DR_;
+std::vector<float> vA_daughter_deta_;
+std::vector<float> vA_daughter_dphi_;
 std::vector<float> vA_recoIdx_;
 std::vector<float> vA_pdgId_;
 std::vector<float> vA_mothPdgId_;
@@ -34,6 +36,8 @@ void RecHitAnalyzer::branchesEvtSel_jet_dijet_ditau_h2aa4Tau ( TTree* tree, edm:
 
   tree->Branch("A_mass",    &vA_mass_);
   tree->Branch("A_DR",      &vA_DR_);
+  tree->Branch("A_Daughter_deta", &vA_daughter_deta_);
+  tree->Branch("A_Daughter_dphi", &vA_daughter_dphi_);
   tree->Branch("A_E",       &vA_E_);
   tree->Branch("A_pT",      &vA_pT_);
   tree->Branch("A_eta",     &vA_eta_);
@@ -105,6 +109,8 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_ditau_h2aa4Tau ( const edm::Event& iEv
   vA_phi_.clear();
   vA_mass_.clear();
   vA_DR_.clear();
+  vA_daughter_deta_.clear();
+  vA_daughter_dphi_.clear();
   vA_recoIdx_.clear();
   float dPhi, dEta;
   //float dPhi, dEta, dR, recoDR;
@@ -123,7 +129,8 @@ void RecHitAnalyzer::fillEvtSel_jet_dijet_ditau_h2aa4Tau ( const edm::Event& iEv
     dPhi = reco::deltaPhi( iGen->daughter(0)->phi(), iGen->daughter(1)->phi() );
     dEta = std::abs( iGen->daughter(0)->eta() - iGen->daughter(1)->eta() );
     hdPhidEta->Fill( dPhi, dEta );
-
+    vA_daughter_deta_.push_back(dEta);
+    vA_daughter_dphi_.push_back(dPhi);
     // Get index to dR-matched preselected photon
     //recoDR = 2*0.04;
     recoDR_idx = -1;

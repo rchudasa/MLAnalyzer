@@ -2,7 +2,7 @@ from CRABClient.UserUtilities import config
 config = config()
 
 #config.section_('General')
-config.General.requestName = 'Tau_Run2018D_ntuples_fromAOD'
+config.General.requestName = 'JetHT_Run2018A-v1_ntuples_eventTriggerTree'
 config.General.workArea = 'crab_projects'
 config.General.transferOutputs = True
 config.General.transferLogs = True
@@ -13,7 +13,7 @@ config.JobType.psetName = 'runRHAnalyzer_data.py'
 #config.JobType.maxMemoryMB = 4000
 
 config.Data.inputDBS = 'phys03'
-config.Data.inputDataset ='/Tau/phys_heavyions-Tau_Run2018D_RAW-AOD-multithread-6d72431937b9b31ce737dc74b7b8c511/USER'
+config.Data.inputDataset ='/JetHT/lpcml-JetHT_Run2018A-v1_RAW-AOD-multithread-6d72431937b9b31ce737dc74b7b8c511/USER'
 
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 1 

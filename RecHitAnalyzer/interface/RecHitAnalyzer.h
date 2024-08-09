@@ -132,6 +132,7 @@
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 #include "DataFormats/HLTReco/interface/TriggerObject.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "DataFormats/Common/interface/ValueMap.h"
 
 #include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h"
@@ -230,6 +231,7 @@ class RecHitAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
     std::string   processName_;
     edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
+    edm::EDGetTokenT<trigger::TriggerEvent> triggerSummaryToken_;
     HLTConfigProvider hltConfig_;
 
     edm::EDGetTokenT<double> rhoLabel_;
