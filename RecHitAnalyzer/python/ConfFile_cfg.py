@@ -10,8 +10,8 @@ options.register('skipEvents',
     info = "skipEvents")
 # TODO: put this option in cmsRun scripts
 options.register('processMode', 
-    #default='JetLevel', 
-    default='EventLevel', 
+    default='JetLevel', 
+    #default='EventLevel', 
     mult=VarParsing.VarParsing.multiplicity.singleton,
     mytype=VarParsing.VarParsing.varType.string,
     info = "process mode: JetLevel or EventLevel")
@@ -53,6 +53,16 @@ process.TFileService = cms.Service("TFileService",
     fileName = cms.string(options.outputFile)
     )
 
+############################
+# Event Analysis
+############################
+process.load('MLAnalyzer.RecHitAnalyzer.hltanalysis_cfi')
+process.load('MLAnalyzer.RecHitAnalyzer.hltobject_cfi')
+#process.load('MLAnalyzer.RecHitAnalyzer.l1object_cfi')
+
+from MLAnalyzer.RecHitAnalyzer.hltobject_cfi import trigger_list_data
+process.hltobject.triggerNames = trigger_list_data
+
 process.hltFilter = cms.EDFilter("HLTHighLevel",
                                           eventSetupPathsKey = cms.string(''),
                                           TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
@@ -70,5 +80,6 @@ process.p = cms.Path(
   process.siStripMatchedRecHits*process.siPixelRecHits*process.MeasurementTrackerEvent*process.TrackRefitter*
 #  process.hltFilter*
 #  process.patDefaultSequence*
+  process.hltanalysis*
   process.fevt
 )

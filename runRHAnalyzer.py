@@ -21,17 +21,16 @@ cfg='RecHitAnalyzer/python/ConfFile_cfg.py'
 #inputFiles_='file:/eos/cms/store/group/phys_heavyions/rchudasa/e2e/Tau/Tau_Run2018D_RAW-AOD-multithread/240208_082349/0000/RAW2DIGI_L1Reco_RECO_trackRechitsAdded_2.root'#pixel checks
 
 #inputFiles_='file:/eos/uscms/store/group/lpcml/rchudasa/JetHT-AOD/JetHT/JetHT_Run2018A-v1_RAW-AOD-multithread/240621_165042/0000/RAW2DIGI_L1Reco_RECO_trackRechitsAdded_jetHT_56.root'
-#inputFiles_='file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_4_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_4/240604_153113/0000/AODSIM_HToAATo4Tau_46_1.root'
-#,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_4_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_4/240604_153113/0000/AODSIM_HToAATo4Tau_46_2.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_4_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_4/240604_153113/0000/AODSIM_HToAATo4Tau_46_3.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_4_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_4/240604_153113/0000/AODSIM_HToAATo4Tau_46_4.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_4_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_4/240604_153113/0000/AODSIM_HToAATo4Tau_46_5.root'#pixel checks
+inputFiles_='file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_4_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_4/240604_153113/0000/AODSIM_HToAATo4Tau_46_1.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_4_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_4/240604_153113/0000/AODSIM_HToAATo4Tau_46_2.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_4_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_4/240604_153113/0000/AODSIM_HToAATo4Tau_46_3.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_4_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_4/240604_153113/0000/AODSIM_HToAATo4Tau_46_4.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_4_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_4/240604_153113/0000/AODSIM_HToAATo4Tau_46_5.root'#pixel checks
 
 #inputFiles_='file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_8_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_8/240606_182926/0000/AODSIM_HToAATo4Tau_46_1.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_8_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_8/240606_182926/0000/AODSIM_HToAATo4Tau_46_2.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_8_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_8/240606_182926/0000/AODSIM_HToAATo4Tau_46_3.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_8_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_8/240606_182926/0000/AODSIM_HToAATo4Tau_46_4.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_8_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_8/240606_182926/0000/AODSIM_HToAATo4Tau_46_5.root'#pixel checks
 
-inputFiles_='file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_12_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_12/240606_183823/0000/AODSIM_HToAATo4Tau_46_1.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_12_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_12/240606_183823/0000/AODSIM_HToAATo4Tau_46_2.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_12_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_12/240606_183823/0000/AODSIM_HToAATo4Tau_46_3.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_12_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_12/240606_183823/0000/AODSIM_HToAATo4Tau_46_4.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_12_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_12/240606_183823/0000/AODSIM_HToAATo4Tau_46_5.root' 
+#inputFiles_='file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_12_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_12/240606_183823/0000/AODSIM_HToAATo4Tau_46_1.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_12_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_12/240606_183823/0000/AODSIM_HToAATo4Tau_46_2.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_12_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_12/240606_183823/0000/AODSIM_HToAATo4Tau_46_3.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_12_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_12/240606_183823/0000/AODSIM_HToAATo4Tau_46_4.root,file:/eos/uscms/store/group/lpcml/bbbam/MCGeneration/signal_withTrigger/GEN_SIM_HToAATo4Tau_M_12_pythia8_2018UL/raw_to_AODSIM_HToAATo4Tau_M_12/240606_183823/0000/AODSIM_HToAATo4Tau_46_5.root' 
 
 #inputFiles_='file:/eos/uscms/store/group/lpcml/rchudasa/MCGeneration/DYToTauTau_M-50_13TeV-powheg_pythia8/DYToTauTau_M-50_13TeV-powheg_pythia8_DIGI-RECO-v2/230718_043012/0000/digiToReco_GluGluHtoTauTau_10.root'
 
-#maxEvents_=10
-maxEvents_=100
+maxEvents_=10
+#maxEvents_=100
 #maxEvents_=-1
 skipEvents_=0#
 #outputFile_='MLAnal_PhaseI_TTbar_13TeVu_trackRefitter.root'
@@ -41,7 +40,7 @@ skipEvents_=0#
 #outputFile_='WJets_secVertex.root'
 #outputFile_='dyToEE.root'
 #outputFile_='acd_EmEnriched.root'
-outputFile_='h2aa4Tau-M12_AOD_eventInfo_trigTree.root'
+outputFile_='h2aa4Tau-M4_AOD_jetInfo_trigTree.root'
 #outputFile_='data-JetHT_AOD_jetTrigger.root'
 #outputFile_='DYToTauTau_AOD_woTrigger.root'
 
